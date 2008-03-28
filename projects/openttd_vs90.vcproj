@@ -761,6 +761,10 @@
 			Name="Header Files"
 			>
 			<File
+				RelativePath=".\..\src\ai\ai.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\aircraft.h"
 				>
 			</File>
@@ -866,6 +870,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\video\dedicated_v.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\ai\default\default.h"
 				>
 			</File>
 			<File
@@ -985,6 +993,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\lzoconf.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\map_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\map_type.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\core\math_func.hpp"
 				>
 			</File>
@@ -993,11 +1013,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\minilzo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\mixer.h"
 				>
 			</File>
 			<File
 				RelativePath=".\..\src\music.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\namegen_func.h"
 				>
 			</File>
 			<File
@@ -1093,6 +1121,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\newgrf_string_type.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\newgrf_text.h"
 				>
 			</File>
@@ -1105,7 +1137,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\..\src\news.h"
+				RelativePath=".\..\src\news_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\news_type.h"
 				>
 			</File>
 			<File
@@ -1214,6 +1250,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\screenshot.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\sdl.h"
 				>
 			</File>
 			<File
@@ -1361,6 +1401,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\ai\trolly\trolly.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\tunnelbridge.h"
 				>
 			</File>
@@ -1389,6 +1433,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\viewport_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\viewport_type.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\waypoint.h"
 				>
 			</File>
@@ -1402,6 +1454,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\video\win32_v.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\water.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\win32.h"
 				>
 			</File>
 			<File
@@ -1677,6 +1737,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\table\bridge_land.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\table\build_industry.h"
 				>
 			</File>
@@ -1689,11 +1753,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\table\control_codes.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\table\elrail_data.h"
 				>
 			</File>
 			<File
 				RelativePath=".\..\src\table\engines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\table\files.h"
 				>
 			</File>
 			<File
@@ -1714,6 +1786,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\table\palettes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\table\railtypes.h"
 				>
 			</File>
 			<File
@@ -1750,6 +1826,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\table\tree_land.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\table\unicode.h"
 				>
 			</File>
 			<File
