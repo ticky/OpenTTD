@@ -215,6 +215,7 @@ void CheckOrders(const Vehicle*);
 void DeleteVehicleOrders(Vehicle *v);
 void AssignOrder(Order *order, Order data);
 bool CheckForValidOrders(const Vehicle* v);
+bool ProcessOrders(Vehicle *v);
 
 Order UnpackOldOrder(uint16 packed);
 
