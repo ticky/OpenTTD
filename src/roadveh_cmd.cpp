@@ -336,19 +336,6 @@ void ClearSlot(Vehicle *v)
 	DEBUG(ms, 3, "Clearing slot at 0x%X", rs->xy);
 }
 
-bool RoadVehicle::IsStoppedInDepot() const
-{
-	TileIndex tile = this->tile;
-
-	if (!IsTileDepotType(tile, TRANSPORT_ROAD)) return false;
-	if (IsRoadVehFront(this) && !(this->vehstatus & VS_STOPPED)) return false;
-
-	for (const Vehicle *v = this; v != NULL; v = v->Next()) {
-		if (v->u.road.state != RVSB_IN_DEPOT || v->tile != tile) return false;
-	}
-	return true;
-}
-
 /** Sell a road vehicle.
  * @param tile unused
  * @param flags operation to perform
@@ -412,7 +399,7 @@ static bool EnumRoadSignalFindDepot(TileIndex tile, void* data, Trackdir trackdi
 	return false;
 }
 
-static RoadFindDepotData FindClosestRoadDepot(const RoadVehicle *v, int max_distance)
+static RoadFindDepotData FindClosestRoadDepot(const Vehicle *v, int max_distance)
 {
 	RoadFindDepotData rfdd;
 	rfdd.owner = v->owner;
@@ -462,7 +449,7 @@ bool RoadVehicle::FindClosestDepot(TileIndex *location, DestinationID *destinati
 	if (rfdd.best_length == UINT_MAX) return false;
 
 	if (location    != NULL) *location    = rfdd.tile;
-	if (destination != NULL) *destination = Depot::GetByTile(rfdd.tile)->index;
+	if (destination != NULL) *destination = GetDepotByTile(rfdd.tile)->index;
 
 	return true;
 }
@@ -477,8 +464,9 @@ bool RoadVehicle::FindClosestDepot(TileIndex *location, DestinationID *destinati
  */
 CommandCost CmdSendRoadVehToDepot(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 {
+	static const uint MAX_ACCEPTABLE_DEPOT_DIST = 16;
+
 	Vehicle *v;
-	const Depot *dep;
 
 	if (p2 & DEPOT_MASS_SEND) {
 		/* Mass goto depot requested */
@@ -524,8 +512,13 @@ CommandCost CmdSendRoadVehToDepot(TileIndex tile, uint32 flags, uint32 p1, uint3
 		return CommandCost();
 	}
 
-	dep = FindClosestRoadDepot(v);
-	if (dep == NULL) return_cmd_error(STR_9019_UNABLE_TO_FIND_LOCAL_DEPOT);
+	RoadFindDepotData rfdd = FindClosestRoadDepot(v, MAX_ACCEPTABLE_DEPOT_DIST);
+	/* Only go to the depot if it is not too far out of our way. */
+	if (rfdd.best_length == UINT_MAX || rfdd.best_length > MAX_ACCEPTABLE_DEPOT_DIST) {
+		return_cmd_error(STR_9019_UNABLE_TO_FIND_LOCAL_DEPOT)
+	}
+
+	const Depot *dep = GetDepotByTile(rfdd.tile);
 
 	if (flags & DC_EXEC) {
 		if (v->current_order.type == OT_LOADING) v->LeaveStation();
@@ -536,7 +529,7 @@ CommandCost CmdSendRoadVehToDepot(TileIndex tile, uint32 flags, uint32 p1, uint3
 		if (!(p2 & DEPOT_SERVICE)) SetBit(v->current_order.flags, OF_HALT_IN_DEPOT);
 		v->current_order.refit_cargo = CT_INVALID;
 		v->current_order.dest = dep->index;
-		v->dest_tile = dep->xy;
+		v->dest_tile = rfdd.tile;
 		InvalidateWindowWidget(WC_VEHICLE_VIEW, v->index, VVW_WIDGET_START_STOP_VEH);
 	}
 
@@ -2030,7 +2023,7 @@ static void CheckIfRoadVehNeedsService(Vehicle *v)
 		return;
 	}
 
-	const Depot *depot = Depot::GetByTile(rfdd.tile);
+	const Depot *depot = GetDepotByTile(rfdd.tile);
 
 	if (v->current_order.type == OT_GOTO_DEPOT &&
 			v->current_order.flags & OFB_NON_STOP &&

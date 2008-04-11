@@ -501,6 +501,25 @@ public:
 	 * @return true if the current order should be interupted.
 	 */
 	bool NeedsAutomaticServicing() const;
+
+	/**
+	 * Determine the location for the station where the vehicle goes to next.
+	 * Things done for example are allocating slots in a road stop or exact
+	 * location of the platform is determined for ships.
+	 * @param station the station to make the next location of the vehicle.
+	 * @return the location (tile) to aim for.
+	 */
+	virtual TileIndex GetOrderStationLocation(StationID station) { return INVALID_TILE; }
+
+	/**
+	 * Find the closest depot for this vehicle and tell us the location,
+	 * DestinationID and whether we should reverse.
+	 * @param location    where do we go to?
+	 * @param destination what hangar do we go to?
+	 * @param reverse     should the vehicle be reversed?
+	 * @return true if a depot could be found.
+	 */
+	virtual bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse) { return false; }
 };
 
 /**

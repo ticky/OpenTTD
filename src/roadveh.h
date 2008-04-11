@@ -47,6 +47,10 @@ static inline bool RoadVehHasArticPart(const Vehicle *v)
 
 void CcBuildRoadVeh(bool success, TileIndex tile, uint32 p1, uint32 p2);
 
+byte GetRoadVehLength(const Vehicle *v);
+
+void RoadVehUpdateCache(Vehicle *v);
+
 
 /**
  * This class 'wraps' Vehicle; you do not actually instantiate this class.
@@ -74,13 +78,10 @@ struct RoadVehicle : public Vehicle {
 	int GetDisplayMaxSpeed() const { return this->max_speed * 10 / 32; }
 	Money GetRunningCost() const { return RoadVehInfo(this->engine_type)->running_cost * GetPriceByIndex(RoadVehInfo(this->engine_type)->running_cost_class); }
 	bool IsInDepot() const { return this->u.road.state == RVSB_IN_DEPOT; }
-	bool IsStoppedInDepot() const;
 	void Tick();
 	void OnNewDay();
+	TileIndex GetOrderStationLocation(StationID station);
+	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);
 };
-
-byte GetRoadVehLength(const Vehicle *v);
-
-void RoadVehUpdateCache(Vehicle *v);
 
 #endif /* ROADVEH_H */

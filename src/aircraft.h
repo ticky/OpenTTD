@@ -125,6 +125,8 @@ struct Aircraft : public Vehicle {
 	bool IsInDepot() const { return (this->vehstatus & VS_HIDDEN) != 0 && IsHangarTile(this->tile); }
 	void Tick();
 	void OnNewDay();
+	TileIndex GetOrderStationLocation(StationID station);
+	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);
 };
 
 Station *GetTargetAirportIfValid(const Vehicle *v);
