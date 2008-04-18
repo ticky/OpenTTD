@@ -779,7 +779,7 @@ static bool CheckCommandsMatch(char *a, char *b, const char *name)
 
 static void HandleString(char *str, bool master)
 {
-	char *s,*t;
+	char *s, *t;
 	LangString *ent;
 	char *casep;
 

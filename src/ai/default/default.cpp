@@ -4045,11 +4045,11 @@ void AiDoGameLoop(Player *p)
 		if (_players_ai[p->index].state != old_state) {
 			if (hasdots)
 				printf("\n");
-			hasdots=false;
+			hasdots = false;
 			printf("AiState: %s\n", _ai_state_names[old_state=_players_ai[p->index].state]);
 		} else {
 			printf(".");
-			hasdots=true;
+			hasdots = true;
 		}
 	}
 #endif

@@ -494,7 +494,7 @@ static void MenuWndProc(Window *w, WindowEvent *e)
 
 
 		if (index < 0) {
-			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR,0);
+			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR, 0);
 			if (GetWidgetFromPos(w2, e->we.popupmenu.pt.x - w2->left, e->we.popupmenu.pt.y - w2->top) == WP(w, menu_d).main_button)
 				index = WP(w, menu_d).sel_index;
 		}
@@ -636,7 +636,7 @@ static void PlayerMenuWndProc(Window *w, WindowEvent *e)
 		}
 
 		if (index < 0) {
-			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR,0);
+			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR, 0);
 			if (GetWidgetFromPos(w2, e->we.popupmenu.pt.x - w2->left, e->we.popupmenu.pt.y - w2->top) == WP(w, menu_d).main_button)
 				index = WP(w, menu_d).sel_index;
 		}
@@ -929,7 +929,7 @@ static void ToolbarZoomInClick(Window *w)
 
 static void ToolbarZoomOutClick(Window *w)
 {
-	if (DoZoomInOutWindow(ZOOM_OUT,FindWindowById(WC_MAIN_WINDOW, 0))) {
+	if (DoZoomInOutWindow(ZOOM_OUT, FindWindowById(WC_MAIN_WINDOW, 0))) {
 		w->HandleButtonClick(18);
 		SndPlayFx(SND_15_BEEP);
 	}
@@ -1267,8 +1267,8 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 	switch (e->event) {
 	case WE_PAINT:
 		/* Draw brown-red toolbar bg. */
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB2);
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB2);
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
 
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
@@ -1520,8 +1520,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 		w->SetWidgetDisabledState(7, _patches_newgame.starting_year >= MAX_YEAR);
 
 		/* Draw brown-red toolbar bg. */
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB2);
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB2);
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
 
 		DrawWindowWidgets(w);
 
@@ -1590,7 +1590,7 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 
 	case WE_RESIZE: {
 		/* There are 15 buttons plus some spacings if the space allows it.
-		 * Furthermore there are two panels of which one is non-essential
+		 * Furthermore there are two panels of which one is non - essential
 		 * and that one can be removed is the space is too small. */
 		uint buttons_width;
 		uint spacing;
