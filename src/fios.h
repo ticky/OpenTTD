@@ -43,22 +43,22 @@ enum FileType {
 };
 
 enum FiosType {
-	FIOS_TYPE_DRIVE        =   0,
-	FIOS_TYPE_PARENT       =   1,
-	FIOS_TYPE_DIR          =   2,
-	FIOS_TYPE_FILE         =   3,
-	FIOS_TYPE_OLDFILE      =   4,
-	FIOS_TYPE_SCENARIO     =   5,
-	FIOS_TYPE_OLD_SCENARIO =   6,
-	FIOS_TYPE_DIRECT       =   7,
-	FIOS_TYPE_PNG          =   8,
-	FIOS_TYPE_BMP          =   9,
-	FIOS_TYPE_INVALID      = 255,
+	FIOS_TYPE_DRIVE,
+	FIOS_TYPE_PARENT,
+	FIOS_TYPE_DIR,
+	FIOS_TYPE_FILE,
+	FIOS_TYPE_OLDFILE,
+	FIOS_TYPE_SCENARIO,
+	FIOS_TYPE_OLD_SCENARIO,
+	FIOS_TYPE_DIRECT,
+	FIOS_TYPE_PNG,
+	FIOS_TYPE_BMP,
+	FIOS_TYPE_INVALID = 255,
 };
 
 /* Deals with finding savegames */
 struct FiosItem {
-	byte type;
+	FiosType type;
 	uint64 mtime;
 	char title[64];
 	char name[256 - 12 - 64];
@@ -82,11 +82,11 @@ extern SaveLoadDialogMode _saveload_mode;   ///< defined in misc_gui.cpp
 void ShowSaveLoadDialog(SaveLoadDialogMode mode);
 
 /* Get a list of savegames */
-FiosItem *FiosGetSavegameList(int mode);
+FiosItem *FiosGetSavegameList(SaveLoadDialogMode mode);
 /* Get a list of scenarios */
-FiosItem *FiosGetScenarioList(int mode);
+FiosItem *FiosGetScenarioList(SaveLoadDialogMode mode);
 /* Get a list of Heightmaps */
-FiosItem *FiosGetHeightmapList(int mode);
+FiosItem *FiosGetHeightmapList(SaveLoadDialogMode mode);
 /* Free the list of savegames */
 void FiosFreeSavegameList();
 /* Browse to. Returns a filename w/path if we reached a file. */
@@ -100,7 +100,7 @@ void FiosMakeSavegameName(char *buf, const char *name, size_t size);
 /* Allocate a new FiosItem */
 FiosItem *FiosAlloc();
 /* Determines type of savegame (or tells it is not a savegame) */
-byte FiosGetSavegameListCallback(int mode, const char *file, const char *ext, char *title);
+FiosType FiosGetSavegameListCallback(SaveLoadDialogMode mode, const char *file, const char *ext, char *title);
 
 int CDECL compare_FiosItems(const void *a, const void *b);
 
