@@ -3,6 +3,7 @@
 #include "../../stdafx.h"
 #include "../../core/bitmath_func.hpp"
 #include "../../string_func.h"
+#include "../../rev.h"
 
 #define Rect  OTTDRect
 #define Point OTTDPoint
@@ -62,7 +63,6 @@ static char *GetOSString()
 	static char buffer[175];
 	const char* CPU;
 	char newgrf[125];
-	extern const char _openttd_revision[];
 
 	// get the hardware info
 	host_basic_info_data_t hostInfo;

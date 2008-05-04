@@ -44,6 +44,7 @@
 #include "sound_func.h"
 #include "core/alloc_func.hpp"
 #include "player_func.h"
+#include "rev.h"
 #ifdef WITH_FREETYPE
 #include "fontcache.h"
 #endif
@@ -1773,9 +1774,6 @@ static void NewsDisplaySaveConfig(IniFile *ini, const char *grpname, uint news_d
  */
 static void SaveVersionInConfig(IniFile *ini)
 {
-	extern const char _openttd_revision[];
-	extern uint32 _openttd_newgrf_version;
-
 	IniGroup *group = ini_getgroup(ini, "version", -1);
 
 	if (group == NULL) return;

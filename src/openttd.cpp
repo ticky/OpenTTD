@@ -66,6 +66,7 @@
 #include "sound_func.h"
 #include "variables.h"
 #include "road_func.h"
+#include "rev.h"
 
 #include "bridge_map.h"
 #include "clear_map.h"
@@ -126,9 +127,10 @@ void CDECL ShowInfoF(const char *str, ...)
 	ShowInfo(buf);
 }
 
-
-extern const char _openttd_revision[];
-static void showhelp()
+/**
+ * Show the help message when someone passed a wrong parameter.
+ */
+static void ShowHelp()
 {
 	char buf[4096], *p;
 
@@ -437,7 +439,7 @@ int ttd_main(int argc, char *argv[])
 		case 'x': save_config = false; break;
 		case -2:
 		case 'h':
-			showhelp();
+			ShowHelp();
 			return 0;
 		}
 	}

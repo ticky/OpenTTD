@@ -5,6 +5,7 @@
 #include "../gfx_func.h"
 #include "../variables.h"
 #include "../win32.h"
+#include "../rev.h"
 #include "../blitter/factory.hpp"
 #include "../network/network.h"
 #include "../core/math_func.hpp"
@@ -284,7 +285,6 @@ static bool MakeWindow(bool full_screen)
 			ShowWindow(_wnd.main_wnd, SW_SHOWNORMAL); // remove maximize-flag
 			SetWindowPos(_wnd.main_wnd, 0, x, y, w, h, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 		} else {
-			extern const char _openttd_revision[];
 			TCHAR Windowtitle[50];
 
 			_sntprintf(Windowtitle, lengthof(Windowtitle), _T("OpenTTD %s"), MB_TO_WIDE(_openttd_revision));
