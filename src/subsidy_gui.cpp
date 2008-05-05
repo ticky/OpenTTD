@@ -15,6 +15,7 @@
 #include "date_func.h"
 #include "viewport_func.h"
 #include "gfx_func.h"
+#include "gui.h"
 
 #include "table/strings.h"
 
@@ -68,7 +69,9 @@ handle_click:
 		xy = GetIndustry(offs)->xy;
 	}
 
-	if (!ScrollMainWindowToTile(xy)) {
+	if (_ctrl_pressed || !ScrollMainWindowToTile(xy)) {
+		if (_ctrl_pressed) ShowExtraViewPortWindow(xy);
+
 		/* otherwise determine to coordinate for subsidy and scroll to it */
 		offs = s->to;
 		if (s->age >= 12) {
@@ -78,7 +81,12 @@ handle_click:
 		} else {
 			xy = GetIndustry(offs)->xy;
 		}
-		ScrollMainWindowToTile(xy);
+
+		if (_ctrl_pressed) {
+			ShowExtraViewPortWindow(xy);
+		} else {
+			ScrollMainWindowToTile(xy);
+		}
 	}
 }
 
