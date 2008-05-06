@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* Table of all default cargo types */
+/** @file cargo_const.h Table of all default cargo types */
 
 #define MK(bt, label, c, e, f, g, h, fr, te, ks1, ks2, ks3, ks4, ks5, l, m) \
           {bt, label, 0, c, c, e, f, {g, h}, fr, te, 0, 0, GRFMappedStringID(ks1, 0), GRFMappedStringID(ks2, 0), GRFMappedStringID(ks3, 0), GRFMappedStringID(ks4, 0), GRFMappedStringID(ks5, 0), l, m, NULL}

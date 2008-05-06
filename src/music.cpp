@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file music.cpp */
+/** @file music.cpp The songs that OpenTTD knows. */
 
 #include "music.h"
 

@@ -1,6 +1,22 @@
 /* $Id$ */
 
-/** @file viewport.cpp */
+/** @file viewport.cpp Handling of all viewports.
+ *
+ * \verbatim
+ * The in-game coordinate system looks like this *
+ *                                               *
+ *                    ^ Z                        *
+ *                    |                          *
+ *                    |                          *
+ *                    |                          *
+ *                    |                          *
+ *                 /     \                       *
+ *              /           \                    *
+ *           /                 \                 *
+ *        /                       \              *
+ *   X <                             > Y         *
+ * \endverbatim
+ */
 
 #include "stdafx.h"
 #include "openttd.h"
