@@ -691,7 +691,7 @@ static void NetworkStartServerWindowWndProc(Window *w, WindowEvent *e)
 		break;
 
 	case WE_PAINT: {
-		int y = NSSWND_START, pos;
+		int y = NSSWND_START;
 		const FiosItem *item;
 
 		/* draw basic widgets */
@@ -711,9 +711,8 @@ static void NetworkStartServerWindowWndProc(Window *w, WindowEvent *e)
 		/* draw list of maps */
 		GfxFillRect(11, 63, 258, 215, 0xD7);  // black background of maps list
 
-		pos = w->vscroll.pos;
-		while (pos < _fios_num + 1) {
-			item = _fios_list + pos - 1;
+		for (uint pos = w->vscroll.pos; pos < _fios_items.Length() + 1; pos++) {
+			item = _fios_items.Get(pos - 1);
 			if (item == nd->map || (pos == 0 && nd->map == NULL))
 				GfxFillRect(11, y - 1, 258, y + 10, 155); // show highlighted item with a different colour
 
@@ -722,7 +721,6 @@ static void NetworkStartServerWindowWndProc(Window *w, WindowEvent *e)
 			} else {
 				DoDrawString(item->title, 14, y, _fios_colors[item->type] );
 			}
-			pos++;
 			y += NSSWND_ROWSIZE;
 
 			if (y >= w->vscroll.cap * NSSWND_ROWSIZE + NSSWND_START) break;
@@ -749,7 +747,7 @@ static void NetworkStartServerWindowWndProc(Window *w, WindowEvent *e)
 			y += w->vscroll.pos;
 			if (y >= w->vscroll.count) return;
 
-			nd->map = (y == 0) ? NULL : _fios_list + y - 1;
+			nd->map = (y == 0) ? NULL : _fios_items.Get(y - 1);
 			SetWindowDirty(w);
 			} break;
 		case NSSW_CONNTYPE_BTN: // Connection type
@@ -945,7 +943,7 @@ static void ShowNetworkStartServerWindow()
 	_saveload_mode = SLD_NEW_GAME;
 	BuildFileList();
 	w->vscroll.cap = 12;
-	w->vscroll.count = _fios_num + 1;
+	w->vscroll.count = _fios_items.Length();
 
 	WP(w, network_ql_d).q.afilter = CS_ALPHANUMERAL;
 	InitializeTextBuffer(&WP(w, network_ql_d).q.text, _edit_str_buf, lengthof(_edit_str_buf), 160);

@@ -10,7 +10,6 @@
 #include "heightmap.h"
 #include "fios.h"
 #include "fileio.h"
-#include "core/alloc_func.hpp"
 #include "functions.h"
 #include "string_func.h"
 #include <sys/types.h>
@@ -30,12 +29,9 @@
 #include "safeguards.h"
 
 /* Variables to display file lists */
-int _fios_num;
-
+SmallVector<FiosItem, 32> _fios_items;
 static char *_fios_path;
-static FiosItem *_fios_items;
 SmallFiosItem _file_to_saveload;
-static int _fios_count, _fios_alloc;
 
 /* OS-specific functions are taken from their respective files (win32/unix/os2 .c) */
 extern bool FiosIsRoot(const char *path);
@@ -46,19 +42,6 @@ extern bool FiosGetDiskFreeSpace(const char *path, uint32 *tot);
 
 /* get the name of an oldstyle savegame */
 extern void GetOldSaveGameName(char *title, const char *path, const char *file);
-
-/**
- * Allocate a new FiosItem.
- * @return A pointer to the newly allocated FiosItem.
- */
-FiosItem *FiosAlloc()
-{
-	if (_fios_count == _fios_alloc) {
-		_fios_alloc += 256;
-		_fios_items = ReallocT(_fios_items, _fios_alloc);
-	}
-	return &_fios_items[_fios_count++];
-}
 
 /**
  * Compare two FiosItem's. Used with qsort when sorting the file list.
@@ -82,15 +65,12 @@ int CDECL compare_FiosItems(const void *a, const void *b)
 	return r;
 }
 
-/**
- * Free the list of savegames
- */
+/** Clear the list */
 void FiosFreeSavegameList()
 {
-	free(_fios_items);
-	_fios_items = NULL;
-	_fios_alloc = _fios_count = 0;
-}
+	_fios_items.Clear();
+	_fios_items.Compact();
+};
 
 /**
  * Get descriptive texts. Returns the path and free space
@@ -230,9 +210,11 @@ static FiosItem *FiosGetFileList(SaveLoadDialogMode mode, fios_getlist_callback_
 	int sort_start;
 	char d_name[sizeof(fios->name)];
 
+	_fios_items.Clear();
+
 	/* A parent directory link exists if we are not in the root directory */
 	if (!FiosIsRoot(_fios_path) && mode != SLD_NEW_GAME) {
-		fios = FiosAlloc();
+		fios = _fios_items.Append();
 		fios->type = FIOS_TYPE_PARENT;
 		fios->mtime = 0;
 		ttd_strlcpy(fios->name, "..", lengthof(fios->name));
@@ -248,7 +230,7 @@ static FiosItem *FiosGetFileList(SaveLoadDialogMode mode, fios_getlist_callback_
 			if (FiosIsValidFile(_fios_path, dirent, &sb) && (sb.st_mode & S_IFDIR) &&
 					(!FiosIsHiddenFile(dirent) || strncasecmp(d_name, PERSONAL_DIR, strlen(d_name)) == 0) &&
 					strcmp(d_name, ".") != 0 && strcmp(d_name, "..") != 0) {
-				fios = FiosAlloc();
+				fios = _fios_items.Append();
 				fios->type = FIOS_TYPE_DIR;
 				fios->mtime = 0;
 				ttd_strlcpy(fios->name, d_name, lengthof(fios->name));
@@ -263,12 +245,12 @@ static FiosItem *FiosGetFileList(SaveLoadDialogMode mode, fios_getlist_callback_
 	{
 		byte order = _savegame_sort_order;
 		_savegame_sort_order = SORT_BY_NAME | SORT_ASCENDING;
-		qsort(_fios_items, _fios_count, sizeof(FiosItem), compare_FiosItems);
+		qsort(_fios_items.Begin(), _fios_items.Length(), sizeof(FiosItem), compare_FiosItems);
 		_savegame_sort_order = order;
 	}
 
 	/* This is where to start sorting for the filenames */
-	sort_start = _fios_count;
+	sort_start = _fios_items.Length();
 
 	/* Show files */
 	dir = ttd_opendir(_fios_path);
@@ -286,7 +268,7 @@ static FiosItem *FiosGetFileList(SaveLoadDialogMode mode, fios_getlist_callback_
 
 			FiosType type = callback_proc(mode, d_name, t, fios_title);
 			if (type != FIOS_TYPE_INVALID) {
-				fios = FiosAlloc();
+				fios = _fios_items.Append();
 				fios->mtime = sb.st_mtime;
 				fios->type = type;
 				ttd_strlcpy(fios->name, d_name, lengthof(fios->name));
@@ -301,13 +283,14 @@ static FiosItem *FiosGetFileList(SaveLoadDialogMode mode, fios_getlist_callback_
 		closedir(dir);
 	}
 
-	qsort(_fios_items + sort_start, _fios_count - sort_start, sizeof(FiosItem), compare_FiosItems);
+	qsort(_fios_items.Get(sort_start), _fios_items.Length() - sort_start, sizeof(FiosItem), compare_FiosItems);
 
 	/* Show drives */
 	if (mode != SLD_NEW_GAME) FiosGetDrives();
 
-	_fios_num = _fios_count;
-	return _fios_items;
+	_fios_items.Compact();
+
+	return _fios_items.Begin();
 }
 
 /**
@@ -346,7 +329,7 @@ FiosType FiosGetSavegameListCallback(SaveLoadDialogMode mode, const char *file, 
  * @return A pointer to an array of FiosItem representing all the files to be shown in the save/load dialog.
  * @see FiosGetFileList
  */
-FiosItem *FiosGetSavegameList(SaveLoadDialogMode mode)
+void FiosGetSavegameList(SaveLoadDialogMode mode)
 {
 	static char *fios_save_path = NULL;
 
@@ -357,7 +340,7 @@ FiosItem *FiosGetSavegameList(SaveLoadDialogMode mode)
 
 	_fios_path = fios_save_path;
 
-	return FiosGetFileList(mode, &FiosGetSavegameListCallback);
+	FiosGetFileList(mode, &FiosGetSavegameListCallback);
 }
 
 /**
@@ -394,7 +377,7 @@ static FiosType FiosGetScenarioListCallback(SaveLoadDialogMode mode, const char 
  * @return A pointer to an array of FiosItem representing all the files to be shown in the save/load dialog.
  * @see FiosGetFileList
  */
-FiosItem *FiosGetScenarioList(SaveLoadDialogMode mode)
+void FiosGetScenarioList(SaveLoadDialogMode mode)
 {
 	static char *fios_scn_path = NULL;
 
@@ -406,7 +389,7 @@ FiosItem *FiosGetScenarioList(SaveLoadDialogMode mode)
 
 	_fios_path = fios_scn_path;
 
-	return FiosGetFileList(mode, &FiosGetScenarioListCallback);
+	FiosGetFileList(mode, &FiosGetScenarioListCallback);
 }
 
 static FiosType FiosGetHeightmapListCallback(SaveLoadDialogMode mode, const char *file, const char *ext, char *title)
@@ -426,7 +409,7 @@ static FiosType FiosGetHeightmapListCallback(SaveLoadDialogMode mode, const char
 }
 
 /* Get a list of Heightmaps */
-FiosItem *FiosGetHeightmapList(SaveLoadDialogMode mode)
+void FiosGetHeightmapList(SaveLoadDialogMode mode)
 {
 	static char *fios_hmap_path = NULL;
 
@@ -437,5 +420,5 @@ FiosItem *FiosGetHeightmapList(SaveLoadDialogMode mode)
 
 	_fios_path = fios_hmap_path;
 
-	return FiosGetFileList(mode, &FiosGetHeightmapListCallback);
+	FiosGetFileList(mode, &FiosGetHeightmapListCallback);
 }

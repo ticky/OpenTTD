@@ -6,6 +6,7 @@
 #define FIOS_H
 
 #include "strings_type.h"
+#include "misc/smallvec.h"
 
 enum {
 	/**
@@ -73,8 +74,7 @@ struct SmallFiosItem {
 };
 
 /* Variables to display file lists */
-extern FiosItem *_fios_list; ///< defined in misc_gui.cpp
-extern int _fios_num;        ///< defined in fios.cpp, read_only version of _fios_count
+extern SmallVector<FiosItem, 32> _fios_items; ///< defined in fios.cpp
 extern SmallFiosItem _file_to_saveload;
 extern SaveLoadDialogMode _saveload_mode;   ///< defined in misc_gui.cpp
 
@@ -82,11 +82,11 @@ extern SaveLoadDialogMode _saveload_mode;   ///< defined in misc_gui.cpp
 void ShowSaveLoadDialog(SaveLoadDialogMode mode);
 
 /* Get a list of savegames */
-FiosItem *FiosGetSavegameList(SaveLoadDialogMode mode);
+void FiosGetSavegameList(SaveLoadDialogMode mode);
 /* Get a list of scenarios */
-FiosItem *FiosGetScenarioList(SaveLoadDialogMode mode);
+void FiosGetScenarioList(SaveLoadDialogMode mode);
 /* Get a list of Heightmaps */
-FiosItem *FiosGetHeightmapList(SaveLoadDialogMode mode);
+void FiosGetHeightmapList(SaveLoadDialogMode mode);
 /* Free the list of savegames */
 void FiosFreeSavegameList();
 /* Browse to. Returns a filename w/path if we reached a file. */

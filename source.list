@@ -483,6 +483,7 @@ misc/dbg_helpers.cpp
 misc/dbg_helpers.h
 misc/fixedsizearray.hpp
 misc/hashtable.hpp
+misc/small_vec.h
 misc/str.hpp
 misc/strapi.hpp
 
