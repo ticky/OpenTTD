@@ -165,6 +165,7 @@ map_func.h
 map_type.h
 core/math_func.hpp
 md5.h
+core/mem_func.hpp
 minilzo.h
 mixer.h
 music.h
@@ -237,6 +238,7 @@ signal_func.h
 signs.h
 slope_func.h
 slope_type.h
+core/sort_func.hpp
 sound_func.h
 sound_type.h
 sprite.h
