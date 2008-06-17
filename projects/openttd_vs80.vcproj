@@ -920,6 +920,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\core\endian_type.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\engine.h"
 				>
 			</File>

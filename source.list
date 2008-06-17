@@ -140,6 +140,7 @@ widgets/dropdown_type.h
 economy_func.h
 economy_type.h
 core/endian_func.hpp
+core/endian_type.hpp
 engine.h
 core/enum_type.hpp
 fileio.h
