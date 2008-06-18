@@ -62,7 +62,7 @@ extern int _pal_count_dirty;
 extern int _num_resolutions;
 extern uint16 _resolutions[32][2];
 extern uint16 _cur_resolution[2];
-extern Colour _cur_palette[256];
+extern Colour _cur_palette[256]; ///< Current palette. Entry 0 has to be always fully transparent!
 
 void HandleKeypress(uint32 key);
 void HandleCtrlChanged();
