@@ -8,7 +8,6 @@
 #include "base.hpp"
 #include "../debug.h"
 #include "../string_func.h"
-#include <string>
 #include <map>
 
 #if defined(WITH_COCOA)
@@ -20,8 +19,16 @@ bool QZ_CanDisplay8bpp();
  */
 class BlitterFactoryBase {
 private:
-	char *name;
-	typedef std::map<std::string, BlitterFactoryBase *> Blitters;
+	const char *name;
+
+	struct StringCompare {
+		bool operator () (const char *a, const char *b) const
+		{
+			return strcmp(a, b) < 0;
+		}
+	};
+
+	typedef std::map<const char *, BlitterFactoryBase *, StringCompare> Blitters;
 
 	static Blitters &GetBlitters()
 	{
@@ -65,7 +72,7 @@ public:
 		if (this->name == NULL) return;
 		GetBlitters().erase(this->name);
 		if (GetBlitters().empty()) delete &GetBlitters();
-		free(this->name);
+		free((void *)this->name);
 	}
 
 	/**

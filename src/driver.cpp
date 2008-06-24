@@ -158,11 +158,12 @@ void DriverFactoryBase::RegisterDriver(const char *name, Driver::Type type, int 
 	strecpy(buf, GetDriverTypeName(type), lastof(buf));
 	strecpy(buf + 5, name, lastof(buf));
 
+	const char *longname = strdup(buf);
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
 	/* NDEBUG disables asserts and gives a warning: unused variable 'P' */
 	std::pair<Drivers::iterator, bool> P =
 #endif /* !NDEBUG */
-	GetDrivers().insert(Drivers::value_type(buf, this));
+	GetDrivers().insert(Drivers::value_type(longname, this));
 	assert(P.second);
 }
 
@@ -188,4 +189,26 @@ char *DriverFactoryBase::GetDriversInfo(char *p, const char *last)
 	}
 
 	return p;
+}
+
+/** Frees memory used for this->name
+ */
+DriverFactoryBase::~DriverFactoryBase() {
+	if (this->name == NULL) return;
+
+	/* Prefix the name with driver type to make it unique */
+	char buf[32];
+	strecpy(buf, GetDriverTypeName(type), lastof(buf));
+	strecpy(buf + 5, this->name, lastof(buf));
+
+	Drivers::iterator it = GetDrivers().find(buf);
+	assert(it != GetDrivers().end());
+
+	const char *longname = (*it).first;
+
+	GetDrivers().erase(it);
+	free((void *)longname);
+
+	if (GetDrivers().empty()) delete &GetDrivers();
+	free((void *)this->name);
 }
