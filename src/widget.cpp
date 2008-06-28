@@ -180,7 +180,7 @@ void DrawFrameRect(int left, int top, int right, int bottom, int ctab, FrameFlag
 	uint light        = _colour_gradient[ctab][7];
 
 	if (flags & FR_TRANSPARENT) {
-		GfxFillRect(left, top, right, bottom, PALETTE_TO_TRANSPARENT | (1 << USE_COLORTABLE));
+		GfxFillRect(left, top, right, bottom, PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOR);
 	} else {
 		uint interior;
 
@@ -336,7 +336,7 @@ void DrawWindowWidgets(const Window *w)
 
 			/* draw "shaded" background */
 			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c2);
-			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1 | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1, FILLRECT_CHECKER);
 
 			/* draw shaded lines */
 			GfxFillRect(r.left + 2, r.top + 10, r.left + 2, r.bottom - 10, c1);
@@ -369,7 +369,7 @@ void DrawWindowWidgets(const Window *w)
 
 			/* draw "shaded" background */
 			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c2);
-			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1 | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1, FILLRECT_CHECKER);
 
 			/* draw shaded lines */
 			GfxFillRect(r.left + 2, r.top + 10, r.left + 2, r.bottom - 10, c1);
@@ -403,7 +403,7 @@ void DrawWindowWidgets(const Window *w)
 
 			/* draw "shaded" background */
 			GfxFillRect(r.left + 10, r.top, r.right - 10, r.bottom, c2);
-			GfxFillRect(r.left + 10, r.top, r.right - 10, r.bottom, c1 | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left + 10, r.top, r.right - 10, r.bottom, c1, FILLRECT_CHECKER);
 
 			/* draw shaded lines */
 			GfxFillRect(r.left + 10, r.top + 2, r.right - 10, r.top + 2, c1);
@@ -518,7 +518,7 @@ void DrawWindowWidgets(const Window *w)
 		}
 
 		if (w->IsWidgetDisabled(i)) {
-			GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, _colour_gradient[wi->color & 0xF][2] | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, _colour_gradient[wi->color & 0xF][2], FILLRECT_CHECKER);
 		}
 	}
 

@@ -114,7 +114,7 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 
 						if (item->masked) {
 							GfxFillRect(x, y, x + width, y + 9,
-								(1 << PALETTE_MODIFIER_GREYOUT) | _colour_gradient[w->widget[0].color][5]
+								_colour_gradient[w->widget[0].color][5], FILLRECT_CHECKER
 							);
 						}
 					} else {

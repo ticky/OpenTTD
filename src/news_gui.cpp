@@ -208,7 +208,7 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 					vp = w->viewport;
 					GfxFillRect(vp->left - w->left, vp->top - w->top,
 						vp->left - w->left + vp->width - 1, vp->top - w->top + vp->height - 1,
-						(ni->flags & NF_INCOLOR ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER) | (1 << USE_COLORTABLE)
+						(ni->flags & NF_INCOLOR ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER), FILLRECT_RECOLOR
 					);
 
 					CopyInDParam(0, ni->params, lengthof(ni->params));

@@ -1270,7 +1270,7 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 	case WE_PAINT:
 		/* Draw brown-red toolbar bg. */
 		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB2);
-		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4, FILLRECT_CHECKER);
 
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
@@ -1528,7 +1528,7 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 
 		/* Draw brown-red toolbar bg. */
 		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB2);
-		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4, FILLRECT_CHECKER);
 
 		DrawWindowWidgets(w);
 
