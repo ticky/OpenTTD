@@ -152,6 +152,11 @@ void DrawMouseCursor();
 void ScreenSizeChanged();
 void UndrawMouseCursor();
 
+/**
+ * Get height of a character for a given font size.
+ * @param size Font size to get height of
+ * @return     Height of characters in the given font (pixels)
+ */
 static inline byte GetCharacterHeight(FontSize size)
 {
 	switch (size) {
