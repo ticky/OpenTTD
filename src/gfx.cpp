@@ -557,7 +557,7 @@ void DrawStringMultiCenter(int x, int y, StringID str, int maxw)
 
 	for (;;) {
 		w = GetStringBoundingBox(src).width;
-		DoDrawString(src, x - (w >> 1), y, TC_FROMSTRING, false);
+		DoDrawString(src, x - (w >> 1), y, 0xFE, true);
 		_cur_fontsize = _last_fontsize;
 
 		for (;;) {
@@ -607,7 +607,7 @@ uint DrawStringMultiLine(int x, int y, StringID str, int maxw, int maxh)
 	src = buffer;
 
 	for (;;) {
-		DoDrawString(src, x, y, TC_FROMSTRING, false);
+		DoDrawString(src, x, y, 0xFE, false);
 		_cur_fontsize = _last_fontsize;
 
 		for (;;) {
