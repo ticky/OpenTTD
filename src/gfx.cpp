@@ -786,8 +786,9 @@ void DoPaletteAnimations()
 	 * A few more for the DOS palette, because the water colors are
 	 * 245-254 for DOS and 217-226 for Windows.  */
 	const ExtraPaletteValues *ev = &_extra_palette_values;
-	int c = _use_dos_palette ? PALETTE_ANIM_SIZE_DOS : PALETTE_ANIM_SIZE_WIN;
+	const int colour_rotation_amount = _use_dos_palette ? PALETTE_ANIM_SIZE_DOS : PALETTE_ANIM_SIZE_WIN;
 	Colour old_val[PALETTE_ANIM_SIZE_DOS];
+	const int oldval_size = colour_rotation_amount * sizeof(*old_val);
 	uint i;
 	uint j;
 	uint old_tc = _palette_animation_counter;
@@ -799,7 +800,7 @@ void DoPaletteAnimations()
 	Colour *palette_pos = &_cur_palette[PALETTE_ANIM_SIZE_START];  // Points to where animations are taking place on the palette
 	/* Makes a copy of the current anmation palette in old_val,
 	 * so the work on the current palette could be compared, see if there has been any changes */
-	memcpy(old_val, palette_pos, c * sizeof(*old_val));
+	memcpy(old_val, palette_pos, oldval_size);
 
 	/* Dark blue water */
 	s = (_opt.landscape == LT_TOYLAND) ? ev->ac : ev->a;
@@ -900,10 +901,10 @@ void DoPaletteAnimations()
 	if (blitter != NULL && blitter->UsePaletteAnimation() == Blitter::PALETTE_ANIMATION_NONE) {
 		_palette_animation_counter = old_tc;
 	} else {
-		if (memcmp(old_val, &_cur_palette[PALETTE_ANIM_SIZE_START], c * sizeof(*old_val)) != 0) {
+		if (memcmp(old_val, &_cur_palette[PALETTE_ANIM_SIZE_START], oldval_size) != 0) {
 			/* Did we changed anything on the palette? Seems so.  Mark it as dirty */
 			_pal_first_dirty = PALETTE_ANIM_SIZE_START;
-			_pal_count_dirty = c;
+			_pal_count_dirty = colour_rotation_amount;
 		}
 	}
 }
