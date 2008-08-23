@@ -175,7 +175,7 @@ extern DrawPixelInfo *_cur_dpi;
  */
 extern byte _colour_gradient[16][8];
 
-extern bool _use_dos_palette;
+extern Palette _use_palette;
 
 /**
  * Return the colour for a particular greyscale level.

@@ -218,4 +218,19 @@ enum StringColorFlags {
 	IS_PALETTE_COLOR = 0x100, ///< color value is already a real palette color index, not an index of a StringColor
 };
 
+/** Define the operation GfxFillRect performs */
+enum FillRectMode {
+	FILLRECT_OPAQUE,  ///< Fill rectangle with a single color
+	FILLRECT_CHECKER, ///< Draw only every second pixel, used for greying-out
+	FILLRECT_RECOLOR, ///< Apply a recolor sprite to the screen content
+};
+
+/** Palettes OpenTTD supports. */
+enum Palette {
+	PAL_DOS,        ///< Use the DOS palette.
+	PAL_WINDOWS,    ///< Use the Windows palette.
+	PAL_AUTODETECT, ///< Automatically detect the palette based on the graphics pack.
+	MAX_PAL = 2,    ///< The number of palettes.
+};
+
 #endif /* GFX_TYPE_H */

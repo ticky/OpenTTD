@@ -160,7 +160,7 @@ static void ShowHelp()
 		"  -f                  = Fork into the background (dedicated only)\n"
 #endif
 #endif /* ENABLE_NETWORK */
-		"  -i                  = Force to use the DOS palette\n"
+		"  -i                  = Force to use the DOS (0) or Windows (1) palette\n"
 		"                          (use this if you see a lot of pink)\n"
 		"  -c config_file      = Use 'config_file' instead of 'openttd.cfg'\n"
 		"  -x                  = Do not automatically save to config file on exit\n",
@@ -362,7 +362,7 @@ int ttd_main(int argc, char *argv[])
 	 *   a letter means: it accepts that param (e.g.: -h)
 	 *   a ':' behind it means: it need a param (e.g.: -m<driver>)
 	 *   a '::' behind it means: it can optional have a param (e.g.: -d<debug>) */
-	optformat = "m:s:v:b:hD::n::eit:d::r:g::G:c:xl:"
+	optformat = "m:s:v:b:hD::n::ei::t:d::r:g::G:c:xl:"
 #if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(WIN32)
 		"f"
 #endif
@@ -411,7 +411,7 @@ int ttd_main(int argc, char *argv[])
 				if (mgo.opt != NULL) SetDebugString(mgo.opt);
 			} break;
 		case 'e': _switch_mode = SM_EDITOR; break;
-		case 'i': _use_dos_palette = true; break;
+		case 'i': _use_palette = (mgo.opt == NULL || atoi(mgo.opt) == 0) ? PAL_DOS : PAL_WINDOWS; break;
 		case 'g':
 			if (mgo.opt != NULL) {
 				strecpy(_file_to_saveload.name, mgo.opt, lastof(_file_to_saveload.name));
