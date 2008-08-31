@@ -13,16 +13,14 @@
 #include "newgrf_config.h"
 #include "core/alloc_func.hpp"
 #include "string_func.h"
-
-#include "safeguards.h"
-
 #include "fileio.h"
 #include "fios.h"
-#include <sys/stat.h>
 
 #ifdef WIN32
 # include <io.h>
 #endif /* WIN32 */
+
+#include "safeguards.h"
 
 
 GRFConfig *_all_grfs;
@@ -268,10 +266,23 @@ compatible_grf:
 	return res;
 }
 
-static bool ScanPathAddGrf(const char *filename)
+/** Helper for scanning for files with GRF as extension */
+class GRFFileScanner : FileScanner {
+public:
+	/* virtual */ bool AddFile(const char *filename, size_t basepath_length);
+
+	/** Do the scan for GRFs. */
+	static uint DoScan()
+	{
+		GRFFileScanner fs;
+		return fs.Scan(".grf", DATA_DIR);
+	}
+};
+
+bool GRFFileScanner::AddFile(const char *filename, size_t basepath_length)
 {
 	GRFConfig *c = CallocT<GRFConfig>(1);
-	c->filename = strdup(filename);
+	c->filename = strdup(filename + basepath_length);
 
 	bool added = true;
 	if (FillGRFDetails(c, false)) {
@@ -314,63 +325,6 @@ static bool ScanPathAddGrf(const char *filename)
 	return added;
 }
 
-/* Scan a path for NewGRFs */
-static uint ScanPath(const char *path, int basepath_length)
-{
-	extern bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb);
-
-	uint num = 0;
-	struct stat sb;
-	struct dirent *dirent;
-	DIR *dir;
-
-	if (path == NULL || (dir = ttd_opendir(path)) == NULL) return 0;
-
-	while ((dirent = readdir(dir)) != NULL) {
-		const char *d_name = FS2OTTD(dirent->d_name);
-		char filename[MAX_PATH];
-
-		if (!FiosIsValidFile(path, dirent, &sb)) continue;
-
-		snprintf(filename, lengthof(filename), "%s%s", path, d_name);
-
-		if (sb.st_mode & S_IFDIR) {
-			/* Directory */
-			if (strcmp(d_name, ".") == 0 || strcmp(d_name, "..") == 0) continue;
-			AppendPathSeparator(filename, lengthof(filename));
-			num += ScanPath(filename, basepath_length);
-		} else if (sb.st_mode & S_IFREG) {
-			/* File */
-			char *ext = strrchr(filename, '.');
-
-			/* If no extension or extension isn't .grf, skip the file */
-			if (ext == NULL) continue;
-			if (strcasecmp(ext, ".grf") != 0) continue;
-
-			if (ScanPathAddGrf(filename + basepath_length)) num++;
-		}
-	}
-
-	closedir(dir);
-
-	return num;
-}
-
-static uint ScanTar(TarFileList::iterator tar)
-{
-	uint num = 0;
-	const char *filename = (*tar).first.c_str();
-	const char *ext = strrchr(filename, '.');
-
-	/* If no extension or extension isn't .grf, skip the file */
-	if (ext == NULL) return false;
-	if (strcasecmp(ext, ".grf") != 0) return false;
-
-	if (ScanPathAddGrf(filename)) num++;
-
-	return num;
-}
-
 /**
  * Simple sorter for GRFS
  * @param p1 the first GRFConfig *
@@ -389,21 +343,10 @@ static int CDECL GRFSorter(const void *p1, const void *p2)
 /* Scan for all NewGRFs */
 void ScanNewGRFFiles()
 {
-	Searchpath sp;
-	char path[MAX_PATH];
-	TarFileList::iterator tar;
-	uint num = 0;
-
 	ClearGRFConfigList(&_all_grfs);
 
 	DEBUG(grf, 1, "Scanning for NewGRFs");
-	FOR_ALL_SEARCHPATHS(sp) {
-		FioAppendDirectory(path, MAX_PATH, sp, DATA_DIR);
-		num += ScanPath(path, strlen(path));
-	}
-	FOR_ALL_TARS(tar) {
-		num += ScanTar(tar);
-	}
+	uint num = GRFFileScanner::DoScan();
 
 	DEBUG(grf, 1, "Scan complete, found %d files", num);
 	if (num == 0 || _all_grfs == NULL) return;
