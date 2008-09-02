@@ -666,18 +666,16 @@ static const byte _genterrain_tbl_2[5] = {  0,  0,  0,  0, 33 };
 
 static void GenerateTerrain(int type, int flag)
 {
-	uint32 r;
+	uint32 r = Random();
 	uint x;
 	uint y;
 	uint w;
 	uint h;
-	const Sprite* templ;
 	const byte *p;
 	Tile* tile;
 	byte direction;
 
-	r = Random();
-	templ = GetSprite((((r >> 24) * _genterrain_tbl_1[type]) >> 8) + _genterrain_tbl_2[type] + 4845);
+	const Sprite *templ = GetSprite((((r >> 24) * _genterrain_tbl_1[type]) >> 8) + _genterrain_tbl_2[type] + 4845, ST_MAPGEN);
 
 	x = r & MapMaxX();
 	y = (r >> MapLogX()) & MapMaxY();

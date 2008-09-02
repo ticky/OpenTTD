@@ -92,7 +92,7 @@ void GetShipSpriteSize(EngineID engine, uint &width, uint &height)
 		spritenum = custom_sprite;
 	}
 
-	const Sprite *spr = GetSprite(spritenum);
+	const Sprite *spr = GetSprite(spritenum, ST_NORMAL);
 
 	width  = spr->width;
 	height = spr->height;

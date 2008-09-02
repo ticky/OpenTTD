@@ -232,7 +232,7 @@ void GetAircraftSpriteSize(EngineID engine, uint &width, uint &height)
 		}
 	}
 
-	const Sprite *spr = GetSprite(sprite);
+	const Sprite *spr = GetSprite(sprite, ST_NORMAL);
 
 	width  = spr->width ;
 	height = spr->height;

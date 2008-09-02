@@ -2022,21 +2022,17 @@ void ShowSelectGameWindow();
 
 void SetupColorsAndInitialWindow()
 {
-	uint i;
-	Window *w;
-	int width, height;
-
-	for (i = 0; i != 16; i++) {
-		const byte *b = GetNonSprite(PALETTE_RECOLOR_START + i);
+	for (uint i = 0; i != 16; i++) {
+		const byte *b = GetNonSprite(PALETTE_RECOLOR_START + i, ST_RECOLOUR);
 
 		assert(b);
 		memcpy(_colour_gradient[i], b + 0xC6, sizeof(_colour_gradient[i]));
 	}
 
-	width = _screen.width;
-	height = _screen.height;
+	int width = _screen.width;
+	int height = _screen.height;
 
-	w = AllocateWindow(0, 0, width, height, MainWindowWndProc, WC_MAIN_WINDOW, NULL);
+	Window *w = AllocateWindow(0, 0, width, height, MainWindowWndProc, WC_MAIN_WINDOW, NULL);
 	AssignWindowViewport(w, 0, 0, width, height, TileXY(32, 32), ZOOM_LVL_VIEWPORT);
 
 	/* XXX: these are not done */

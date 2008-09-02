@@ -616,7 +616,7 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, byte 
 {
 	const ViewportDrawer *vd = _cur_vd;
 	Point pt = RemapCoords(x, y, z);
-	const Sprite* spr = GetSprite(image & SPRITE_MASK);
+	const Sprite* spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 
 	if (pt.x + spr->x_offs >= vd->dpi.left + vd->dpi.width ||
 			pt.x + spr->x_offs + spr->width <= vd->dpi.left ||
@@ -701,7 +701,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		top  = ps->top  = RemapCoords(x + bb_offset_x, y + bb_offset_y, z + dz         ).y;
 		bottom          = RemapCoords(x + w          , y + h          , z + bb_offset_z).y + 1;
 	} else {
-		const Sprite *spr = GetSprite(image & SPRITE_MASK);
+		const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 		left = ps->left = (pt.x += spr->x_offs);
 		right           = (pt.x +  spr->width );
 		top  = ps->top  = (pt.y += spr->y_offs);
