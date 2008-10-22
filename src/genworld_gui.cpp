@@ -263,6 +263,7 @@ static void GenerateLandscapeWndProc(Window *w, WindowEvent *e)
 		case WE_CREATE:
 			w->LowerWidget(_opt_newgame.landscape + GLAND_TEMPERATE);
 
+			/* snprintf() always outputs trailing '\0', so whole buffer can be used */
 			snprintf(_genseed_buffer, sizeof(_genseed_buffer), "%u", _patches_newgame.generation_seed);
 			InitializeTextBuffer(&_genseed_query.text, _genseed_buffer, lengthof(_genseed_buffer), 120);
 			_genseed_query.caption = STR_NULL;

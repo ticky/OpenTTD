@@ -882,8 +882,8 @@ static void DelChar(Textbuf *tb, bool backspace)
 	}
 
 	/* Move the remaining characters over the marker */
-	memmove(s, s + len, tb->length - (s - tb->buf) - len + 1);
-	tb->length -= len;
+	memmove(s, s + len, tb->size - (s - tb->buf) - len);
+	tb->size -= len;
 }
 
 /**
@@ -898,7 +898,7 @@ bool DeleteTextBufferChar(Textbuf *tb, int delmode)
 	if (delmode == WKC_BACKSPACE && tb->caretpos != 0) {
 		DelChar(tb, true);
 		return true;
-	} else if (delmode == WKC_DELETE && tb->caretpos < tb->length) {
+	} else if (delmode == WKC_DELETE && tb->caretpos < tb->size - 1) {
 		DelChar(tb, false);
 		return true;
 	}
@@ -912,9 +912,9 @@ bool DeleteTextBufferChar(Textbuf *tb, int delmode)
  */
 void DeleteTextBufferAll(Textbuf *tb)
 {
-	memset(tb->buf, 0, tb->maxlength);
-	tb->length = tb->width = 0;
-	tb->caretpos = tb->caretxoffs = 0;
+	memset(tb->buf, 0, tb->maxsize);
+	tb->size = 1;
+	tb->width = tb->caretpos = tb->caretxoffs = 0;
 }
 
 /**
@@ -928,12 +928,12 @@ void DeleteTextBufferAll(Textbuf *tb)
 bool InsertTextBufferChar(Textbuf *tb, WChar key)
 {
 	const byte charwidth = GetCharacterWidth(FS_NORMAL, key);
-	size_t len = Utf8CharLen(key);
-	if (tb->length < (tb->maxlength - len) && (tb->maxwidth == 0 || tb->width + charwidth <= tb->maxwidth)) {
-		memmove(tb->buf + tb->caretpos + len, tb->buf + tb->caretpos, tb->length - tb->caretpos + 1);
+	uint16 len = (uint16)Utf8CharLen(key);
+	if (tb->size + len <= tb->maxsize && (tb->maxwidth == 0 || tb->width + charwidth <= tb->maxwidth)) {
+		memmove(tb->buf + tb->caretpos + len, tb->buf + tb->caretpos, tb->size - tb->caretpos);
 		Utf8Encode(tb->buf + tb->caretpos, key);
-		tb->length += len;
-		tb->width  += charwidth;
+		tb->size  += len;
+		tb->width += charwidth;
 
 		tb->caretpos   += len;
 		tb->caretxoffs += charwidth;
@@ -964,7 +964,7 @@ bool MoveTextBufferPos(Textbuf *tb, int navmode)
 		}
 		break;
 	case WKC_RIGHT:
-		if (tb->caretpos < tb->length) {
+		if (tb->caretpos < tb->size - 1) {
 			WChar c;
 
 			tb->caretpos   += Utf8Decode(&c, tb->buf + tb->caretpos);
@@ -978,7 +978,7 @@ bool MoveTextBufferPos(Textbuf *tb, int navmode)
 		tb->caretxoffs = 0;
 		return true;
 	case WKC_END:
-		tb->caretpos = tb->length;
+		tb->caretpos = tb->size - 1;
 		tb->caretxoffs = tb->width;
 		return true;
 	}
@@ -991,16 +991,18 @@ bool MoveTextBufferPos(Textbuf *tb, int navmode)
  * and the maximum length of this buffer
  * @param tb Textbuf type which is getting initialized
  * @param buf the buffer that will be holding the data for input
- * @param maxlength maximum length in characters of this buffer
+ * @param maxsize maximum size in bytes, including terminating '\0'
  * @param maxwidth maximum length in pixels of this buffer. If reached, buffer
- * cannot grow, even if maxlength would allow because there is space. A length
- * of zero '0' means the buffer is only restricted by maxlength */
-void InitializeTextBuffer(Textbuf *tb, const char *buf, uint16 maxlength, uint16 maxwidth)
+ * cannot grow, even if maxsize would allow because there is space. Width
+ * of zero '0' means the buffer is only restricted by maxsize */
+void InitializeTextBuffer(Textbuf *tb, char *buf, uint16 maxsize, uint16 maxwidth)
 {
-	tb->buf = (char*)buf;
-	tb->maxlength = maxlength;
-	tb->maxwidth  = maxwidth;
-	tb->caret = true;
+	assert(maxsize != 0);
+
+	tb->buf      = buf;
+	tb->maxsize  = maxsize;
+	tb->maxwidth = maxwidth;
+	tb->caret    = true;
 	UpdateTextBufferSize(tb);
 }
 
@@ -1013,17 +1015,19 @@ void InitializeTextBuffer(Textbuf *tb, const char *buf, uint16 maxlength, uint16
 void UpdateTextBufferSize(Textbuf *tb)
 {
 	const char *buf = tb->buf;
-	WChar c = Utf8Consume(&buf);
 
 	tb->width = 0;
-	tb->length = 0;
+	tb->size = 1; // terminating zero
 
-	for (; c != '\0' && tb->length < (tb->maxlength - 1); c = Utf8Consume(&buf)) {
+	WChar c;
+	while ((c = Utf8Consume(&buf)) != '\0') {
 		tb->width += GetCharacterWidth(FS_NORMAL, c);
-		tb->length += Utf8CharLen(c);
+		tb->size += Utf8CharLen(c);
 	}
 
-	tb->caretpos = tb->length;
+	assert(tb->size <= tb->maxsize);
+
+	tb->caretpos = tb->size - 1;
 	tb->caretxoffs = tb->width;
 }
 
@@ -1210,19 +1214,16 @@ static char _edit_str_buf[64];
 /** Show a query popup window with a textbox in it.
  * @param str StringID for the text shown in the textbox
  * @param caption StringID of text shown in caption of querywindow
- * @param maxlen maximum length in characters allowed. If bit 12 is set we
- * will not check the resulting string against to original string to return success
+ * @param maxsize maximum size in bytes (including terminating '\0')
  * @param maxwidth maximum width in pixels allowed
  * @param parent pointer to a Window that will handle the events (ok/cancel) of this
- * window. If NULL, results are handled by global function HandleOnEditText
- * @param afilter filters out unwanted character input */
-void ShowQueryString(StringID str, StringID caption, uint maxlen, uint maxwidth, Window *parent, CharSetFilter afilter)
+ *        window. If NULL, results are handled by global function HandleOnEditText
+ * @param afilter filters out unwanted character input
+ */
+void ShowQueryString(StringID str, StringID caption, uint maxsize, uint maxwidth, Window *parent, CharSetFilter afilter)
 {
 	static char orig_str_buf[lengthof(_edit_str_buf)];
 	Window *w;
-	uint realmaxlen = maxlen & ~0x1000;
-
-	assert(realmaxlen < lengthof(_edit_str_buf));
 
 	DeleteWindowById(WC_QUERY_STRING, 0);
 	DeleteWindowById(WC_SAVELOAD, 0);
@@ -1230,10 +1231,10 @@ void ShowQueryString(StringID str, StringID caption, uint maxlen, uint maxwidth,
 	w = AllocateWindowDesc(&_query_string_desc);
 	w->parent = parent;
 
-	GetString(_edit_str_buf, str, lastof(_edit_str_buf));
-	_edit_str_buf[realmaxlen - 1] = '\0';
+	GetString(_edit_str_buf, str, _edit_str_buf[maxsize - 1]);
+	_edit_str_buf[maxsize - 1] = '\0';
 
-	if (maxlen & 0x1000) {
+	if (maxsize & 0x1000) {
 		WP(w, querystr_d).orig = NULL;
 	} else {
 		strecpy(orig_str_buf, _edit_str_buf, lastof(orig_str_buf));
@@ -1243,7 +1244,7 @@ void ShowQueryString(StringID str, StringID caption, uint maxlen, uint maxwidth,
 	w->LowerWidget(QUERY_STR_WIDGET_TEXT);
 	WP(w, querystr_d).caption = caption;
 	WP(w, querystr_d).afilter = afilter;
-	InitializeTextBuffer(&WP(w, querystr_d).text, _edit_str_buf, realmaxlen, maxwidth);
+	InitializeTextBuffer(&WP(w, querystr_d).text, _edit_str_buf, maxsize, maxwidth);
 }
 
 
@@ -1578,7 +1579,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 					ShowHeightmapLoad();
 				} else {
 					/* SLD_SAVE_GAME, SLD_SAVE_SCENARIO copy clicked name to editbox */
-					ttd_strlcpy(WP(w, querystr_d).text.buf, file->title, WP(w, querystr_d).text.maxlength);
+					ttd_strlcpy(WP(w, querystr_d).text.buf, file->title, WP(w, querystr_d).text.maxsize);
 					UpdateTextBufferSize(&WP(w, querystr_d).text);
 					w->InvalidateWidget(10);
 				}
