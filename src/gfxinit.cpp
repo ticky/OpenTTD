@@ -17,6 +17,7 @@
 #include "core/alloc_func.hpp"
 #include "core/bitmath_func.hpp"
 #include <string.h>
+#include "string_func.h"
 #include "settings_type.h"
 
 #include "table/sprites.h"
@@ -173,25 +174,26 @@ void CheckExternalFiles()
 	char error_msg[ERROR_MESSAGE_LENGTH * (lengthof(files->basic) + lengthof(files->landscape) + 3)];
 	error_msg[0] = '\0';
 	char *add_pos = error_msg;
+	const char *last = lastof(error_msg);
 
 	for (uint i = 0; i < lengthof(files->basic); i++) {
 		if (!FileMD5(files->basic[i])) {
-			add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->basic[i].filename, files->basic[i].filename);
+			add_pos += seprintf(add_pos, last, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->basic[i].filename, files->basic[i].filename);
 		}
 	}
 
 	for (uint i = 0; i < lengthof(files->landscape); i++) {
 		if (!FileMD5(files->landscape[i])) {
-			add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->landscape[i].filename, files->landscape[i].filename);
+			add_pos += seprintf(add_pos, last, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->landscape[i].filename, files->landscape[i].filename);
 		}
 	}
 
 	if (!FileMD5(files_win.sound) && !FileMD5(files_dos.sound)) {
-		add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your 'sample.cat' file is corrupted or missing! You can find 'sample.cat' on your Transport Tycoon Deluxe CD-ROM.\n");
+		add_pos += seprintf(add_pos, last, "Your 'sample.cat' file is corrupted or missing! You can find 'sample.cat' on your Transport Tycoon Deluxe CD-ROM.\n");
 	}
 
 	if (!FileMD5(files->openttd)) {
-		add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your '%s' file is corrupted or missing! The file was part of your installation.\n", files->openttd.filename);
+		add_pos += seprintf(add_pos, last, "Your '%s' file is corrupted or missing! The file was part of your installation.\n", files->openttd.filename);
 	}
 
 	if (add_pos != error_msg) ShowInfoF(error_msg);

@@ -1198,8 +1198,8 @@ static char *GetSpecialPlayerNameString(char *buff, int ind, const int64 *argv, 
 	/* resolution size? */
 	if (IsInsideMM(ind, (SPECSTR_RESOLUTION_START - 0x70E4), (SPECSTR_RESOLUTION_END - 0x70E4) + 1)) {
 		int i = ind - (SPECSTR_RESOLUTION_START - 0x70E4);
-		buff += snprintf(
-			buff, last - buff + 1, "%dx%d", _resolutions[i][0], _resolutions[i][1]
+		buff += seprintf(
+			buff, last, "%dx%d", _resolutions[i][0], _resolutions[i][1]
 		);
 		return buff;
 	}

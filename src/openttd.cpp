@@ -136,7 +136,7 @@ static void ShowHelp()
 
 	p = buf;
 
-	p += snprintf(p, lengthof(buf), "OpenTTD %s\n", _openttd_revision);
+	p += seprintf(p, lastof(buf), "OpenTTD %s\n", _openttd_revision);
 	p = strecpy(p,
 		"\n"
 		"\n"
