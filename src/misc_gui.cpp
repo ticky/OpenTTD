@@ -1527,14 +1527,7 @@ static void MakeSortedSaveGameList()
 
 static void GenerateFileName()
 {
-	/* Check if we are not a specatator who wants to generate a name..
-	    Let's use the name of player #0 for now. */
-	const Player *p = GetPlayer(IsValidPlayer(_local_player) ? _local_player : PLAYER_FIRST);
-
-	SetDParam(0, p->index);
-	SetDParam(1, _date);
-	GetString(_edit_str_buf, STR_4004, lastof(_edit_str_buf));
-	SanitizeFilename(_edit_str_buf);
+	GenerateDefaultSaveName(_edit_str_buf, lastof(_edit_str_buf));
 }
 
 extern void StartupEngines();

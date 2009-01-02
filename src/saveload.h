@@ -28,6 +28,7 @@ enum SaveOrLoadMode {
 	SL_BMP      =  4,
 };
 
+void GenerateDefaultSaveName(char *buf, const char *last);
 void SetSaveLoadError(uint16 str);
 const char *GetSaveLoadErrorString();
 SaveOrLoadResult SaveOrLoad(const char *filename, int mode, Subdirectory sb);

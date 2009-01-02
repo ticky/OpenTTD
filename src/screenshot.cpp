@@ -16,7 +16,7 @@
 #include "core/alloc_func.hpp"
 #include "core/endian_func.hpp"
 #include "map_func.h"
-#include "date_func.h"
+#include "saveload.h"
 #include "player_func.h"
 
 #include "table/strings.h"
@@ -557,13 +557,10 @@ static char *MakeScreenshotName(const char *ext)
 	if (_game_mode == GM_EDITOR || _game_mode == GM_MENU || _local_player == PLAYER_SPECTATOR) {
 		ttd_strlcpy(_screenshot_name, "screenshot", lengthof(_screenshot_name));
 	} else {
-		SetDParam(0, _local_player);
-		SetDParam(1, _date);
-		GetString(_screenshot_name, STR_4004, lastof(_screenshot_name));
+		GenerateDefaultSaveName(_screenshot_name, lastof(_screenshot_name));
 	}
 
 	/* Add extension to screenshot file */
-	SanitizeFilename(_screenshot_name);
 	len = strlen(_screenshot_name);
 	snprintf(&_screenshot_name[len], lengthof(_screenshot_name) - len, ".%s", ext);
 
@@ -626,6 +623,3 @@ bool MakeScreenshot()
 		default: return false;
 	}
 }
-
-
-

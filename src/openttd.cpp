@@ -1047,10 +1047,8 @@ static void DoAutosave()
 #endif /* PSP */
 
 	if (_patches.keep_all_autosave && _local_player != PLAYER_SPECTATOR) {
-		SetDParam(0, _local_player);
-		SetDParam(1, _date);
-		GetString(buf, STR_4004, lastof(buf));
-		ttd_strlcat(buf, ".sav", lengthof(buf));
+		GenerateDefaultSaveName(buf, lastof(buf));
+		strecat(buf, ".sav", lastof(buf));
 	} else {
 		/* generate a savegame name and number according to _patches.max_num_autosaves */
 		snprintf(buf, sizeof(buf), "autosave%d.sav", _autosave_ctr);
