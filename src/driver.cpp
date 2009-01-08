@@ -14,18 +14,18 @@
 #include "safeguards.h"
 
 VideoDriver *_video_driver;
-char _ini_videodriver[32];
+char *_ini_videodriver;
 int _num_resolutions;
 uint16 _resolutions[32][2];
 uint16 _cur_resolution[2];
 
 SoundDriver *_sound_driver;
-char _ini_sounddriver[32];
+char *_ini_sounddriver;
 
 MusicDriver *_music_driver;
-char _ini_musicdriver[32];
+char *_ini_musicdriver;
 
-char _ini_blitter[32];
+char *_ini_blitter;
 
 static const char* GetDriverParam(const char* const* parm, const char* name)
 {
@@ -65,7 +65,7 @@ const Driver *DriverFactoryBase::SelectDriver(const char *name, Driver::Type typ
 {
 	if (GetDrivers().size() == 0) return NULL;
 
-	if (*name == '\0') {
+	if (StrEmpty(name)) {
 		/* Probe for this driver */
 		for (int priority = 10; priority >= 0; priority--) {
 			Drivers::iterator it = GetDrivers().begin();
