@@ -94,17 +94,17 @@ static void IConsoleWndProc(Window *w, WindowEvent *e)
 			GfxFillRect(w->left, w->top, w->width, w->height - 1, 0);
 			while ((i > 0) && (i > iconsole_scroll - max) && (_iconsole_buffer[i] != NULL)) {
 				DoDrawString(_iconsole_buffer[i], 5,
-					w->height - (iconsole_scroll + 2 - i) * ICON_LINE_HEIGHT, _iconsole_cbuffer[i]);
+					w->height - (iconsole_scroll + 2 - i) * ICON_LINE_HEIGHT, (TextColour)_iconsole_cbuffer[i]);
 				i--;
 			}
 			/* If the text is longer than the window, don't show the starting ']' */
 			delta = w->width - 10 - _iconsole_cmdline.width - ICON_RIGHT_BORDERWIDTH;
 			if (delta > 0) {
-				DoDrawString("]", 5, w->height - ICON_LINE_HEIGHT, _icolour_cmd);
+				DoDrawString("]", 5, w->height - ICON_LINE_HEIGHT, (TextColour)_icolour_cmd);
 				delta = 0;
 			}
 
-			DoDrawString(_iconsole_cmdline.buf, 10 + delta, w->height - ICON_LINE_HEIGHT, _icolour_cmd);
+			DoDrawString(_iconsole_cmdline.buf, 10 + delta, w->height - ICON_LINE_HEIGHT, (TextColour)_icolour_cmd);
 
 			if (_iconsole_cmdline.caret)
 				DoDrawString("_", 10 + delta + _iconsole_cmdline.caretxoffs, w->height - ICON_LINE_HEIGHT, TC_WHITE);

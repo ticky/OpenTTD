@@ -731,11 +731,11 @@ static NewsID getNews(NewsID i)
  * Draw an unformatted news message truncated to a maximum length. If
  * length exceeds maximum length it will be postfixed by '...'
  * @param x,y position of the string
- * @param color the color the string will be shown in
+ * @param colour the colour the string will be shown in
  * @param *ni NewsItem being printed
  * @param maxw maximum width of string in pixels
  */
-static void DrawNewsString(int x, int y, uint16 color, const NewsItem *ni, uint maxw)
+static void DrawNewsString(int x, int y, TextColour colour, const NewsItem *ni, uint maxw)
 {
 	char buffer[512];
 	StringID str;
@@ -750,7 +750,7 @@ static void DrawNewsString(int x, int y, uint16 color, const NewsItem *ni, uint 
 	GetUnformattedString(buffer, str);
 
 	/* Truncate and show string; postfixed by '...' if neccessary */
-	DoDrawStringTruncated(buffer, x, y, color, maxw);
+	DoDrawStringTruncated(buffer, x, y, colour, maxw);
 }
 
 

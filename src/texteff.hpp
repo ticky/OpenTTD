@@ -26,7 +26,7 @@ void RemoveTextEffect(TextEffectID effect_id);
 
 void InitChatMessage();
 void DrawChatMessage();
-void CDECL AddChatMessage(uint16 color, uint8 duration, const char *message, ...);
+void CDECL AddChatMessage(TextColour colour, uint8 duration, const char *message, ...);
 void UndrawChatMessage();
 
 /* misc_gui.cpp */

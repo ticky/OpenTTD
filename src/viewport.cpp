@@ -1504,7 +1504,7 @@ static void ViewportDrawStrings(DrawPixelInfo *dpi, const StringSpriteToDraw *ss
 	dp.height = UnScaleByZoom(dp.height, zoom);
 
 	do {
-		uint16 colour;
+		TextColour colour;
 
 		if (ss->width != 0) {
 			int x = UnScaleByZoom(ss->x, zoom) - 1;
@@ -1536,7 +1536,7 @@ static void ViewportDrawStrings(DrawPixelInfo *dpi, const StringSpriteToDraw *ss
 		if (IsTransparencySet(TO_SIGNS) && ss->string != STR_2806 && ss->width != 0) {
 			/* Real colors need the IS_PALETTE_COLOR flag
 			 * otherwise colors from _string_colormap are assumed. */
-			colour = _colour_gradient[ss->color][6] | IS_PALETTE_COLOR;
+			colour = (TextColour)_colour_gradient[ss->color][6] | IS_PALETTE_COLOR;
 		} else {
 			colour = TC_BLACK;
 		}

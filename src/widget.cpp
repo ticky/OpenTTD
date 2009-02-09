@@ -258,7 +258,7 @@ void DrawWindowWidgets(const Window *w)
 		case WWT_TEXT: {
 			const StringID str = wi->data;
 
-			if (str != STR_NULL) DrawStringTruncated(r.left, r.top, str, wi->color, r.right - r.left);
+			if (str != STR_NULL) DrawStringTruncated(r.left, r.top, str, (TextColour)wi->color, r.right - r.left);
 			break;
 		}
 
@@ -490,7 +490,7 @@ void DrawWindowWidgets(const Window *w)
 				GfxFillRect(r.left + 2, r.top + 2, r.right - 2, r.bottom - 2, _colour_gradient[_player_colors[w->caption_color]][4]);
 			}
 
-			DrawStringCenteredTruncated(r.left + 2, r.right - 2, r.top + 2, wi->data, 0x84);
+			DrawStringCenteredTruncated(r.left + 2, r.right - 2, r.top + 2, wi->data, (TextColour)0x84);
 			break;
 		}
 

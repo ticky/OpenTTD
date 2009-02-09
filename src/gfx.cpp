@@ -62,8 +62,8 @@ static uint8 _cursor_backup[64 * 64 * 4];
  * @ingroup dirty
  */
 static Rect _invalid_rect;
-static const byte *_color_remap_ptr;
-static byte _string_colorremap[3];
+static const byte *_colour_remap_ptr;
+static byte _string_colourremap[3];
 
 #define DIRTY_BYTES_PER_LINE (MAX_SCREEN_WIDTH / 64)
 static byte _dirty_blocks[DIRTY_BYTES_PER_LINE * MAX_SCREEN_HEIGHT / 8];
@@ -91,11 +91,11 @@ void GfxScroll(int left, int top, int width, int height, int xo, int yo)
  * @param top Minimum Y (inclusive)
  * @param right Maximum X (inclusive)
  * @param bottom Maximum Y (inclusive)
- * @param colour A 8 bit palette index (FILLRECT_OPAQUE and FILLRECT_CHECKER) or a recolor spritenumber (FILLRECT_RECOLOR)
+ * @param colour A 8 bit palette index (FILLRECT_OPAQUE and FILLRECT_CHECKER) or a recolour spritenumber (FILLRECT_RECOLOR)
  * @param mode
  *         FILLRECT_OPAQUE:   Fill the rectangle with the specified colour
  *         FILLRECT_CHECKER:  Like FILLRECT_OPAQUE, but only draw every second pixel (used to grey out things)
- *         FILLRECT_RECOLOR:  Apply a recolor sprite to every pixel in the rectangle currently on screen
+ *         FILLRECT_RECOLOR:  Apply a recolour sprite to every pixel in the rectangle currently on screen
  */
 void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode)
 {
@@ -216,18 +216,18 @@ void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3)
 	 *            ....V.
 	 */
 
-	static const byte color = 255;
+	static const byte colour = 255;
 
-	GfxDrawLineUnscaled(x, y, x + dx1, y + dy1, color);
-	GfxDrawLineUnscaled(x, y, x + dx2, y + dy2, color);
-	GfxDrawLineUnscaled(x, y, x + dx3, y + dy3, color);
+	GfxDrawLineUnscaled(x, y, x + dx1, y + dy1, colour);
+	GfxDrawLineUnscaled(x, y, x + dx2, y + dy2, colour);
+	GfxDrawLineUnscaled(x, y, x + dx3, y + dy3, colour);
 
-	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx2, y + dy1 + dy2, color);
-	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx3, y + dy1 + dy3, color);
-	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx1, y + dy2 + dy1, color);
-	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx3, y + dy2 + dy3, color);
-	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx1, y + dy3 + dy1, color);
-	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx2, y + dy3 + dy2, color);
+	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx2, y + dy1 + dy2, colour);
+	GfxDrawLineUnscaled(x + dx1, y + dy1, x + dx1 + dx3, y + dy1 + dy3, colour);
+	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx1, y + dy2 + dy1, colour);
+	GfxDrawLineUnscaled(x + dx2, y + dy2, x + dx2 + dx3, y + dy2 + dy3, colour);
+	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx1, y + dy3 + dy1, colour);
+	GfxDrawLineUnscaled(x + dx3, y + dy3, x + dx3 + dx2, y + dy3 + dy2, colour);
 }
 
 
@@ -306,16 +306,16 @@ static inline int TruncateStringID(StringID src, char *dest, int maxw, const cha
  * @param x      X position to start drawing
  * @param y      Y position to start drawing
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  *
  * @return Horizontal coordinate after drawing the string
  */
-int DrawString(int x, int y, StringID str, uint16 color)
+int DrawString(int x, int y, StringID str, TextColour colour)
 {
 	char buffer[512];
 
 	GetString(buffer, str, lastof(buffer));
-	return DoDrawString(buffer, x, y, color);
+	return DoDrawString(buffer, x, y, colour);
 }
 
 /**
@@ -324,16 +324,16 @@ int DrawString(int x, int y, StringID str, uint16 color)
  * @param x      X position to start drawing
  * @param y      Y position to start drawing
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  * @param maxw   Maximal width of the string
  *
  * @return Horizontal coordinate after drawing the (possibly truncated) string
  */
-int DrawStringTruncated(int x, int y, StringID str, uint16 color, uint maxw)
+int DrawStringTruncated(int x, int y, StringID str, TextColour colour, uint maxw)
 {
 	char buffer[512];
 	TruncateStringID(str, buffer, maxw, lastof(buffer));
-	return DoDrawString(buffer, x, y, color);
+	return DoDrawString(buffer, x, y, colour);
 }
 
 /**
@@ -342,18 +342,18 @@ int DrawStringTruncated(int x, int y, StringID str, uint16 color, uint maxw)
  * @param x      Right-most x position of the string
  * @param y      Y position of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  *
  * @return Width of drawn string in pixels
  */
-int DrawStringRightAligned(int x, int y, StringID str, uint16 color)
+int DrawStringRightAligned(int x, int y, StringID str, TextColour colour)
 {
 	char buffer[512];
 	int w;
 
 	GetString(buffer, str, lastof(buffer));
 	w = GetStringBoundingBox(buffer).width;
-	DoDrawString(buffer, x - w, y, color);
+	DoDrawString(buffer, x - w, y, colour);
 
 	return w;
 }
@@ -364,15 +364,15 @@ int DrawStringRightAligned(int x, int y, StringID str, uint16 color)
  * @param x      Right-most x position to start drawing
  * @param y      Y position to start drawing
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  * @param maxw   Maximal width of the string
  */
-void DrawStringRightAlignedTruncated(int x, int y, StringID str, uint16 color, uint maxw)
+void DrawStringRightAlignedTruncated(int x, int y, StringID str, TextColour colour, uint maxw)
 {
 	char buffer[512];
 
 	TruncateStringID(str, buffer, maxw, lastof(buffer));
-	DoDrawString(buffer, x - GetStringBoundingBox(buffer).width, y, color);
+	DoDrawString(buffer, x - GetStringBoundingBox(buffer).width, y, colour);
 }
 
 /**
@@ -381,12 +381,12 @@ void DrawStringRightAlignedTruncated(int x, int y, StringID str, uint16 color, u
  * @param x      Right-most x position of the string
  * @param y      Y position of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  */
-void DrawStringRightAlignedUnderline(int x, int y, StringID str, uint16 color)
+void DrawStringRightAlignedUnderline(int x, int y, StringID str, TextColour colour)
 {
-	int w = DrawStringRightAligned(x, y, str, color);
-	GfxFillRect(x - w, y + 10, x, y + 10, _string_colorremap[1]);
+	int w = DrawStringRightAligned(x, y, str, colour);
+	GfxFillRect(x - w, y + 10, x, y + 10, _string_colourremap[1]);
 }
 
 /**
@@ -395,11 +395,11 @@ void DrawStringRightAlignedUnderline(int x, int y, StringID str, uint16 color)
  * @param x      X position of center of the string
  * @param y      Y position of center of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  *
  * @return Width of the drawn string in pixels
  */
-int DrawStringCentered(int x, int y, StringID str, uint16 color)
+int DrawStringCentered(int x, int y, StringID str, TextColour colour)
 {
 	char buffer[512];
 	int w;
@@ -407,7 +407,7 @@ int DrawStringCentered(int x, int y, StringID str, uint16 color)
 	GetString(buffer, str, lastof(buffer));
 
 	w = GetStringBoundingBox(buffer).width;
-	DoDrawString(buffer, x - w / 2, y, color);
+	DoDrawString(buffer, x - w / 2, y, colour);
 
 	return w;
 }
@@ -419,15 +419,15 @@ int DrawStringCentered(int x, int y, StringID str, uint16 color)
  * @param xr     Right-most x position
  * @param y      Y position of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  *
  * @return Right-most coordinate of the (possibly truncated) drawn string
  */
-int DrawStringCenteredTruncated(int xl, int xr, int y, StringID str, uint16 color)
+int DrawStringCenteredTruncated(int xl, int xr, int y, StringID str, TextColour colour)
 {
 	char buffer[512];
 	int w = TruncateStringID(str, buffer, xr - xl, lastof(buffer));
-	return DoDrawString(buffer, (xl + xr - w) / 2, y, color);
+	return DoDrawString(buffer, (xl + xr - w) / 2, y, colour);
 }
 
 /**
@@ -436,14 +436,14 @@ int DrawStringCenteredTruncated(int xl, int xr, int y, StringID str, uint16 colo
  * @param x      X position of center of the string
  * @param y      Y position of center of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  *
  * @return Width of the drawn string in pixels
  */
-int DoDrawStringCentered(int x, int y, const char *str, uint16 color)
+int DoDrawStringCentered(int x, int y, const char *str, TextColour colour)
 {
 	int w = GetStringBoundingBox(str).width;
-	DoDrawString(str, x - w / 2, y, color);
+	DoDrawString(str, x - w / 2, y, colour);
 	return w;
 }
 
@@ -453,12 +453,12 @@ int DoDrawStringCentered(int x, int y, const char *str, uint16 color)
  * @param x      X position of center of the string
  * @param y      Y position of center of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  */
-void DrawStringCenterUnderline(int x, int y, StringID str, uint16 color)
+void DrawStringCenterUnderline(int x, int y, StringID str, TextColour colour)
 {
-	int w = DrawStringCentered(x, y, str, color);
-	GfxFillRect(x - (w >> 1), y + 10, x - (w >> 1) + w, y + 10, _string_colorremap[1]);
+	int w = DrawStringCentered(x, y, str, colour);
+	GfxFillRect(x - (w >> 1), y + 10, x - (w >> 1) + w, y + 10, _string_colourremap[1]);
 }
 
 /**
@@ -468,12 +468,12 @@ void DrawStringCenterUnderline(int x, int y, StringID str, uint16 color)
  * @param xr     Right x position of the string
  * @param y      Y position of center of the string
  * @param str    String to draw
- * @param color  Color used for drawing the string, see DoDrawString() for details
+ * @param colour Colour used for drawing the string, see DoDrawString() for details
  */
-void DrawStringCenterUnderlineTruncated(int xl, int xr, int y, StringID str, uint16 color)
+void DrawStringCenterUnderlineTruncated(int xl, int xr, int y, StringID str, TextColour colour)
 {
-	int w = DrawStringCenteredTruncated(xl, xr, y, str, color);
-	GfxFillRect((xl + xr - w) / 2, y + 10, (xl + xr + w) / 2, y + 10, _string_colorremap[1]);
+	int w = DrawStringCenteredTruncated(xl, xr, y, str, colour);
+	GfxFillRect((xl + xr - w) / 2, y + 10, (xl + xr + w) / 2, y + 10, _string_colourremap[1]);
 }
 
 /**
@@ -577,7 +577,7 @@ void DrawStringMultiCenter(int x, int y, StringID str, int maxw)
 
 	for (;;) {
 		w = GetStringBoundingBox(src).width;
-		DoDrawString(src, x - (w >> 1), y, 0xFE, true);
+		DoDrawString(src, x - (w >> 1), y, TC_FROMSTRING, true);
 		_cur_fontsize = _last_fontsize;
 
 		for (;;) {
@@ -627,7 +627,7 @@ uint DrawStringMultiLine(int x, int y, StringID str, int maxw, int maxh)
 	src = buffer;
 
 	for (;;) {
-		DoDrawString(src, x, y, 0xFE, true);
+		DoDrawString(src, x, y, TC_FROMSTRING, true);
 		_cur_fontsize = _last_fontsize;
 
 		for (;;) {
@@ -696,17 +696,18 @@ Dimension GetStringBoundingBox(const char *str)
  * @param c           Character (glyph) to draw
  * @param x           X position to draw character
  * @param y           Y position to draw character
- * @param real_color  Colour to use, see DoDrawString() for details
+ * @param real_colour Colour to use, see DoDrawString() for details
  */
-void DrawCharCentered(WChar c, int x, int y, uint16 real_color)
+void DrawCharCentered(WChar c, int x, int y, TextColour colour)
 {
 	FontSize size = FS_NORMAL;
-	byte color = real_color & 0xFF;
+	assert(colour & IS_PALETTE_COLOR);
+	colour &= ~IS_PALETTE_COLOR;
 	int w = GetCharacterWidth(size, c);
 
-	_string_colorremap[1] = _string_colormap[_use_palette][color].text;
-	_string_colorremap[2] = _string_colormap[_use_palette][color].shadow;
-	_color_remap_ptr = _string_colorremap;
+	_string_colourremap[1] = _string_colourmap[_use_palette][colour].text;
+	_string_colourremap[2] = _string_colourmap[_use_palette][colour].shadow;
+	_colour_remap_ptr = _string_colourremap;
 
 	GfxMainBlitter(GetGlyph(size, c), x - w / 2, y, BM_COLOUR_REMAP);
 }
@@ -717,7 +718,7 @@ void DrawCharCentered(WChar c, int x, int y, uint16 real_color)
  * @param string              The string to draw
  * @param x                   Offset from left side of the screen, if negative offset from the right side
  * @param y                   Offset from top side of the screen, if negative offset from the bottom
- * @param real_colour         Colour of the string, see _string_colormap in
+ * @param colour              Colour of the string, see _string_colourmap in
  *                            table/palettes.h or docs/ottd-colourtext-palette.png or the enum TextColour in gfx_type.h
  * @param parse_string_also_when_clipped
  *                            By default, always test the available space where to draw the string.
@@ -728,15 +729,14 @@ void DrawCharCentered(WChar c, int x, int y, uint16 real_color)
  * @return                    the x-coordinates where the drawing has finished.
  *                            If nothing is drawn, the originally passed x-coordinate is returned
  */
-int DoDrawString(const char *string, int x, int y, uint16 real_colour, bool parse_string_also_when_clipped)
+int DoDrawString(const char *string, int x, int y, TextColour colour, bool parse_string_also_when_clipped)
 {
 	DrawPixelInfo *dpi = _cur_dpi;
 	FontSize size = _cur_fontsize;
 	WChar c;
 	int xo = x, yo = y;
 
-	byte colour = real_colour & 0xFF;  // extract the 8 bits colour index that is required for the mapping
-	byte previous_colour = colour;
+	TextColour previous_colour = colour;
 
 	if (!parse_string_also_when_clipped) {
 		/* in "mode multiline", the available space have been verified. Not in regular one.
@@ -749,14 +749,14 @@ int DoDrawString(const char *string, int x, int y, uint16 real_colour, bool pars
 
 		if (colour != TC_INVALID) { // the invalid colour flag test should not  really occur.  But better be safe
 switch_colour:;
-			if (real_colour & IS_PALETTE_COLOR) {
-				_string_colorremap[1] = colour;
-				_string_colorremap[2] = (_use_palette == PAL_DOS) ? 1 : 215;
+			if (colour & IS_PALETTE_COLOR) {
+				_string_colourremap[1] = colour & ~IS_PALETTE_COLOR;
+				_string_colourremap[2] = (_use_palette == PAL_DOS) ? 1 : 215;
 			} else {
-				_string_colorremap[1] = _string_colormap[_use_palette][colour].text;
-				_string_colorremap[2] = _string_colormap[_use_palette][colour].shadow;
+				_string_colourremap[1] = _string_colourmap[_use_palette][colour].text;
+				_string_colourremap[2] = _string_colourmap[_use_palette][colour].shadow;
 			}
-			_color_remap_ptr = _string_colorremap;
+			_colour_remap_ptr = _string_colourremap;
 		}
 	}
 
@@ -788,7 +788,7 @@ skip_cont:;
 			goto check_bounds;
 		} else if (c >= SCC_BLUE && c <= SCC_BLACK) { // change colour?
 			previous_colour = colour;
-			colour = (byte)(c - SCC_BLUE);
+			colour = (TextColour)(c - SCC_BLUE);
 			goto switch_colour;
 		} else if (c == SCC_PREVIOUS_COLOUR) { // revert to the previous colour
 			Swap(colour, previous_colour);
@@ -815,17 +815,17 @@ skip_cont:;
  * @param str  Character buffer containing the string
  * @param x    Left-most x coordinate to start drawing
  * @param y    Y coordinate to draw the string
- * @param color Colour to use, see DoDrawString() for details.
+ * @param colour Colour to use, see DoDrawString() for details.
  * @param maxw  Maximal width in pixels that may be used for drawing
  *
  * @return Right-most x position after drawing the (possibly truncated) string
  */
-int DoDrawStringTruncated(const char *str, int x, int y, uint16 color, uint maxw)
+int DoDrawStringTruncated(const char *str, int x, int y, TextColour colour, uint maxw)
 {
 	char buffer[512];
 	ttd_strlcpy(buffer, str, sizeof(buffer));
 	TruncateString(buffer, maxw);
-	return DoDrawString(buffer, x, y, color);
+	return DoDrawString(buffer, x, y, colour);
 }
 
 /**
@@ -839,10 +839,10 @@ int DoDrawStringTruncated(const char *str, int x, int y, uint16 color, uint maxw
 void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub)
 {
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
-		_color_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
 		GfxMainBlitter(GetSprite(GB(img, 0, SPRITE_WIDTH), ST_NORMAL), x, y, BM_TRANSPARENT, sub);
 	} else if (pal != PAL_NONE) {
-		_color_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
 		GfxMainBlitter(GetSprite(GB(img, 0, SPRITE_WIDTH), ST_NORMAL), x, y, BM_COLOUR_REMAP, sub);
 	} else {
 		GfxMainBlitter(GetSprite(GB(img, 0, SPRITE_WIDTH), ST_NORMAL), x, y, BM_NORMAL, sub);
@@ -883,7 +883,7 @@ static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode,
 
 	bp.dst = dpi->dst_ptr;
 	bp.pitch = dpi->pitch;
-	bp.remap = _color_remap_ptr;
+	bp.remap = _colour_remap_ptr;
 
 	assert(sprite->width > 0);
 	assert(sprite->height > 0);
