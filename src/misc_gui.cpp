@@ -62,6 +62,7 @@ SaveLoadDialogMode _saveload_mode;
 
 static bool _fios_path_changed;
 static bool _savegame_sort_dirty;
+int _caret_timer;
 
 enum {
 	LAND_INFO_LINES          =   7,

@@ -33,6 +33,10 @@
 #include "safeguards.h"
 
 char _name_array[512][32];
+extern uint32 _cur_town_ctr;
+extern uint32 _cur_town_iter;
+extern uint _next_competitor_start;
+extern uint _cur_player_tick_index;
 
 void InitializeVehicles();
 void InitializeWaypoints();

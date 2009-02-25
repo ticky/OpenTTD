@@ -44,6 +44,8 @@ PlayerByte _current_player;
 /* NOSAVE: can be determined from player structs */
 byte _player_colors[MAX_PLAYERS];
 PlayerFace _player_face; ///< for player face storage in openttd.cfg
+uint _next_competitor_start;      ///< the number of ticks before the next AI is started
+uint _cur_player_tick_index;     ///< used to generate a name for one company that doesn't have a name yet per tick
 HighScore _highscore_table[5][5]; // 4 difficulty-settings (+ network); top 5
 
 /**

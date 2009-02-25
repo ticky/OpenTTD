@@ -96,4 +96,7 @@ static inline Player *GetPlayer(PlayerID i)
 
 Money CalculateCompanyValue(const Player *p);
 
+extern uint _next_competitor_start;
+extern uint _cur_player_tick_index;
+
 #endif /* PLAYER_BASE_H */

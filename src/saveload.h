@@ -322,4 +322,7 @@ bool SlObjectMember(void *object, const SaveLoad *sld);
 void SaveFileStart();
 void SaveFileDone();
 void SaveFileError();
+
+extern char _savegame_format[8];
+
 #endif /* SAVELOAD_H */

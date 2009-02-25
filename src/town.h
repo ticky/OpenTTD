@@ -313,6 +313,8 @@ extern const Town **_town_sort;
 
 extern Town *_cleared_town;
 extern int _cleared_town_rating;
+extern uint32 _cur_town_ctr;
+extern uint32 _cur_town_iter;
 
 uint OriginalTileRandomiser(uint x, uint y);
 void ResetHouses();
