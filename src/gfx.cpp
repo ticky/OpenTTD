@@ -838,18 +838,26 @@ void DoPaletteAnimations()
 		byte i = (_palette_animation_counter >> 1) & 0x7F;
 		byte v;
 
-		(v = 255, i < 0x3f) ||
-		(v = 128, i < 0x4A || i >= 0x75) ||
-		(v = 20);
+		if (i < 0x3f) {
+			v = 255;
+		} else if (i < 0x4A || i >= 0x75) {
+			v = 128;
+		} else {
+			v = 20;
+		}
 		d->r = v;
 		d->g = 0;
 		d->b = 0;
 		d++;
 
 		i ^= 0x40;
-		(v = 255, i < 0x3f) ||
-		(v = 128, i < 0x4A || i >= 0x75) ||
-		(v = 20);
+		if (i < 0x3f) {
+			v = 255;
+		} else if (i < 0x4A || i >= 0x75) {
+			v = 128;
+		} else {
+			v = 20;
+		}
 		d->r = v;
 		d->g = 0;
 		d->b = 0;

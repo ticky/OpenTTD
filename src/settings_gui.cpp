@@ -559,7 +559,7 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 				DrawArrowButtons(5, y, 3,
 						(diffic_d->clicked_button == i) ? 1 + !!diffic_d->clicked_increase : 0,
 						!(HasBit(disabled, i) || gsd->min == value),
-						!(HasBit(disabled, i) || gsd->max == value));
+						!(HasBit(disabled, i) || gsd->max == (uint32)value));
 
 				value += _game_setting_info[i].str;
 				if (i == 4) value *= 1000; // XXX - handle currency option
@@ -934,7 +934,7 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 					value = (int32)ReadValue(var, sd->save.conv);
 
 					/* Draw [<][>] boxes for settings of an integer-type */
-					DrawArrowButtons(x, y, 3, WP(w, def_d).data_2 - (i * 2), (editable && value != sdb->min), (editable && value != sdb->max));
+					DrawArrowButtons(x, y, 3, WP(w, def_d).data_2 - (i * 2), (editable && value != sdb->min), (editable && (uint32)value != sdb->max));
 
 					disabled = (value == 0) && (sdb->flags & SGF_0ISDISABLED);
 					if (disabled) {
@@ -1009,7 +1009,7 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 							/* Increase or decrease the value and clamp it to extremes */
 							if (x >= 10) {
 								value += step;
-								if (value > sdb->max) value = sdb->max;
+								if ((uint32)value > sdb->max) value = (int32)sdb->max;
 							} else {
 								value -= step;
 								if (value < sdb->min) value = (sdb->flags & SGF_0ISDISABLED) ? 0 : sdb->min;
