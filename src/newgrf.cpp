@@ -2732,7 +2732,7 @@ static void NewSpriteGroup(byte *buf, int len)
 					}
 
 					/* Set the terminator value. */
-					((DrawTileSeqStruct*)group->g.layout.dts->seq)[i].delta_x = (byte)0x80;
+					((DrawTileSeqStruct*)group->g.layout.dts->seq)[i].delta_x = (int8)0x80;
 
 					break;
 				}
