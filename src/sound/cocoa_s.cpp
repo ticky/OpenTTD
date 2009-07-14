@@ -8,27 +8,18 @@
 
 #ifdef WITH_COCOA
 
-#define MAC_OS_X_VERSION_MIN_REQUIRED    MAC_OS_X_VERSION_10_3
-#include <AvailabilityMacros.h>
-
-#include <AudioUnit/AudioUnit.h>
-
-/* Name conflict */
-#define Rect        OTTDRect
-#define Point       OTTDPoint
-#define WindowClass OTTDWindowClass
-
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../driver.h"
 #include "../mixer.h"
 #include "../core/endian_func.hpp"
-
 #include "cocoa_s.h"
 
-#undef WindowClass
-#undef Point
+#define Rect        OTTDRect
+#define Point       OTTDPoint
+#include <AudioUnit/AudioUnit.h>
 #undef Rect
+#undef Point
 
 #include "../safeguards.h"
 
