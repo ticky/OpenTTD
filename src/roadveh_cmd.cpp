@@ -412,11 +412,24 @@ static bool EnumRoadSignalFindDepot(TileIndex tile, void* data, Trackdir trackdi
 	return false;
 }
 
-static const Depot* FindClosestRoadDepot(const Vehicle* v)
+static RoadFindDepotData FindClosestRoadDepot(const RoadVehicle *v, int max_distance)
 {
+	RoadFindDepotData rfdd;
+	rfdd.owner = v->owner;
+
+	if (IsRoadDepotTile(v->tile)) {
+		rfdd.tile = v->tile;
+		rfdd.best_length = 0;
+		return rfdd;
+	}
+
+	rfdd.best_length = UINT_MAX;
+
 	switch (_patches.pathfinder_for_roadvehs) {
-		case VPF_YAPF: /* YAPF */
-			return YapfFindNearestRoadDepot(v);
+		case VPF_YAPF: { // YAPF
+			bool found = YapfFindNearestRoadDepot(v, max_distance, &rfdd.tile);
+			rfdd.best_length = found ? max_distance / 2 : UINT_MAX; // some fake distance or NOT_FOUND
+		} break;
 
 		case VPF_NPF: { /* NPF */
 			/* See where we are now */
@@ -424,26 +437,34 @@ static const Depot* FindClosestRoadDepot(const Vehicle* v)
 
 			NPFFoundTargetData ftd = NPFRouteToDepotBreadthFirstTwoWay(v->tile, trackdir, false, v->tile, ReverseTrackdir(trackdir), false, TRANSPORT_ROAD, v->u.road.compatible_roadtypes, v->owner, INVALID_RAILTYPES, 0);
 
-			if (ftd.best_bird_dist == 0) return GetDepotByTile(ftd.node.tile); /* Target found */
+			if (ftd.best_bird_dist == 0) {
+				rfdd.tile = ftd.node.tile;
+				rfdd.best_length = ftd.best_path_dist / NPF_TILE_LENGTH;
+			}
 		} break;
 
 		default:
-		case VPF_OPF: { /* OPF */
-			RoadFindDepotData rfdd;
-
-			rfdd.owner = v->owner;
-			rfdd.best_length = UINT_MAX;
-
+		case VPF_OPF: // OPF
 			/* search in all directions */
 			for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 				FollowTrack(v->tile, TRANSPORT_ROAD, v->u.road.compatible_roadtypes, d, EnumRoadSignalFindDepot, NULL, &rfdd);
 			}
 
-			if (rfdd.best_length != UINT_MAX) return GetDepotByTile(rfdd.tile);
-		} break;
+			break;
 	}
 
-	return NULL; /* Target not found */
+	return rfdd; // Target not found
+}
+
+bool RoadVehicle::FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse)
+{
+	RoadFindDepotData rfdd = FindClosestRoadDepot(this, 0);
+	if (rfdd.best_length == UINT_MAX) return false;
+
+	if (location    != NULL) *location    = rfdd.tile;
+	if (destination != NULL) *destination = Depot::GetByTile(rfdd.tile)->index;
+
+	return true;
 }
 
 /** Send a road vehicle to the depot.
@@ -1986,6 +2007,8 @@ void RoadVehicle::Tick()
 
 static void CheckIfRoadVehNeedsService(Vehicle *v)
 {
+	static const uint MAX_ACCEPTABLE_DEPOT_DIST = 16;
+
 	/* If we already got a slot at a stop, use that FIRST, and go to a depot later */
 	if (v->u.road.slot != NULL || _patches.servint_roadveh == 0 || !v->NeedsAutomaticServicing()) return;
 	if (v->IsInDepot()) {
@@ -1993,17 +2016,21 @@ static void CheckIfRoadVehNeedsService(Vehicle *v)
 		return;
 	}
 
-	/* XXX If we already have a depot order, WHY do we search over and over? */
-	const Depot *depot = FindClosestRoadDepot(v);
-
-	if (depot == NULL || DistanceManhattan(v->tile, depot->xy) > 12) {
+	RoadFindDepotData rfdd = FindClosestRoadDepot(v, MAX_ACCEPTABLE_DEPOT_DIST);
+	/* Only go to the depot if it is not too far out of our way. */
+	if (rfdd.best_length == UINT_MAX || rfdd.best_length > MAX_ACCEPTABLE_DEPOT_DIST) {
 		if (v->current_order.type == OT_GOTO_DEPOT) {
+			/* If we were already heading for a depot but it has
+			 * suddenly moved farther away, we continue our normal
+			 * schedule? */
 			v->current_order.type = OT_DUMMY;
 			v->current_order.flags = 0;
 			InvalidateWindowWidget(WC_VEHICLE_VIEW, v->index, VVW_WIDGET_START_STOP_VEH);
 		}
 		return;
 	}
+
+	const Depot *depot = Depot::GetByTile(rfdd.tile);
 
 	if (v->current_order.type == OT_GOTO_DEPOT &&
 			v->current_order.flags & OFB_NON_STOP &&
@@ -2017,7 +2044,7 @@ static void CheckIfRoadVehNeedsService(Vehicle *v)
 	v->current_order.type = OT_GOTO_DEPOT;
 	v->current_order.flags = OFB_NON_STOP;
 	v->current_order.dest = depot->index;
-	v->dest_tile = depot->xy;
+	v->dest_tile = rfdd.tile;
 	InvalidateWindowWidget(WC_VEHICLE_VIEW, v->index, VVW_WIDGET_START_STOP_VEH);
 }
 
