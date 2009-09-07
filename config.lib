@@ -133,7 +133,7 @@ set_default() {
 		with_threads
 		with_distcc
 		with_ccache
-	CC CXX CFLAGS LDFLAGS"
+	CC CXX CFLAGS CXXFLAGS LDFLAGS"
 }
 
 detect_params() {
@@ -356,6 +356,7 @@ detect_params() {
 			CC=* | --CC=*)                CC="$optarg";;
 			CXX=* | --CXX=*)              CXX="$optarg";;
 			CFLAGS=* | --CFLAGS=*)        CFLAGS="$optarg";;
+			CXXFLAGS=* | --CXXFLAGS=*)    CXXFLAGS="$optarg";;
 			LDFLAGS=* | --LDFLAGS=*)      LDFLAGS="$optarg";;
 
 			--ignore-extra-parameters)    ignore_extra_parameters="1";;
@@ -1088,6 +1089,18 @@ make_compiler_cflags() {
 			# about it's own optimized code in some places.
 			flags="$flags -fno-strict-overflow"
 		fi
+
+		if [ $cc_version -ge 43 ]; then
+			# Use c++0x mode so static_assert() is available
+			cxxflags="$cxxflags -std=c++0x"
+		fi
+
+		has_rdynamic=`$1 -dumpspecs | grep rdynamic`
+		if [ -n "$has_rdynamic" ]; then
+			# rdynamic is used to get useful stack traces from crash reports.
+			flags="$flags -rdynamic"
+			ldflags="$ldflags -rdynamic"
+		fi
 	fi
 
 	eval "$2=\"$flags\""
@@ -1099,10 +1112,14 @@ make_compiler_cflags() {
 make_cflags_and_ldflags() {
 	# General CFlags for BUILD
 	CFLAGS_BUILD=""
+	# Special CXXFlags for BUILD
+	CXXFLAGS_BUILD=""
+	# LDFLAGS for BUILD
+	LDFLAGS_BUILD=""
 	# General CFlags for HOST
 	CFLAGS="$CFLAGS -D$os"
-	# CFlags for HOST and C-Compiler
-	CC_FLAGS=""
+	# Special CXXFlags for HOST
+	CXXFLAGS="$CXXFLAGS"
 	# Libs to compile. In fact this is just LDFLAGS
 	LIBS="-lstdc++"
 	# LDFLAGS used for HOST
@@ -1493,7 +1510,8 @@ make_cflags_and_ldflags() {
 
 	CFLAGS="$CFLAGS -DGLOBAL_DATA_DIR=\\\\\"$prefix_dir/$data_dir\\\\\""
 
-	log 1 "using CFLAGS... $CFLAGS $CC_CFLAGS"
+	log 1 "using CFLAGS... $CFLAGS"
+	log 1 "using CXXFLAGS... $CXXFLAGS"
 	log 1 "using LDFLAGS... $LIBS $LDFLAGS"
 
 	# Makedepend doesn't like something like: -isysroot /OSX/blabla
@@ -1502,8 +1520,13 @@ make_cflags_and_ldflags() {
 	# Lovely hackish, not?
 	# Btw, this almost always comes from outside the configure, so it is
 	#  not something we can control.
-	if [ "$with_makedepend" != "0" ]; then
-		cflags_makedep="` echo "$CFLAGS" | sed 's# /# -#g'`"
+	# Also make makedepend aware of compiler's built-in defines.
+	if [ "$with_makedepend" != "0" ] || [ "$enable_builtin_depend" != "0" ]; then
+		# Append CXXFLAGS possibly containing -std=c++0x
+		cflags_makedep="`echo | $cxx_host $CXXFLAGS -E -x c++ -dM - | sed 's@.define @-D@g;s@ .*@ @g;s@(.*)@@g' | tr -d '\r\n'`"
+
+		# Please escape ALL " within ` because e.g. "" terminates the string in some sh implementations
+		cflags_makedep="$cflags_makedep `echo \"$CFLAGS\" \"$CXXFLAGS\" | sed 's@ /@ -@g;s@-I[ ]*[^ ]*@@g'`"
 	else
 		makedepend=""
 	fi
@@ -2454,6 +2477,7 @@ detect_cputype() {
 
 make_sed() {
 	T_CFLAGS="$CFLAGS"
+	T_CXXFLAGS="$CXXFLAGS"
 	T_LDFLAGS="$LDFLAGS"
 
 	# We check here if we are PPC, because then we need to enable FOUR_BYTE_BOOL
@@ -2474,66 +2498,68 @@ make_sed() {
 	#  use multiple OBJS_DIR, because all in-between
 	#  binaries are stored in there, and nowhere else.
 	SRC_REPLACE="
-		s~!!CC_HOST!!~$cc_host~g;
-		s~!!CXX_HOST!!~$cxx_host~g;
-		s~!!CC_BUILD!!~$cc_build~g;
-		s~!!CXX_BUILD!!~$cxx_build~g;
-		s~!!WINDRES!!~$windres~g;
-		s~!!STRIP!!~$strip $strip_arg~g;
-		s~!!LIPO!!~$lipo~g;
-		s~!!CC_CFLAGS!!~$CC_CFLAGS~g;
-		s~!!CFLAGS!!~$T_CFLAGS~g;
-		s~!!CFLAGS_BUILD!!~$CFLAGS_BUILD~g;
-		s~!!STRGEN_FLAGS!!~$strgen_flags~g;
-		s~!!LIBS!!~$LIBS~g;
-		s~!!LDFLAGS!!~$T_LDFLAGS~g;
-		s~!!BIN_DIR!!~$BIN_DIR~g;
-		s~!!ROOT_DIR!!~$ROOT_DIR~g;
-		s~!!MEDIA_DIR!!~$MEDIA_DIR~g;
-		s~!!SOURCE_LIST!!~$SOURCE_LIST~g;
-		s~!!SRC_OBJS_DIR!!~$SRC_OBJS_DIR~g;
-		s~!!LANG_OBJS_DIR!!~$LANG_OBJS_DIR~g;
-		s~!!SRC_DIR!!~$SRC_DIR~g;
-		s~!!SCRIPT_SRC_DIR!!~$SCRIPT_SRC_DIR~g;
-		s~!!OSXAPP!!~$OSXAPP~g;
-		s~!!LANG_DIR!!~$LANG_DIR~g;
-		s~!!TTD!!~$TTD~g;
-		s~!!BINARY_DIR!!~$prefix_dir/$binary_dir~g;
-		s~!!DATA_DIR!!~$prefix_dir/$data_dir~g;
-		s~!!DOC_DIR!!~$prefix_dir/$doc_dir~g;
-		s~!!MAN_DIR!!~$prefix_dir/$man_dir~g;
-		s~!!ICON_DIR!!~$prefix_dir/$icon_dir~g;
-		s~!!ICON_THEME_DIR!!~$prefix_dir/$icon_theme_dir~g;
-		s~!!PERSONAL_DIR!!~$personal_dir~g;
-		s~!!SHARED_DIR!!~$shared_dir~g;
-		s~!!INSTALL_DIR!!~$install_dir~g;
-		s~!!BINARY_NAME!!~$binary_name~g;
-		s~!!STRGEN!!~$STRGEN~g;
-		s~!!ENDIAN_CHECK!!~$ENDIAN_CHECK~g;
-		s~!!ENDIAN_FORCE!!~$endian~g;
-		s~!!STAGE!!~$STAGE~g;
-		s~!!MAKEDEPEND!!~$makedepend~g;
-		s~!!CFLAGS_MAKEDEP!!~$cflags_makedep~g;
-		s~!!SORT!!~$sort~g;
-		s~!!CONFIG_CACHE_COMPILER!!~config.cache.compiler~g;
-		s~!!CONFIG_CACHE_LINKER!!~config.cache.linker~g;
-		s~!!CONFIG_CACHE_ENDIAN!!~config.cache.endian~g;
-		s~!!CONFIG_CACHE_SOURCE!!~config.cache.source~g;
-		s~!!CONFIG_CACHE_VERSION!!~config.cache.version~g;
-		s~!!CONFIG_CACHE_SOURCE_LIST!!~config.cache.source.list~g;
-		s~!!CONFIG_CACHE_PWD!!~config.cache.pwd~g;
-		s~!!LANG_SUPPRESS!!~$lang_suppress~g;
-		s~!!OBJS_C!!~$OBJS_C~g;
-		s~!!OBJS_CPP!!~$OBJS_CPP~g;
-		s~!!OBJS_MM!!~$OBJS_MM~g;
-		s~!!OBJS_RC!!~$OBJS_RC~g;
-		s~!!SRCS!!~$SRCS~g;
-		s~!!OS!!~$os~g;
-		s~!!CONFIGURE_FILES!!~$CONFIGURE_FILES~g;
-		s~!!REVISION!!~$revision~g;
-		s~!!AWK!!~$awk~g;
-		s~!!GCC295!!~$gcc295~g;
-		s~!!DISTCC!!~$distcc~g;
+		s@!!CC_HOST!!@$cc_host@g;
+		s@!!CXX_HOST!!@$cxx_host@g;
+		s@!!CC_BUILD!!@$cc_build@g;
+		s@!!CXX_BUILD!!@$cxx_build@g;
+		s@!!WINDRES!!@$windres@g;
+		s@!!STRIP!!@$strip $strip_arg@g;
+		s@!!LIPO!!@$lipo@g;
+		s@!!CFLAGS!!@$T_CFLAGS@g;
+		s@!!CFLAGS_BUILD!!@$CFLAGS_BUILD@g;
+		s@!!CXXFLAGS!!@$T_CXXFLAGS@g;
+		s@!!CXXFLAGS_BUILD!!@$CXXFLAGS_BUILD@g;
+		s@!!STRGEN_FLAGS!!@$strgen_flags@g;
+		s@!!LIBS!!@$LIBS@g;
+		s@!!LDFLAGS!!@$T_LDFLAGS@g;
+		s@!!LDFLAGS_BUILD!!@$LDFLAGS_BUILD@g;
+		s@!!BIN_DIR!!@$BIN_DIR@g;
+		s@!!ROOT_DIR!!@$ROOT_DIR@g;
+		s@!!MEDIA_DIR!!@$MEDIA_DIR@g;
+		s@!!SOURCE_LIST!!@$SOURCE_LIST@g;
+		s@!!SRC_OBJS_DIR!!@$SRC_OBJS_DIR@g;
+		s@!!LANG_OBJS_DIR!!@$LANG_OBJS_DIR@g;
+		s@!!SRC_DIR!!@$SRC_DIR@g;
+		s@!!SCRIPT_SRC_DIR!!@$SCRIPT_SRC_DIR@g;
+		s@!!OSXAPP!!@$OSXAPP@g;
+		s@!!LANG_DIR!!@$LANG_DIR@g;
+		s@!!TTD!!@$TTD@g;
+		s@!!BINARY_DIR!!@$prefix_dir/$binary_dir@g;
+		s@!!DATA_DIR!!@$prefix_dir/$data_dir@g;
+		s@!!DOC_DIR!!@$prefix_dir/$doc_dir@g;
+		s@!!MAN_DIR!!@$prefix_dir/$man_dir@g;
+		s@!!ICON_DIR!!@$prefix_dir/$icon_dir@g;
+		s@!!ICON_THEME_DIR!!@$prefix_dir/$icon_theme_dir@g;
+		s@!!PERSONAL_DIR!!@$personal_dir@g;
+		s@!!SHARED_DIR!!@$shared_dir@g;
+		s@!!INSTALL_DIR!!@$install_dir@g;
+		s@!!BINARY_NAME!!@$binary_name@g;
+		s@!!STRGEN!!@$STRGEN@g;
+		s@!!ENDIAN_CHECK!!@$ENDIAN_CHECK@g;
+		s@!!DEPEND!!@$DEPEND@g;
+		s@!!ENDIAN_FORCE!!@$endian@g;
+		s@!!STAGE!!@$STAGE@g;
+		s@!!MAKEDEPEND!!@$makedepend@g;
+		s@!!CFLAGS_MAKEDEP!!@$cflags_makedep@g;
+		s@!!SORT!!@$sort@g;
+		s@!!CONFIG_CACHE_COMPILER!!@config.cache.compiler@g;
+		s@!!CONFIG_CACHE_LINKER!!@config.cache.linker@g;
+		s@!!CONFIG_CACHE_ENDIAN!!@config.cache.endian@g;
+		s@!!CONFIG_CACHE_SOURCE!!@config.cache.source@g;
+		s@!!CONFIG_CACHE_VERSION!!@config.cache.version@g;
+		s@!!CONFIG_CACHE_SOURCE_LIST!!@config.cache.source.list@g;
+		s@!!CONFIG_CACHE_PWD!!@config.cache.pwd@g;
+		s@!!LANG_SUPPRESS!!@$lang_suppress@g;
+		s@!!OBJS_C!!@$OBJS_C@g;
+		s@!!OBJS_CPP!!@$OBJS_CPP@g;
+		s@!!OBJS_MM!!@$OBJS_MM@g;
+		s@!!OBJS_RC!!@$OBJS_RC@g;
+		s@!!SRCS!!@$SRCS@g;
+		s@!!OS!!@$os@g;
+		s@!!CONFIGURE_FILES!!@$CONFIGURE_FILES@g;
+		s@!!REVISION!!@$revision@g;
+		s@!!AWK!!@$awk@g;
+		s@!!DISTCC!!@$distcc@g;
 	"
 
 	if [ "$icon_theme_dir" != "" ]; then
@@ -2790,6 +2816,7 @@ showhelp() {
 	echo "  CC                             C compiler command"
 	echo "  CXX                            C++ compiler command"
 	echo "  CFLAGS                         C compiler flags"
+	echo "  CXXFLAGS                       C++ compiler flags"
 	echo "  WINDRES                        windres command"
 	echo "  LDFLAGS                        linker flags, e.g. -L<lib dir> if you"
 	echo "                                 have libraries in a nonstandard"
