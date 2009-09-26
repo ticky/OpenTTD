@@ -29,7 +29,7 @@ template <> struct EnumPropsT<SettingDescTypeLong> : MakeEnumPropsT<SettingDescT
 typedef TinyEnumT<SettingDescTypeLong> SettingDescType;
 
 
-enum SettingGuiFlagLong {
+enum SettingGuiFlagLong: uint16 {
 	/* 8 bytes allocated for a maximum of 8 flags
 	 * Flags directing saving/loading of a variable */
 	SGF_NONE = 0,
@@ -44,7 +44,7 @@ enum SettingGuiFlagLong {
 };
 
 DECLARE_ENUM_AS_BIT_SET(SettingGuiFlagLong);
-template <> struct EnumPropsT<SettingGuiFlagLong> : MakeEnumPropsT<SettingGuiFlagLong, byte, SGF_NONE, SGF_END, SGF_END> {};
+template <> struct EnumPropsT<SettingGuiFlagLong> : MakeEnumPropsT<SettingGuiFlagLong, uint16, SGF_NONE, SGF_END, SGF_END> {};
 typedef TinyEnumT<SettingGuiFlagLong> SettingGuiFlag;
 
 
