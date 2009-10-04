@@ -545,6 +545,56 @@ check_params() {
 		sleep 5
 	fi
 
+	if [ "$os" != "OSX" ] && [ "$with_osx_sysroot" != "0" ]; then
+		if [ "$with_osx_sysroot" = "1" ]; then
+			with_osx_sysroot="0"
+
+			log 1 "checking OSX sysroot... not OSX, skipping"
+		else
+			log 1 "configure: error: --with-osx-sysroot only works if OSX is the target"
+			exit 1
+		fi
+	fi
+
+	if [ "$with_osx_sysroot" != "0" ]; then
+		if [ "$enable_universal" = "0" ] && [ "$with_osx_sysroot" != "1" ] && [ "$with_osx_sysroot" != "2" ]; then
+			# Sysroot manually specified? Check for usability
+			log 1 "checking OSX sysroot... $with_osx_sysroot"
+			if ! check_osx_sdk "$with_osx_sysroot"; then
+				log 1 "Passed sysroot not found/not functional"
+				exit 1
+			fi
+		else
+			# If autodetect and no universal, use system default
+			if [ "$with_osx_sysroot" = "1" ] && [ "$enable_universal" = "0" ]; then
+				log 1 "checking OSX sysroot... no (use system default)"
+			else
+				log 1 "checking OSX sysroot... automatically"
+				detect_osx_sdk
+			fi
+		fi
+
+		if [ -n "$osx_sdk_path" ]; then
+			if [ "$enable_universal" != "0" ]; then
+				if [ -z "$osx_sdk_104_path" ]; then
+					log 1 "WARNING: Could not find a usable 10.4u SDK, the resulting"
+					log 1 "WARNING: binary will only run on OSX 10.5 or later"
+					osx_sdk_104_path="$osx_sdk_path"
+				fi
+				OSX_SYSROOT="-isysroot $osx_sdk_104_path"
+				OSX_LD_SYSROOT="-Wl,-syslibroot,$osx_sdk_104_path"
+			else
+				OSX_SYSROOT="-isysroot $osx_sdk_path"
+				OSX_LD_SYSROOT="-Wl,-syslibroot,$osx_sdk_path"
+			fi
+		fi
+	else
+		if [ "$os" = "OSX" ]; then
+			log 1 "checking OSX sysroot... no (use system default)"
+		fi
+	fi
+
+	detect_allegro
 	detect_sdl
 	detect_cocoa
 
@@ -715,36 +765,6 @@ check_params() {
 		log 1 "checking ccache... $ccache"
 	fi
 
-	if [ "$os" != "OSX" ] && [ "$with_osx_sysroot" != "0" ]; then
-		if [ "$with_osx_sysroot" = "1" ]; then
-			with_osx_sysroot="0"
-
-			log 1 "checking OSX sysroot... not OSX, skipping"
-		else
-			log 1 "configure: error: --with-osx-sysroot only works if OSX is the target"
-			exit 1
-		fi
-	fi
-
-	if [ "$with_osx_sysroot" != "0" ]; then
-		if [ "$enable_universal" = "0" ] && [ "$with_osx_sysroot" != "1" ] && [ "$with_osx_sysroot" != "2" ]; then
-			log 1 "checking OSX sysroot... $with_osx_sysroot"
-		else
-			# If autodetect and no universal, use system default
-			if [ "$with_osx_sysroot" = "1" ] && [ "$enable_universal" = "0" ]; then
-				log 1 "checking OSX sysroot... no (use system default)"
-				with_osx_sysroot="0"
-			else
-				log 1 "checking OSX sysroot... automatically"
-				with_osx_sysroot="3"
-			fi
-		fi
-	else
-		if [ "$os" = "OSX" ]; then
-			log 1 "checking OSX sysroot... no (use system default)"
-		fi
-	fi
-
 	if [ "$os" != "OSX" ] && [ "$with_application_bundle" != "0" ]; then
 		if [ "$with_application_bundle" = "1" ]; then
 			with_application_bundle="0"
@@ -897,8 +917,6 @@ check_params() {
 		fi
 	fi
 
-	# "set_universal_binary_flags" needs to be before "detect_iconv"
-	set_universal_binary_flags
 	detect_iconv
 
 	if [ -n "$personal_dir" ]
@@ -1304,14 +1322,33 @@ make_cflags_and_ldflags() {
 
 	if [ "$os" = "OSX" ]; then
 		LDFLAGS="$LDFLAGS -framework Cocoa"
-		if [ "$enable_dedicated" = "0" ] && [ "$cpu_type" = "32" ]; then
+		if [ "$enable_dedicated" = "0" ] && ([ "$cpu_type" = "32" ] || [ "$enable_universal" != "0" ]); then
 			LIBS="$LIBS -framework QuickTime"
 		else
 			CFLAGS="$CFLAGS -DNO_QUICKTIME"
 		fi
 
-		if [ "$cpu_type" = "64" ]; then
-			CFLAGS="$CFLAGS -mmacosx-version-min=10.5"
+		if [ "$enable_universal" = "0" ]; then
+			# Universal builds set this elsewhere
+			CFLAGS="$OSX_SYSROOT $CFLAGS"
+			LDFLAGS="$OSX_LD_SYSROOT $LDFLAGS"
+		fi
+
+		if [ "$enable_universal" = "0" ] && [ $cc_version -ge 40 ]; then
+			# Only set the min version when not doing an universal build.
+			# Universal builds set the version elsewhere.
+			if [ "$cpu_type" = "64" ]; then
+				CFLAGS="$CFLAGS -mmacosx-version-min=10.5"
+			else
+				gcc_cpu=`$cc_host -dumpmachine`
+				if [ "`echo $gcc_cpu | cut -c 1-3`" = "ppc" -o "`echo $gcc_cpu | cut -c 1-7`" = "powerpc" ]; then
+					# PowerPC build can run on 10.3
+					CFLAGS="$CFLAGS -mmacosx-version-min=10.3"
+				else
+					# Intel is only available starting from 10.4
+					CFLAGS="$CFLAGS -mmacosx-version-min=10.4"
+				fi
+			fi
 		fi
 	fi
 
@@ -1363,7 +1400,7 @@ make_cflags_and_ldflags() {
 	fi
 
 	# 64bit machines need -D_SQ64
-	if [ "$cpu_type" = "64" ]; then
+	if [ "$cpu_type" = "64" ] && [ "$enable_universal" = "0" ]; then
 		CFLAGS="$CFLAGS -D_SQ64"
 	fi
 	SCRIPT_SRC_DIR="$ROOT_DIR/src/3rdparty/squirrel/include"
@@ -1726,24 +1763,38 @@ check_lipo() {
 	fi
 }
 
-set_universal_binary_flags() {
-	if [ -z "$osx_target_version" ]; then
-		# if we don't speficy a target version then we presume 10.4
-		osx_target_version=10.4
+check_osx_sdk() {
+	local sysroot=""
+	if [ -n "$1" ]; then
+		if echo "$1" | grep -q / ; then
+			# Seems to be a file system path
+			osx_sdk_path="$1"
+		else
+			osx_sdk_path="/Developer/SDKs/MacOSX$1.sdk"
+		fi
+		if [ ! -d "$osx_sdk_path" ]; then
+			# No directory, not present or garbage
+			return 1
+		fi
+
+		# Set minimum version to 10.4 as that's when kCGBitmapByteOrder32Host was introduced
+		sysroot="-isysroot $osx_sdk_path -Wl,-syslibroot,$osx_sdk_path -mmacosx-version-min=10.4"
 	fi
 
-	if [ "$osx_target_version" = "10.4" ]; then
-		# Apple added u to 10.4 to show that it's universal
-		# There is a version without the u, but it's only in Xcode 2.0 and people should use the free update to 2.5
-		osx_sysroot_version=10.4u
-	else
-		osx_sysroot_version="$osx_target_version"
-	fi
-
-	if [ "$with_osx_sysroot" = "3" ]; then
-		CFLAGS="$CFLAGS -isysroot /Developer/SDKs/MacOSX$osx_sysroot_version.sdk -mmacosx-version-min=$osx_target_version"
-		LDFLAGS="$LDFLAGS -Wl,-syslibroot,/Developer/SDKs/MacOSX$osx_sysroot_version.sdk -mmacosx-version-min=$osx_target_version"
-	fi
+cat > tmp.osx.mm << EOF
+#include <Cocoa/Cocoa.h>
+int main() {
+	kCGBitmapByteOrder32Host;
+	return 0;
+}
+EOF
+	execute="$cxx_host $sysroot $CFLAGS tmp.osx.mm -framework Cocoa -o tmp.osx 2>&1"
+	eval $execute > /dev/null
+	ret=$?
+	log 2 "executing $execute"
+	log 2 "  exit code $ret"
+	rm -f tmp.osx.mm tmp.osx
+	return $ret
 }
 
 check_direct_music() {
@@ -1977,6 +2028,39 @@ detect_sdl() {
 	log 1 "checking SDL... found"
 }
 
+detect_osx_sdk() {
+	# Try to find the best SDK available. For a normal build this
+	# is currently the 10.5 SDK as this is needed to compile all
+	# optional code. Because such an executable won't run on 10.4
+	# or lower, also check for the 10.4u SDK when doing an universal
+	# build.
+
+	# Check for the 10.5 SDK, but try 10.6 if that fails
+	check_osx_sdk "10.5" ||	check_osx_sdk "10.6" || osx_sdk_path=""
+
+	if [ -z "$osx_sdk_path" ] || [ "$enable_universal" != "0" ]; then
+		# No better SDK or universal build enabled? Check 10.4u SDK as well
+		local old_sdk="$osx_sdk_path"
+		if check_osx_sdk "10.4u"; then
+			osx_sdk_104_path="$osx_sdk_path"
+		else
+			osx_sdk_104_path=""
+		fi
+		if [ -z "$old_sdk" ]; then
+			osx_sdk_path="$osx_sdk_104_path"
+		else
+			osx_sdk_path="$old_sdk"
+		fi
+	fi
+
+	if [ -z "$osx_sdk_path" ]; then
+		log 1 "Your system SDK is probably too old"
+		log 1 "Please install/upgrade your Xcode to >= 2.5"
+
+		exit 1
+	fi
+}
+
 detect_cocoa() {
 	# 0 means no, 1 is auto-detect, 2 is force
 	if [ "$with_cocoa" = "0" ]; then
@@ -2022,15 +2106,51 @@ detect_cocoa() {
 		log 1 "checking whether to enable the Quartz window subdriver... no"
 	fi
 
+	detect_quickdraw
+}
+
+detect_quickdraw() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$enable_cocoa_quickdraw" = "0" ]; then
+		log 1 "checking Quickdraw window subdriver... disabled"
+		return 0
+	fi
+
+	# Assume QuickDraw is available when doing an universal build
+	if [ "$enable_universal" != "0" ]; then
+		log 1 "checking Quickdraw window subdriver... found"
+		return 0
+	fi
+
 	# 64 bits doesn't have quickdraw
 	if [ "$cpu_type" = "64" ]; then
 		enable_cocoa_quickdraw="0"
+		log 1 "checking Quickdraw window subdriver... disabled (64 bits)"
+		return 0
 	fi
 
-	if [ "$enable_cocoa_quickdraw" != "0" ]; then
-		log 1 "checking whether to enable the Quickdraw window subdriver... yes"
-	else
-		log 1 "checking whether to enable the Quickdraw window subdriver... no"
+cat > tmp.osx.mm << EOF
+#include <AvailabilityMacros.h>
+#import <Cocoa/Cocoa.h>
+int main(int argc, char *argv[]) { SetEmptyRgn(NULL); return 0; }
+EOF
+	execute="$cxx_host $OSX_SYSROOT $OSX_LD_SYSROOT $CFLAGS -mmacosx-version-min=10.3 tmp.osx.mm -framework Cocoa -o tmp.osx 2>&1"
+	eval $execute > /dev/null
+	ret=$?
+	log 2 "executing $execute"
+	log 2 "  exit code $ret"
+	rm -f tmp.osx.mm tmp.osx
+	if [ "$ret" != "0" ]; then
+		log 1 "checking Quickdraw window subdriver... not found"
+
+		# It was forced, so it should be found.
+		if [ "$enable_cocoa_quickdraw" != "1" ]; then
+			log 1 "configure: error: Quickdraw window driver could not be found"
+			exit 1
+		fi
+
+		enable_cocoa_quickdraw=0
+		return 0
 	fi
 }
 
@@ -2384,13 +2504,34 @@ int main() {
 	return iconv(convd, &inbuf, &inlen, &outbuf, &outlen);
 }
 EOF
-	execute="$cxx_host $CFLAGS -c tmp.iconv.cpp -o tmp.iconv -DTESTING 2>&1"
-	eval $execute >&/dev/null
+	execute="$cxx_host $OSX_SYSROOT $CFLAGS -c tmp.iconv.cpp -o tmp.iconv -DTESTING 2>&1"
+	eval $execute > /dev/null
 	ret=$?
 	log 2 "executing $execute"
 	log 2 "  exit code $ret"
 	if [ "$ret" = "0" ]; then have_broken_iconv="no"; else have_broken_iconv="yes"; fi
 	log 1 "checking if iconv has non-const inbuf... $have_broken_iconv"
+
+	cat > tmp.iconv.cpp << EOF
+#include "src/stdafx.h"
+#include <iconv.h>
+int main() {
+	static char buf[1024];
+	iconv_t convd = 0;
+	char *inbuf = "";
+	char *outbuf  = buf;
+	size_t outlen = 1023;
+	size_t inlen  = 0;
+	return iconv(convd, &inbuf, &inlen, &outbuf, &outlen);
+}
+EOF
+	execute="$cxx_host $OSX_SYSROOT $OSX_LD_SYSROOT $CFLAGS tmp.iconv.cpp -o tmp.iconv -DTESTING 2>&1"
+	eval $execute > /dev/null
+	ret=$?
+	log 2 "executing $execute"
+	log 2 "  exit code $ret"
+	if [ "$ret" = "0" ]; then link_to_iconv="no"; else link_to_iconv="yes"; fi
+	log 1 "checking whether to link to iconv... $link_to_iconv"
 	rm -f tmp.iconv tmp.iconv.cpp
 }
 
@@ -2662,6 +2803,14 @@ generate_src_osx() {
 	CLEAN_LDFLAGS="$LDFLAGS"
 	cc_host_orig="$cc_host"
 	cxx_host_orig="$cxx_host"
+	CFLAGS_orig="$CFLAGS"
+	LDFLAGS_orig="$LDFLAGS"
+
+	if [ -n "$osx_sdk_104_path" ]; then
+		# Use 10.4 SDK for 32-bit targets
+		CFLAGS="-isysroot $osx_sdk_104_path $CFLAGS_orig"
+		LDFLAGS="-Wl,-syslibroot,$osx_sdk_104_path $LDFLAGS_orig"
+	fi
 
 	# 10.3(.9) can run on PPC, but not on i386
 	CFLAGS="$CLEAN_CFLAGS -mmacosx-version-min=10.3"
@@ -2690,8 +2839,11 @@ generate_src_osx() {
 	if [ "$enable_universal" = "64" ]; then
 		# 64 bits is always 10.5 or higher. Furthermore it has a broken ICONV
 		# and they also removed support for QuickTime/QuickDraw
-		CFLAGS="$CLEAN_CFLAGS -D_SQ64 -DHAVE_BROKEN_ICONV -DNO_QUICKTIME -UENABLE_COCOA_QUICKDRAW -mmacosx-version-min=10.5"
-		LDFLAGS="$CLEAN_CFLAGS -mmacosx-version-min=10.5"
+		if [ -n "$osx_sdk_path" ]; then
+			CFLAGS="-isysroot $osx_sdk_path $CFLAGS_orig"
+			LDFLAGS="-Wl,-syslibroot,$osx_sdk_path $LDFLAGS_orig"
+		fi
+		CFLAGS="$CFLAGS -D_SQ64 -DHAVE_BROKEN_ICONV -DNO_QUICKTIME -UENABLE_COCOA_QUICKDRAW"
 		LIBS="`echo $LIBS | sed 's/-framework QuickTime//'`"
 
 		BASE_SRC_OBJS_DIR="$OBJS_DIR/ppc64"
