@@ -170,6 +170,9 @@ static void IConsoleWndProc(Window *w, WindowEvent *e)
 					IConsoleResize(w);
 					MarkWholeScreenDirty();
 					break;
+#ifdef WITH_COCOA
+				case (WKC_META | 'V'):
+#endif
 				case (WKC_CTRL | 'V'):
 					if (InsertTextBufferClipboard(&_iconsole_cmdline)) {
 						IConsoleResetHistoryPos();
@@ -179,6 +182,9 @@ static void IConsoleWndProc(Window *w, WindowEvent *e)
 				case (WKC_CTRL | 'L'):
 					IConsoleCmdExec("clear");
 					break;
+#ifdef WITH_COCOA
+				case (WKC_META | 'U'):
+#endif
 				case (WKC_CTRL | 'U'):
 					DeleteTextBufferAll(&_iconsole_cmdline);
 					SetWindowDirty(w);

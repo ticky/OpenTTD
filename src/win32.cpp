@@ -1093,28 +1093,17 @@ void DetermineBasePaths(const char *exe)
 	ScanForTarFiles();
 }
 
-/**
- * Insert a chunk of text from the clipboard onto the textbuffer. Get TEXT clipboard
- * and append this up to the maximum length (either absolute or screenlength). If maxlength
- * is zero, we don't care about the screenlength but only about the physical length of the string
- * @param tb Textbuf type to be changed
- * @return true on successful change of Textbuf, or false otherwise
- */
-bool InsertTextBufferClipboard(Textbuf *tb)
+bool GetClipboardContents(char *buffer, size_t buff_len)
 {
 	HGLOBAL cbuf;
-	char utf8_buf[512];
 	const char *ptr;
-
-	WChar c;
-	uint16 width, length;
 
 	if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
 		OpenClipboard(NULL);
 		cbuf = GetClipboardData(CF_UNICODETEXT);
 
 		ptr = (const char*)GlobalLock(cbuf);
-		const char *ret = convert_from_fs((wchar_t*)ptr, utf8_buf, lengthof(utf8_buf));
+		const char *ret = convert_from_fs((wchar_t*)ptr, buffer, buff_len);
 		GlobalUnlock(cbuf);
 		CloseClipboard();
 
@@ -1125,7 +1114,7 @@ bool InsertTextBufferClipboard(Textbuf *tb)
 		cbuf = GetClipboardData(CF_TEXT);
 
 		ptr = (const char*)GlobalLock(cbuf);
-		ttd_strlcpy(utf8_buf, FS2OTTD(ptr), lengthof(utf8_buf));
+		ttd_strlcpy(buffer, FS2OTTD(ptr), buff_len);
 
 		GlobalUnlock(cbuf);
 		CloseClipboard();
@@ -1133,33 +1122,6 @@ bool InsertTextBufferClipboard(Textbuf *tb)
 	} else {
 		return false;
 	}
-
-	width = length = 0;
-
-	for (ptr = utf8_buf; (c = Utf8Consume(&ptr)) != '\0';) {
-		if (!IsPrintable(c)) break;
-
-		size_t len = Utf8CharLen(c);
-		if (tb->length + length >= tb->maxlength - (uint16)len) break;
-
-		byte charwidth = GetCharacterWidth(FS_NORMAL, c);
-		if (tb->maxwidth != 0 && width + tb->width + charwidth > tb->maxwidth) break;
-
-		width += charwidth;
-		length += len;
-	}
-
-	if (length == 0) return false;
-
-	memmove(tb->buf + tb->caretpos + length, tb->buf + tb->caretpos, tb->length - tb->caretpos);
-	memcpy(tb->buf + tb->caretpos, utf8_buf, length);
-	tb->width += width;
-	tb->caretxoffs += width;
-
-	tb->length += length;
-	tb->caretpos += length;
-	assert(tb->length < tb->maxlength);
-	tb->buf[tb->length] = '\0'; // terminating zero
 
 	return true;
 }

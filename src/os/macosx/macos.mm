@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include "../../stdafx.h"
 #include "../../core/bitmath_func.hpp"
+#include "macos.h"
+#include "../../string_func.h"
 
 #ifndef CPU_SUBTYPE_POWERPC_970
 #define CPU_SUBTYPE_POWERPC_970 ((cpu_subtype_t) 100)
@@ -210,4 +212,22 @@ const char *GetCurrentLocale(const char *)
 		[ preferredLang getCString:retbuf maxLength:32 ];
 	}
 	return retbuf;
+}
+
+
+bool GetClipboardContents(char *buffer, size_t buff_len)
+{
+	NSPasteboard *pb = [ NSPasteboard generalPasteboard ];
+	NSArray *types = [ NSArray arrayWithObject:NSStringPboardType ];
+	NSString *bestType = [ pb availableTypeFromArray:types ];
+
+	/* Clipboard has no text data available. */
+	if (bestType == nil) return false;
+
+	NSString *string = [ pb stringForType:NSStringPboardType ];
+	if (string == nil || [ string length ] == 0) return false;
+
+	ttd_strlcpy(buffer, [ string UTF8String ], buff_len);
+
+	return true;
 }

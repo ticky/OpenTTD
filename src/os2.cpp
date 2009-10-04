@@ -169,14 +169,7 @@ int CDECL main(int argc, char* argv[])
 	return ttd_main(argc, argv);
 }
 
-/**
- * Insert a chunk of text from the clipboard onto the textbuffer. Get TEXT clipboard
- * and append this up to the maximum length (either absolute or screenlength). If maxlength
- * is zero, we don't care about the screenlength but only about the physical length of the string
- * @param tb Textbuf type to be changed
- * @return Return true on successful change of Textbuf, or false otherwise
- */
-bool InsertTextBufferClipboard(Textbuf *tb)
+bool GetClipboardContents(char *buffer, size_t buff_len)
 {
 /* XXX -- Currently no clipboard support implemented with GCC */
 #ifndef __INNOTEK_LIBC__
@@ -188,30 +181,7 @@ bool InsertTextBufferClipboard(Textbuf *tb)
 
 		if (text != NULL)
 		{
-			uint length = 0;
-			uint width = 0;
-			const char* i;
-
-			for (i = text; IsValidAsciiChar(*i); i++)
-			{
-				uint w;
-
-				if (tb->length + length >= tb->maxlength - 1) break;
-
-				w = GetCharacterWidth(FS_NORMAL, (byte)*i);
-				if (tb->maxwidth != 0 && width + tb->width + w > tb->maxwidth) break;
-
-				width += w;
-				length++;
-			}
-
-			memmove(tb->buf + tb->caretpos + length, tb->buf + tb->caretpos, tb->length - tb->caretpos + 1);
-			memcpy(tb->buf + tb->caretpos, text, length);
-			tb->width += width;
-			tb->caretxoffs += width;
-			tb->length += length;
-			tb->caretpos += length;
-
+			ttd_strlcpy(buffer, text, buff_len);
 			WinCloseClipbrd(hab);
 			return true;
 		}
