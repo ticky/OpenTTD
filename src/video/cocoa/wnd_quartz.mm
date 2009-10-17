@@ -60,7 +60,7 @@ public:
 	WindowQuartzSubdriver(int bpp);
 	virtual ~WindowQuartzSubdriver();
 
-	virtual void Draw();
+	virtual void Draw(bool force_update);
 	virtual void MakeDirty(int left, int top, int width, int height);
 	virtual void UpdatePalette(uint first_color, uint num_colors);
 
@@ -409,7 +409,7 @@ WindowQuartzSubdriver::~WindowQuartzSubdriver()
 	free(this->pixel_buffer);
 }
 
-void WindowQuartzSubdriver::Draw()
+void WindowQuartzSubdriver::Draw(bool force_update)
 {
 	int i;
 	NSRect dirtyrect;

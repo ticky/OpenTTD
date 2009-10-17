@@ -474,7 +474,7 @@ public:
 		RestoreVideoMode();
 	}
 
-	virtual void Draw()
+	virtual void Draw(bool force_update)
 	{
 		const uint8 *src   = (uint8 *)this->pixel_buffer;
 		uint8 *dst         = (uint8 *)this->window_buffer;

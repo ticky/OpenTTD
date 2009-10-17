@@ -78,7 +78,7 @@ public:
 	WindowQuickdrawSubdriver(int bpp);
 	virtual ~WindowQuickdrawSubdriver();
 
-	virtual void Draw();
+	virtual void Draw(bool force_update);
 	virtual void MakeDirty(int left, int top, int width, int height);
 	virtual void UpdatePalette(uint first_color, uint num_colors);
 
@@ -372,7 +372,7 @@ WindowQuickdrawSubdriver::~WindowQuickdrawSubdriver()
 	free(pixel_buffer);
 }
 
-void WindowQuickdrawSubdriver::Draw()
+void WindowQuickdrawSubdriver::Draw(bool force_update)
 {
 	int i;
 	RgnHandle dirty, temp;
