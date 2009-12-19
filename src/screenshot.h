@@ -12,14 +12,11 @@ void SetScreenshotFormat(int i);
 
 /** Type of requested screenshot */
 enum ScreenshotType {
-	SC_NONE,     ///< No screenshot requested
 	SC_VIEWPORT, ///< Screenshot of viewport
 	SC_WORLD,    ///< World screenshot
 };
 
-bool MakeScreenshot();
-void RequestScreenshot(ScreenshotType t, const char *name);
-bool IsScreenshotRequested();
+bool MakeScreenshot(ScreenshotType t, const char *name);
 
 extern char _screenshot_format_name[8];
 extern uint _num_screenshot_formats;

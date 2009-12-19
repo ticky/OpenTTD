@@ -690,17 +690,6 @@ static void ProcessSentMessage(ThreadMsg message)
 	OTTD_ReleaseMutex(); // release mutex so that other threads, messages can be handled
 }
 
-static void ShowScreenshotResult(bool b)
-{
-	if (b) {
-		SetDParamStr(0, _screenshot_name);
-		ShowErrorMessage(INVALID_STRING_ID, STR_031B_SCREENSHOT_SUCCESSFULLY, 0, 0);
-	} else {
-		ShowErrorMessage(INVALID_STRING_ID, STR_031C_SCREENSHOT_FAILED, 0, 0);
-	}
-
-}
-
 static void MakeNewGameDone()
 {
 	SettingsDisableElrail(_patches.disable_elrails);
@@ -1122,9 +1111,6 @@ void GameLoop()
 
 	/* handle scrolling of the main window */
 	HandleKeyScrolling();
-
-	/* make a screenshot? */
-	if (IsScreenshotRequested()) ShowScreenshotResult(MakeScreenshot());
 
 	/* switch game mode? */
 	if (_switch_mode != SM_NONE) {

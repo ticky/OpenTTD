@@ -998,8 +998,7 @@ DEF_CONSOLE_CMD(ConScreenShot)
 		}
 	}
 
-	RequestScreenshot(type, name);
-
+	MakeScreenshot(type, name);
 	return true;
 }
 
