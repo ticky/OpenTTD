@@ -187,6 +187,11 @@ public:
 	 */
 	virtual const char *GetName() = 0;
 
+	/**
+	 * Post resize event
+	 */
+	virtual void PostResize() { };
+
 	virtual ~Blitter() { }
 };
 
