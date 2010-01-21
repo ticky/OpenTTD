@@ -173,7 +173,7 @@ void DepotSortList(Vehicle **v, uint16 length)
 /** draw the vehicle profit button in the vehicle list window. */
 void DrawVehicleProfitButton(const Vehicle *v, int x, int y)
 {
-	SpriteID pal;
+	PaletteID pal;
 
 	/* draw profit-based colored icons */
 	if (v->age <= 365 * 2) {

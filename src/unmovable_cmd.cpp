@@ -202,7 +202,7 @@ static void DrawTile_Unmovable(TileInfo *ti)
 		default: {
 			const DrawTileSeqStruct* dtss;
 			const DrawTileSprites* t;
-			SpriteID palette;
+			PaletteID palette;
 
 			assert(IsCompanyHQ(ti->tile));
 			if (ti->tileh != SLOPE_FLAT) DrawFoundation(ti, FOUNDATION_LEVELED);

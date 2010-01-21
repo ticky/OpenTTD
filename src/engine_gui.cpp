@@ -46,7 +46,7 @@ static const Widget _engine_preview_widgets[] = {
 {   WIDGETS_END},
 };
 
-typedef void DrawEngineProc(int x, int y, EngineID engine, SpriteID pal);
+typedef void DrawEngineProc(int x, int y, EngineID engine, PaletteID pal);
 typedef void DrawEngineInfoProc(EngineID, int x, int y, int maxw);
 
 struct DrawEngineInfo {

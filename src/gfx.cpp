@@ -657,7 +657,15 @@ int DoDrawStringTruncated(const char *str, int x, int y, uint16 color, uint maxw
 	return DoDrawString(buffer, x, y, color);
 }
 
-void DrawSprite(SpriteID img, SpriteID pal, int x, int y, const SubSprite *sub)
+/**
+ * Draw a sprite.
+ * @param img  Image number to draw
+ * @param pal  Palette to use.
+ * @param x    Left coordinate of image
+ * @param y    Top coordinate of image
+ * @param sub  If available, draw only specified part of the sprite
+ */
+void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub)
 {
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
 		_color_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH)) + 1;
@@ -1224,7 +1232,7 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
 	return true;
 }
 
-static void SetCursorSprite(SpriteID cursor, SpriteID pal)
+static void SetCursorSprite(CursorID cursor, PaletteID pal)
 {
 	CursorVars *cv = &_cursor;
 	const Sprite *p;
@@ -1261,7 +1269,7 @@ void CursorTick()
 		SwitchAnimatedCursor();
 }
 
-void SetMouseCursor(SpriteID sprite, SpriteID pal)
+void SetMouseCursor(CursorID sprite, PaletteID pal)
 {
 	/* Turn off animation */
 	_cursor.animate_timeout = 0;

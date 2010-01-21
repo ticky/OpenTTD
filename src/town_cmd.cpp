@@ -159,7 +159,7 @@ static void DrawTile_Town(TileInfo *ti)
 {
 	const DrawBuildingsTileStruct *dcts;
 	SpriteID image;
-	SpriteID pal;
+	PaletteID pal;
 	HouseID house_id = GetHouseType(ti->tile);
 
 	if (house_id >= NEW_HOUSE_OFFSET) {

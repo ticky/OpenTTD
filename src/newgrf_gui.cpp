@@ -353,7 +353,7 @@ static void NewGRFWndProc(Window *w, WindowEvent *e)
 			for (c = *WP(w, newgrf_d).list, i = 0; c != NULL; c = c->next, i++) {
 				if (i >= w->vscroll.pos && i < w->vscroll.pos + w->vscroll.cap) {
 					const char *text = (c->name != NULL && !StrEmpty(c->name)) ? c->name : c->filename;
-					SpriteID pal;
+					PaletteID pal;
 					byte txtoffset;
 
 					/* Pick a colour */

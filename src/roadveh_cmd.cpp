@@ -109,7 +109,7 @@ int RoadVehicle::GetImage(Direction direction) const
 	return image;
 }
 
-void DrawRoadVehEngine(int x, int y, EngineID engine, SpriteID pal)
+void DrawRoadVehEngine(int x, int y, EngineID engine, PaletteID pal)
 {
 	int spritenum = RoadVehInfo(engine)->image_index;
 

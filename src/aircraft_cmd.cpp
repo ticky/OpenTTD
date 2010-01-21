@@ -186,7 +186,7 @@ SpriteID GetRotorImage(const Vehicle *v)
 	return SPR_ROTOR_STOPPED + w->u.air.state;
 }
 
-void DrawAircraftEngine(int x, int y, EngineID engine, SpriteID pal)
+void DrawAircraftEngine(int x, int y, EngineID engine, PaletteID pal)
 {
 	const AircraftVehicleInfo* avi = AircraftVehInfo(engine);
 	int spritenum = avi->image_index;

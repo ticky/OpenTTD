@@ -80,7 +80,7 @@ struct StringSpriteToDraw {
 
 struct TileSpriteToDraw {
 	SpriteID image;
-	SpriteID pal;
+	PaletteID pal;
 	const SubSprite *sub;           ///< only draw a rectangular part of the sprite
 	TileSpriteToDraw *next;
 	int32 x;
@@ -90,7 +90,7 @@ struct TileSpriteToDraw {
 
 struct ChildScreenSpriteToDraw {
 	SpriteID image;
-	SpriteID pal;
+	PaletteID pal;
 	const SubSprite *sub;           ///< only draw a rectangular part of the sprite
 	int32 x;
 	int32 y;
@@ -99,7 +99,7 @@ struct ChildScreenSpriteToDraw {
 
 struct ParentSpriteToDraw {
 	SpriteID image;                 ///< sprite to draw
-	SpriteID pal;                   ///< palette to use
+	PaletteID pal;                  ///< palette to use
 	const SubSprite *sub;           ///< only draw a rectangular part of the sprite
 
 	int32 x;                        ///< screen X coordinate of sprite
@@ -477,7 +477,7 @@ void HandleZoomMessage(Window *w, const ViewPort *vp, byte widget_zoom_in, byte 
  * @param sub Only draw a part of the sprite.
  *
  */
-void DrawGroundSpriteAt(SpriteID image, SpriteID pal, int32 x, int32 y, byte z, const SubSprite *sub)
+void DrawGroundSpriteAt(SpriteID image, PaletteID pal, int32 x, int32 y, byte z, const SubSprite *sub)
 {
 	ViewportDrawer *vd = _cur_vd;
 	TileSpriteToDraw *ts;
@@ -515,7 +515,7 @@ void DrawGroundSpriteAt(SpriteID image, SpriteID pal, int32 x, int32 y, byte z, 
  * @param extra_offs_x Pixel X offset for the sprite position.
  * @param extra_offs_y Pixel Y offset for the sprite position.
  */
-static void AddChildSpriteToFoundation(SpriteID image, SpriteID pal, const SubSprite *sub, FoundationPart foundation_part, int extra_offs_x, int extra_offs_y)
+static void AddChildSpriteToFoundation(SpriteID image, PaletteID pal, const SubSprite *sub, FoundationPart foundation_part, int extra_offs_x, int extra_offs_y)
 {
 	ViewportDrawer *vd = _cur_vd;
 	assert(IsInsideMM(foundation_part, 0, FOUNDATION_PART_END));
@@ -540,7 +540,7 @@ static void AddChildSpriteToFoundation(SpriteID image, SpriteID pal, const SubSp
  * @param pal the provided palette.
  * @param sub Only draw a part of the sprite.
  */
-void DrawGroundSprite(SpriteID image, SpriteID pal, const SubSprite *sub)
+void DrawGroundSprite(SpriteID image, PaletteID pal, const SubSprite *sub)
 {
 	ViewportDrawer *vd = _cur_vd;
 	/* Switch to first foundation part, if no foundation was drawn */
@@ -594,7 +594,7 @@ void OffsetGroundSprite(int x, int y)
  * @param z position z of the sprite.
  * @param sub Only draw a part of the sprite.
  */
-static void AddCombinedSprite(SpriteID image, SpriteID pal, int x, int y, byte z, const SubSprite *sub)
+static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, byte z, const SubSprite *sub)
 {
 	const ViewportDrawer *vd = _cur_vd;
 	Point pt = RemapCoords(x, y, z);
@@ -633,7 +633,7 @@ static void AddCombinedSprite(SpriteID image, SpriteID pal, int x, int y, byte z
  * @param bb_offset_z bounding box extent towards negative Z (world)
  * @param sub Only draw a part of the sprite.
  */
-void AddSortableSpriteToDraw(SpriteID image, SpriteID pal, int x, int y, int w, int h, int dz, int z, bool transparent, int bb_offset_x, int bb_offset_y, int bb_offset_z, const SubSprite *sub)
+void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent, int bb_offset_x, int bb_offset_y, int bb_offset_z, const SubSprite *sub)
 {
 	ViewportDrawer *vd = _cur_vd;
 	ParentSpriteToDraw *ps;
@@ -749,7 +749,7 @@ void EndSpriteCombine()
  * @param transparent if true, switch the palette between the provided palette and the transparent palette,
  * @param sub Only draw a part of the sprite.
  */
-void AddChildSpriteScreen(SpriteID image, SpriteID pal, int x, int y, bool transparent, const SubSprite *sub)
+void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub)
 {
 	ViewportDrawer *vd = _cur_vd;
 	ChildScreenSpriteToDraw *cs;
@@ -828,7 +828,7 @@ void *AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint64 par
  * @param z_offset Z offset relative to the groundsprite. Only used for the sprite position, not for sprite sorting.
  * @param foundation_part Foundation part the sprite belongs to.
  */
-static void DrawSelectionSprite(SpriteID image, SpriteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part)
+static void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part)
 {
 	/* FIXME: This is not totally valid for some autorail highlights, that extent over the edges of the tile. */
 	if (_cur_vd->foundation[foundation_part] == NULL) {
@@ -846,7 +846,7 @@ static void DrawSelectionSprite(SpriteID image, SpriteID pal, const TileInfo *ti
  * @param ti TileInfo Tile that is being drawn
  * @param pal Palette to apply.
  */
-static void DrawTileSelectionRect(const TileInfo *ti, SpriteID pal)
+static void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
 {
 	SpriteID sel;
 	if (IsHalftileSlope(ti->tileh)) {
@@ -907,7 +907,7 @@ static const HighLightStyle _autorail_type[6][2] = {
 static void DrawAutorailSelection(const TileInfo *ti, uint autorail_type)
 {
 	SpriteID image;
-	SpriteID pal;
+	PaletteID pal;
 	int offset;
 
 	FoundationPart foundation_part = FOUNDATION_PART_NORMAL;
@@ -2834,14 +2834,14 @@ bool VpHandlePlaceSizingDrag()
 	return false;
 }
 
-void SetObjectToPlaceWnd(CursorID icon, SpriteID pal, ViewportHighlightMode mode, Window *w)
+void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, ViewportHighlightMode mode, Window *w)
 {
 	SetObjectToPlace(icon, pal, mode, w->window_class, w->window_number);
 }
 
 #include "table/animcursors.h"
 
-void SetObjectToPlace(CursorID icon, SpriteID pal, ViewportHighlightMode mode, WindowClass window_class, WindowNumber window_num)
+void SetObjectToPlace(CursorID icon, PaletteID pal, ViewportHighlightMode mode, WindowClass window_class, WindowNumber window_num)
 {
 	Window *w;
 

@@ -31,11 +31,11 @@ static inline void MaxZoomInOut(int how, Window *w)
 
 void OffsetGroundSprite(int x, int y);
 
-void DrawGroundSprite(SpriteID image, SpriteID pal, const SubSprite *sub = NULL);
-void DrawGroundSpriteAt(SpriteID image, SpriteID pal, int32 x, int32 y, byte z, const SubSprite *sub = NULL);
-void AddSortableSpriteToDraw(SpriteID image, SpriteID pal, int x, int y, int w, int h, int dz, int z, bool transparent = false, int bb_offset_x = 0, int bb_offset_y = 0, int bb_offset_z = 0, const SubSprite *sub = NULL);
+void DrawGroundSprite(SpriteID image, PaletteID pal, const SubSprite *sub = NULL);
+void DrawGroundSpriteAt(SpriteID image, PaletteID pal, int32 x, int32 y, byte z, const SubSprite *sub = NULL);
+void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent = false, int bb_offset_x = 0, int bb_offset_y = 0, int bb_offset_z = 0, const SubSprite *sub = NULL);
 void *AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint64 params_2);
-void AddChildSpriteScreen(SpriteID image, SpriteID pal, int x, int y, bool transparent = false, const SubSprite *sub = NULL);
+void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent = false, const SubSprite *sub = NULL);
 
 
 void StartSpriteCombine();
@@ -65,8 +65,8 @@ bool HandlePlacePushButton(Window *w, int widget, CursorID cursor, ViewportHighl
 
 void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom);
 
-void SetObjectToPlaceWnd(CursorID icon, SpriteID pal, ViewportHighlightMode mode, Window *w);
-void SetObjectToPlace(CursorID icon, SpriteID pal, ViewportHighlightMode mode, WindowClass window_class, WindowNumber window_num);
+void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, ViewportHighlightMode mode, Window *w);
+void SetObjectToPlace(CursorID icon, PaletteID pal, ViewportHighlightMode mode, WindowClass window_class, WindowNumber window_num);
 
 void ResetObjectToPlace();
 

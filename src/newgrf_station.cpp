@@ -761,7 +761,7 @@ bool DrawStationTile(int x, int y, RailType railtype, Axis axis, StationClassID 
 	const RailtypeInfo *rti = GetRailTypeInfo(railtype);
 	SpriteID relocation;
 	SpriteID image;
-	SpriteID palette = PLAYER_SPRITE_COLOR(_local_player);
+	PaletteID palette = PLAYER_SPRITE_COLOR(_local_player);
 	uint tile = 2;
 
 	statspec = GetCustomStationSpec(sclass, station);
@@ -799,7 +799,7 @@ bool DrawStationTile(int x, int y, RailType railtype, Axis axis, StationClassID 
 			image += relocation;
 		}
 
-		SpriteID pal;
+		PaletteID pal;
 		if (HasBit(image, PALETTE_MODIFIER_TRANSPARENT) || HasBit(image, PALETTE_MODIFIER_COLOR)) {
 			if (seq->image.pal > 0) {
 				pal = seq->image.pal;

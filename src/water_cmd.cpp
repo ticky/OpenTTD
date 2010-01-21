@@ -572,7 +572,7 @@ struct LocksDrawTileStruct {
 #include "table/water_land.h"
 
 static void DrawWaterStuff(const TileInfo *ti, const WaterDrawTileStruct *wdts,
-	SpriteID palette, uint base, bool draw_ground
+	PaletteID palette, uint base, bool draw_ground
 )
 {
 	SpriteID image;

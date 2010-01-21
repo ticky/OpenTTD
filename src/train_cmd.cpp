@@ -580,7 +580,7 @@ int Train::GetImage(Direction direction) const
 	return base;
 }
 
-void DrawTrainEngine(int x, int y, EngineID engine, SpriteID pal)
+void DrawTrainEngine(int x, int y, EngineID engine, PaletteID pal)
 {
 	const RailVehicleInfo *rvi = RailVehInfo(engine);
 

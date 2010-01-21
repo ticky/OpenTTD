@@ -1085,7 +1085,7 @@ void DrawBridgeMiddle(const TileInfo* ti)
 		/* draw poles below for small bridges */
 		if (psid->sprite != 0) {
 			SpriteID image = psid->sprite;
-			SpriteID pal   = psid->pal;
+			PaletteID pal  = psid->pal;
 			if (IsTransparencySet(TO_BRIDGES)) {
 				SetBit(image, PALETTE_MODIFIER_TRANSPARENT);
 				pal = PALETTE_TO_TRANSPARENT;

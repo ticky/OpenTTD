@@ -312,7 +312,7 @@ void DrawTileLayout(const TileInfo *ti, const SpriteGroup *group, byte stage, Ho
 	const DrawTileSeqStruct *dtss;
 
 	SpriteID image = dts->ground.sprite;
-	SpriteID pal   = dts->ground.pal;
+	PaletteID pal  = dts->ground.pal;
 
 	if (IS_CUSTOM_SPRITE(image)) image += stage;
 

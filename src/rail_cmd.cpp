@@ -1609,7 +1609,7 @@ static void DrawTrackBits(TileInfo* ti, TrackBits track)
 	/* DrawFoundation modifies ti */
 
 	SpriteID image;
-	SpriteID pal = PAL_NONE;
+	PaletteID pal = PAL_NONE;
 	const SubSprite *sub = NULL;
 	bool junction = false;
 
@@ -1839,7 +1839,7 @@ default_waypoint:
 
 		foreach_draw_tile_seq(dtss, dts->seq) {
 			SpriteID image = dtss->image.sprite;
-			SpriteID pal;
+			PaletteID pal;
 
 			/* Unlike stations, our default waypoint has no variation for
 			 * different railtype, so don't use the railtype offset if
@@ -1875,7 +1875,7 @@ default_waypoint:
 
 static void DrawTileSequence(int x, int y, SpriteID ground, const DrawTileSeqStruct* dtss, uint32 offset)
 {
-	SpriteID palette = PLAYER_SPRITE_COLOR(_local_player);
+	PaletteID palette = PLAYER_SPRITE_COLOR(_local_player);
 
 	DrawSprite(ground, PAL_NONE, x, y);
 	for (; dtss->image.sprite != 0; dtss++) {

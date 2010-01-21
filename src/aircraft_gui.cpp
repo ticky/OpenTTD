@@ -66,7 +66,7 @@ void DrawAircraftDetails(const Vehicle *v, int x, int y)
 
 void DrawAircraftImage(const Vehicle *v, int x, int y, VehicleID selection)
 {
-	SpriteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+	PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 	DrawSprite(v->GetImage(DIR_W), pal, x + 25, y + 10);
 	if (v->subtype == AIR_HELICOPTER) {
 		SpriteID rotor_sprite = GetCustomRotorSprite(v, true);

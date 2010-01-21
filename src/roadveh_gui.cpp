@@ -115,7 +115,7 @@ void DrawRoadVehImage(const Vehicle *v, int x, int y, VehicleID selection, int c
 
 	for (int dx = 0 ; v != NULL && dx < max_length ; dx += v->u.road.cached_veh_length, v = v->Next()) {
 		if (dx + v->u.road.cached_veh_length > 0 && dx <= max_length) {
-			SpriteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+			PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 			DrawSprite(v->GetImage(DIR_W), pal, x + 14 + RoadVehLengthToPixels(dx), y + 6);
 
 			if (v->index == selection) {

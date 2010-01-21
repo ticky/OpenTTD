@@ -2077,7 +2077,7 @@ static void DrawTile_Station(TileInfo *ti)
 	const StationSpec *statspec = NULL;
 	PlayerID owner = GetTileOwner(ti->tile);
 
-	SpriteID palette;
+	PaletteID palette;
 	if (IsValidPlayer(owner)) {
 		palette = PLAYER_SPRITE_COLOR(owner);
 	} else {
@@ -2157,7 +2157,7 @@ static void DrawTile_Station(TileInfo *ti)
 			image += relocation;
 		}
 
-		SpriteID pal;
+		PaletteID pal;
 		if (HasBit(image, PALETTE_MODIFIER_TRANSPARENT) || HasBit(image, PALETTE_MODIFIER_COLOR)) {
 			if (dtss->image.pal > 0) {
 				pal = dtss->image.pal;
@@ -2185,7 +2185,7 @@ static void DrawTile_Station(TileInfo *ti)
 void StationPickerDrawSprite(int x, int y, StationType st, RailType railtype, RoadType roadtype, int image)
 {
 	int32 total_offset = 0;
-	SpriteID pal = PLAYER_SPRITE_COLOR(_local_player);
+	PaletteID pal = PLAYER_SPRITE_COLOR(_local_player);
 	const DrawTileSprites *t = &_station_display_datas[st][image];
 
 	if (railtype != INVALID_RAILTYPE) {

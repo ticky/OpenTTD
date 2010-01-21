@@ -923,7 +923,7 @@ static void GenerateBuildList(Window *w)
 	EngList_Sort(&bv->eng_list, _sorter[bv->vehicle_type][bv->sort_criteria]);
 }
 
-static void DrawVehicleEngine(VehicleType type, int x, int y, EngineID engine, SpriteID pal)
+static void DrawVehicleEngine(VehicleType type, int x, int y, EngineID engine, PaletteID pal)
 {
 	switch (type) {
 		case VEH_TRAIN:    DrawTrainEngine(   x, y, engine, pal); break;

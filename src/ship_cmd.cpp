@@ -54,7 +54,7 @@ static inline TrackBits GetTileShipTrackStatus(TileIndex tile)
 	return TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_WATER, 0));
 }
 
-void DrawShipEngine(int x, int y, EngineID engine, SpriteID pal)
+void DrawShipEngine(int x, int y, EngineID engine, PaletteID pal)
 {
 	int spritenum = ShipVehInfo(engine)->image_index;
 

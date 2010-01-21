@@ -178,7 +178,7 @@ void IndustryDrawTileLayout(const TileInfo *ti, const SpriteGroup *group, byte r
 	const DrawTileSeqStruct *dtss;
 
 	SpriteID image = dts->ground.sprite;
-	SpriteID pal   = dts->ground.pal;
+	PaletteID pal  = dts->ground.pal;
 
 	if (IS_CUSTOM_SPRITE(image)) image += stage;
 

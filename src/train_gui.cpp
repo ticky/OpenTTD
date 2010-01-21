@@ -90,7 +90,7 @@ void DrawTrainImage(const Vehicle *v, int x, int y, VehicleID selection, int cou
 
 		if (dx + width > 0) {
 			if (dx <= count) {
-				SpriteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+				PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 				DrawSprite(v->GetImage(DIR_W), pal, 16 + WagonLengthToPixels(dx), 7 + (is_custom_sprite(RailVehInfo(v->engine_type)->image_index) ? _traininfo_vehicle_pitch : 0));
 				if (v->index == selection) {
 					/* Set the highlight position */
@@ -198,7 +198,7 @@ void DrawTrainDetails(const Vehicle *v, int x, int y, int vscroll_pos, uint16 vs
 
 				u = v;
 				do {
-					SpriteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+					PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 					DrawSprite(u->GetImage(DIR_W), pal, x + WagonLengthToPixels(4 + dx), y + 6 + (is_custom_sprite(RailVehInfo(u->engine_type)->image_index) ? _traininfo_vehicle_pitch : 0));
 					dx += u->u.rail.cached_veh_length;
 					u = u->Next();

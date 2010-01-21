@@ -1016,7 +1016,7 @@ static void DrawRoadBits(TileInfo* ti)
 
 	const DrawRoadTileStruct *drts;
 	SpriteID image = 0;
-	SpriteID pal = PAL_NONE;
+	PaletteID pal = PAL_NONE;
 	Roadside roadside;
 
 	if (ti->tileh != SLOPE_FLAT) {
@@ -1103,7 +1103,7 @@ static void DrawTile_Road(TileInfo *ti)
 
 		case ROAD_TILE_CROSSING: {
 			SpriteID image;
-			SpriteID pal = PAL_NONE;
+			PaletteID pal = PAL_NONE;
 			Roadside roadside = GetRoadside(ti->tile);
 
 			if (ti->tileh != SLOPE_FLAT) DrawFoundation(ti, FOUNDATION_LEVELED);
@@ -1136,7 +1136,7 @@ static void DrawTile_Road(TileInfo *ti)
 		case ROAD_TILE_DEPOT: {
 			const DrawTileSprites* dts;
 			const DrawTileSeqStruct* dtss;
-			SpriteID palette;
+			PaletteID palette;
 
 			if (ti->tileh != SLOPE_FLAT) DrawFoundation(ti, FOUNDATION_LEVELED);
 
@@ -1152,7 +1152,7 @@ static void DrawTile_Road(TileInfo *ti)
 
 			for (dtss = dts->seq; dtss->image.sprite != 0; dtss++) {
 				SpriteID image = dtss->image.sprite;
-				SpriteID pal;
+				PaletteID pal;
 
 				if (!IsTransparencySet(TO_BUILDINGS) && HasBit(image, PALETTE_MODIFIER_COLOR)) {
 					pal = palette;
@@ -1176,7 +1176,7 @@ static void DrawTile_Road(TileInfo *ti)
 
 void DrawRoadDepotSprite(int x, int y, DiagDirection dir, RoadType rt)
 {
-	SpriteID palette = PLAYER_SPRITE_COLOR(_local_player);
+	PaletteID palette = PLAYER_SPRITE_COLOR(_local_player);
 	const DrawTileSprites* dts = (rt == ROADTYPE_TRAM) ? &_tram_depot[dir] : &_road_depot[dir];
 	const DrawTileSeqStruct* dtss;
 

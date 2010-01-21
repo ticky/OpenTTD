@@ -828,7 +828,7 @@ CommandCost GetRefitCost(EngineID engine_type)
 static void DoDrawVehicle(const Vehicle *v)
 {
 	SpriteID image = v->cur_image;
-	SpriteID pal;
+	PaletteID pal = PAL_NONE;
 
 	if (v->vehstatus & VS_DEFPAL) {
 		pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
@@ -2763,9 +2763,9 @@ const Livery *GetEngineLivery(EngineID engine_type, PlayerID player, EngineID pa
 }
 
 
-static SpriteID GetEngineColourMap(EngineID engine_type, PlayerID player, EngineID parent_engine_type, const Vehicle *v)
+static PaletteID GetEngineColourMap(EngineID engine_type, CompanyID company, EngineID parent_engine_type, const Vehicle *v)
 {
-	SpriteID map = (v != NULL) ? v->colormap : PAL_NONE;
+	PaletteID map = (v != NULL) ? v->colourmap : PAL_NONE;
 
 	/* Return cached value if any */
 	if (map != PAL_NONE) return map;
@@ -2789,7 +2789,7 @@ static SpriteID GetEngineColourMap(EngineID engine_type, PlayerID player, Engine
 
 	bool twocc = HasBit(EngInfo(engine_type)->misc_flags, EF_USES_2CC);
 
-	if (map == PAL_NONE) map = twocc ? (SpriteID)SPR_2CCMAP_BASE : (SpriteID)PALETTE_RECOLOR_START;
+	if (map == PAL_NONE) map = twocc ? (PaletteID)SPR_2CCMAP_BASE : (PaletteID)PALETTE_RECOLOR_START;
 
 	const Livery *livery = GetEngineLivery(engine_type, player, parent_engine_type, v);
 
@@ -2801,12 +2801,12 @@ static SpriteID GetEngineColourMap(EngineID engine_type, PlayerID player, Engine
 	return map;
 }
 
-SpriteID GetEnginePalette(EngineID engine_type, PlayerID player)
+PaletteID GetEnginePalette(EngineID engine_type, CompanyID company)
 {
 	return GetEngineColourMap(engine_type, player, INVALID_ENGINE, NULL);
 }
 
-SpriteID GetVehiclePalette(const Vehicle *v)
+PaletteID GetVehiclePalette(const Vehicle *v)
 {
 	if (v->type == VEH_TRAIN) {
 		return GetEngineColourMap(
