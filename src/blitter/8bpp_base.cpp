@@ -8,7 +8,7 @@
 
 #include "../safeguards.h"
 
-void Blitter_8bppBase::DrawColorMappingRect(void *dst, int width, int height, int pal)
+void Blitter_8bppBase::DrawColourMappingRect(void *dst, int width, int height, PaletteID pal)
 {
 	const uint8 *ctab = GetNonSprite(pal, ST_RECOLOUR) + 1;
 

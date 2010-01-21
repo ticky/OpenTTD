@@ -60,7 +60,7 @@ void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoo
 	}
 }
 
-void Blitter_32bppSimple::DrawColorMappingRect(void *dst, int width, int height, int pal)
+void Blitter_32bppSimple::DrawColourMappingRect(void *dst, int width, int height, PaletteID pal)
 {
 	uint32 *udst = (uint32 *)dst;
 

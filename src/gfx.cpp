@@ -114,7 +114,7 @@ void GfxFillRect(int left, int top, int right, int bottom, int color)
 		if (!HasBit(color, USE_COLORTABLE)) {
 			blitter->DrawRect(dst, right, bottom, (uint8)color);
 		} else {
-			blitter->DrawColorMappingRect(dst, right, bottom, GB(color, 0, PALETTE_WIDTH));
+			blitter->DrawColourMappingRect(dst, right, bottom, GB(color, 0, PALETTE_WIDTH));
 		}
 	} else {
 		byte bo = (oleft - left + dpi->left + otop - top + dpi->top) & 1;
