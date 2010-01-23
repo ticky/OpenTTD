@@ -299,15 +299,16 @@ typedef uint32 GetSmallMapPixels(TileIndex tile); // typedef callthrough functio
  * @param yc The Y coordinate of the first tile in the column
  * @param pitch Number of pixels to advance in the screen buffer each time a pixel is written.
  * @param reps Number of lines to draw
- * @param mask ?
+ * @param start_pos Position of first pixel to draw.
+ * @param end_pos Position of last pixel to draw (exclusive).
  * @param proc Pointer to the colour function
+ * @note If pixel position is below \c 0, skip drawing.
  * @see GetSmallMapPixels(TileIndex)
  */
-static void DrawSmallMapStuff(void *dst, uint xc, uint yc, int pitch, int reps, uint32 mask, GetSmallMapPixels *proc)
+static void DrawSmallMapStuff(void *dst, uint xc, uint yc, int pitch, int reps, int start_pos, int end_pos, GetSmallMapPixels *proc)
 {
 	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
 	void *dst_ptr_abs_end = blitter->MoveTo(_screen.dst_ptr, 0, _screen.height);
-	void *dst_ptr_end = blitter->MoveTo(dst_ptr_abs_end, -4, 0);
 
 	do {
 		/* check if the tile (xc,yc) is within the map range */
@@ -316,20 +317,13 @@ static void DrawSmallMapStuff(void *dst, uint xc, uint yc, int pitch, int reps, 
 			if (dst < _screen.dst_ptr) continue;
 			if (dst >= dst_ptr_abs_end) continue;
 
-			uint32 val = proc(TileXY(xc, yc)) & mask;
+			uint32 val = proc(TileXY(xc, yc));
 			uint8 *val8 = (uint8 *)&val;
 
-			if (dst <= dst_ptr_end) {
-				blitter->SetPixelIfEmpty(dst, 0, 0, val8[0]);
-				blitter->SetPixelIfEmpty(dst, 1, 0, val8[1]);
-				blitter->SetPixelIfEmpty(dst, 2, 0, val8[2]);
-				blitter->SetPixelIfEmpty(dst, 3, 0, val8[3]);
-			} else {
-				/* It happens that there are only 1, 2 or 3 pixels left to fill, so in that special case, write till the end of the video-buffer */
-				int i = 0;
-				do {
-					blitter->SetPixelIfEmpty(dst, 0, 0, val8[i]);
-				} while (i++, dst = blitter->MoveTo(dst, 1, 0), dst < dst_ptr_abs_end);
+			int idx = max(0, -start_pos);
+			for (int pos = max(0, start_pos); pos < end_pos; pos++) {
+				blitter->SetPixel(dst, idx, 0, val8[idx]);
+				idx++;
 			}
 		}
 	/* switch to next tile in the column */
@@ -497,20 +491,7 @@ static inline uint32 GetSmallMapOwnerPixels(TileIndex tile)
 	return _owner_colors[o];
 }
 
-
-static const uint32 _smallmap_mask_left[3] = {
-	MKCOLOR(0xFF000000),
-	MKCOLOR(0xFFFF0000),
-	MKCOLOR(0xFFFFFF00),
-};
-
-static const uint32 _smallmap_mask_right[] = {
-	MKCOLOR(0x000000FF),
-	MKCOLOR(0x0000FFFF),
-	MKCOLOR(0x00FFFFFF),
-};
-
-/* each tile has 4 x pixels and 1 y pixel */
+/* Each tile has 4 x pixels and 1 y pixel */
 
 static GetSmallMapPixels *_smallmap_draw_procs[] = {
 	GetSmallMapContoursPixels,
@@ -639,32 +620,21 @@ static void DrawSmallMap(DrawPixelInfo *dpi, Window *w, int type, bool show_town
 	y = 0;
 
 	for (;;) {
-		uint32 mask = 0xFFFFFFFF;
 		int reps;
 		int t;
 
 		/* distance from left edge */
-		if (x < 0) {
-			if (x < -3) goto skip_column;
-			/* mask to use at the left edge */
-			mask = _smallmap_mask_left[x + 3];
+		if (x >= -3) {
+			if (x >= dpi->width) break; // Exit the loop.
+
+			int end_pos = min(dpi->width, x + 4);
+
+			int reps = (dpi->height - y + 1) / 2; // Number of lines.
+			if (reps > 0) {
+				DrawSmallMapStuff(ptr, tile_x, tile_y, dpi->pitch * 2, reps, x, end_pos, _smallmap_draw_procs[type]);
+			}
 		}
 
-		/* distance from right edge */
-		t = dpi->width - x;
-		if (t < 4) {
-			if (t <= 0) break; /* exit loop */
-			/* mask to use at the right edge */
-			mask &= _smallmap_mask_right[t - 1];
-		}
-
-		/* number of lines */
-		reps = (dpi->height - y + 1) / 2;
-		if (reps > 0) {
-			DrawSmallMapStuff(ptr, tile_x, tile_y, dpi->pitch * 2, reps, mask, _smallmap_draw_procs[type]);
-		}
-
-skip_column:
 		if (y == 0) {
 			tile_y++;
 			y++;
