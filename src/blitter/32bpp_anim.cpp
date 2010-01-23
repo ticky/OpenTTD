@@ -260,17 +260,6 @@ void Blitter_32bppAnim::SetPixel(void *video, int x, int y, uint8 color)
 	this->anim_buf[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y * this->anim_buf_width] = color;
 }
 
-void Blitter_32bppAnim::SetPixelIfEmpty(void *video, int x, int y, uint8 color)
-{
-	uint32 *dst = (uint32 *)video + x + y * _screen.pitch;
-	if (*dst == 0) {
-		*dst = LookupColourInPalette(color);
-		/* Set the color in the anim-buffer too, if we are rendering to the screen */
-		if (_screen_disable_anim) return;
-		this->anim_buf[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y * this->anim_buf_width] = color;
-	}
-}
-
 void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8 color)
 {
 	if (_screen_disable_anim) {

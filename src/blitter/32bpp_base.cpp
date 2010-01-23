@@ -18,12 +18,6 @@ void Blitter_32bppBase::SetPixel(void *video, int x, int y, uint8 color)
 	*((uint32 *)video + x + y * _screen.pitch) = LookupColourInPalette(color);
 }
 
-void Blitter_32bppBase::SetPixelIfEmpty(void *video, int x, int y, uint8 color)
-{
-	uint32 *dst = (uint32 *)video + x + y * _screen.pitch;
-	if (*dst == 0) *dst = LookupColourInPalette(color);
-}
-
 void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 color)
 {
 	uint32 color32 = LookupColourInPalette(color);

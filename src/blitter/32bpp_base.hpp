@@ -16,7 +16,6 @@ public:
 //	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, Blitter::AllocatorProc *allocator);
 	/* virtual */ void *MoveTo(const void *video, int x, int y);
 	/* virtual */ void SetPixel(void *video, int x, int y, uint8 color);
-	/* virtual */ void SetPixelIfEmpty(void *video, int x, int y, uint8 color);
 	/* virtual */ void DrawRect(void *video, int width, int height, uint8 color);
 	/* virtual */ void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 color);
 	/* virtual */ void CopyFromBuffer(void *video, const void *src, int width, int height);
