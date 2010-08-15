@@ -392,14 +392,20 @@ static void MenuClickWorldScreenshot()
 	MakeScreenshot(SC_WORLD, NULL);
 }
 
+static void MenuClickZoomedInScreenshot()
+{
+	MakeScreenshot(SC_ZOOMEDIN, NULL);
+}
+
 static void MenuClickHelp(int index)
 {
 	switch (index) {
-		case 0: PlaceLandBlockInfo();       break;
-		case 2: IConsoleSwitch();           break;
-		case 3: MenuClickSmallScreenshot(); break;
-		case 4: MenuClickWorldScreenshot(); break;
-		case 5: ShowAboutWindow();          break;
+		case 0: PlaceLandBlockInfo();          break;
+		case 2: IConsoleSwitch();              break;
+		case 3: MenuClickSmallScreenshot();    break;
+		case 4: MenuClickZoomedInScreenshot(); break;
+		case 5: MenuClickWorldScreenshot();    break;
+		case 6: ShowAboutWindow();             break;
 	}
 }
 
@@ -964,7 +970,7 @@ static void ToolbarNewspaperClick(Window *w)
 
 static void ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, 26, STR_02D5_LAND_BLOCK_INFO, 6, 0);
+	PopupMainToolbMenu(w, 26, STR_02D5_LAND_BLOCK_INFO, 7, 0);
 }
 
 static void ToolbarOptionsClick(Window *w)
@@ -1308,6 +1314,7 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 		case WKC_SHIFT | WKC_F11: ShowBuildTreesToolbar(); break;
 		case WKC_SHIFT | WKC_F12: ShowMusicWindow(); break;
 		case WKC_CTRL  | 'S': MenuClickSmallScreenshot(); break;
+		case WKC_CTRL  | 'P': MenuClickZoomedInScreenshot(); break;
 		case WKC_CTRL  | 'G': MenuClickWorldScreenshot(); break;
 		case WKC_CTRL | WKC_ALT | 'C': if (!_networking) ShowCheatWindow(); break;
 		case 'A': if (CanBuildVehicleInfrastructure(VEH_TRAIN)) ShowBuildRailToolbar(_last_built_railtype, 4); break; // Invoke Autorail
@@ -1540,6 +1547,7 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 			case WKC_F10: ShowMusicWindow(); break;
 			case WKC_F11: PlaceLandBlockInfo(); break;
 			case WKC_CTRL | 'S': MenuClickSmallScreenshot(); break;
+			case WKC_CTRL | 'P': MenuClickZoomedInScreenshot(); break;
 			case WKC_CTRL | 'G': MenuClickWorldScreenshot(); break;
 
 			/* those following are all fall through */
