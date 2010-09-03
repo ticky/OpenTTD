@@ -946,10 +946,15 @@ check_params() {
 make_compiler_cflags() {
 	# Params:
 	# $1 - compiler
-	# $2 - the current cflags
-	# $3 - variable to finally write to
+	# $2 - name of the cflags variable
+	# $3 - name of the cxxflags variable
+	# $4 - name of the ldflags variable
+	# $5 - name of the features variable
 
-	flags="$2"
+	eval eval "flags=\\\$$2"
+	eval eval "cxxflags=\\\$$3"
+	eval eval "ldflags=\\\$$4"
+	eval eval "features=\\\$$5"
 
 	if [ `echo $1 | cut -c 1-3` = "icc" ]; then
 		# Enable some things only for certain ICC versions
@@ -1006,7 +1011,10 @@ make_compiler_cflags() {
 		fi
 	fi
 
-	eval "$3=\"$flags\""
+	eval "$2=\"$flags\""
+	eval "$3=\"$cxxflags\""
+	eval "$4=\"$ldflags\""
+	eval "$5=\"$features\""
 }
 
 make_cflags_and_ldflags() {
@@ -1020,6 +1028,11 @@ make_cflags_and_ldflags() {
 	LIBS="-lstdc++"
 	# LDFLAGS used for HOST
 	LDFLAGS="$LDFLAGS"
+	# FEATURES for HOST (lto)
+	FEATURES=""
+
+	make_compiler_cflags "$cc_build" "CFLAGS_BUILD" "CXXFLAGS_BUILD" "LDFLAGS_BUILD" "FEATURES_BUILD"
+	make_compiler_cflags "$cc_host" "CFLAGS" "CXXFLAGS" "LDFLAGS" "FEATURES"
 
 	if [ $enable_debug = 0 ]; then
 		# No debug, add default stuff
