@@ -82,8 +82,7 @@ class WindowQuickdrawSubdriver: public CocoaSubdriver {
 	Rect dirty_rects[MAX_DIRTY_RECTS];
 	int num_dirty_rects;
 
-	uint16 palette16[256];
-	uint32 palette32[256];
+	uint32 palette[256];
 
 public:
 	bool active;
@@ -450,33 +449,29 @@ bool WindowQuickdrawSubdriver::SetVideoMode(int width, int height)
 
 void WindowQuickdrawSubdriver::Blit32ToView32(int left, int top, int right, int bottom)
 {
-	const uint32* src   = (uint32*)pixel_buffer;
-	uint32*       dst   = (uint32*)window_buffer;
-	uint          width = window_width;
-	uint          pitch = window_pitch / 4;
-	int y;
-
+	const uint32* src   = (uint32*)this->pixel_buffer;
+	uint32*       dst   = (uint32*)this->window_buffer;
+	uint          width = this->window_width;
+	uint          pitch = this->window_pitch / 4;
 
 	dst += top * pitch + left;
 	src += top * width + left;
 
-	for (y = top; y < bottom; y++, dst+= pitch, src+= width) {
+	for (int y = top; y < bottom; y++, dst+= pitch, src+= width) {
 		memcpy(dst, src, (right - left) * 4);
 	}
 }
 
 void WindowQuickdrawSubdriver::BlitIndexedToView32(int left, int top, int right, int bottom)
 {
-	const uint32* pal   = palette32;
-	const uint8*  src   = (uint8*)pixel_buffer;
-	uint32*       dst   = (uint32*)window_buffer;
-	uint          width = window_width;
-	uint          pitch = window_pitch / 4;
-	int x;
-	int y;
+	const uint32 *pal   = this->palette;
+	const uint8  *src   = (uint8*)this->pixel_buffer;
+	uint32       *dst   = (uint32*)this->window_buffer;
+	uint          width = this->window_width;
+	uint          pitch = this->window_pitch / 4;
 
-	for (y = top; y < bottom; y++) {
-		for (x = left; x < right; x++) {
+	for (int y = top; y < bottom; y++) {
+		for (int x = left; x < right; x++) {
 			dst[y * pitch + x] = pal[src[y * width + x]];
 		}
 	}
@@ -484,16 +479,14 @@ void WindowQuickdrawSubdriver::BlitIndexedToView32(int left, int top, int right,
 
 void WindowQuickdrawSubdriver::BlitIndexedToView16(int left, int top, int right, int bottom)
 {
-	const uint16* pal   = palette16;
-	const uint8*  src   = (uint8*)pixel_buffer;
-	uint16*       dst   = (uint16*)window_buffer;
-	uint          width = window_width;
-	uint          pitch = window_pitch / 2;
-	int x;
-	int y;
+	const uint32 *pal   = this->palette;
+	const uint8  *src   = (uint8*)this->pixel_buffer;
+	uint16       *dst   = (uint16*)this->window_buffer;
+	uint          width = this->window_width;
+	uint          pitch = this->window_pitch / 2;
 
-	for (y = top; y < bottom; y++) {
-		for (x = left; x < right; x++) {
+	for (int y = top; y < bottom; y++) {
+		for (int x = left; x < right; x++) {
 			dst[y * pitch + x] = pal[src[y * width + x]];
 		}
 	}
@@ -652,7 +645,7 @@ void WindowQuickdrawSubdriver::UpdatePalette(uint first_color, uint num_colors)
 				clr32 |= (uint32)_cur_palette[i].r << 16;
 				clr32 |= (uint32)_cur_palette[i].g << 8;
 				clr32 |= (uint32)_cur_palette[i].b;
-				palette32[i] = clr32;
+				this->palette[i] = clr32;
 			}
 			break;
 		case 16:
@@ -661,7 +654,7 @@ void WindowQuickdrawSubdriver::UpdatePalette(uint first_color, uint num_colors)
 				clr16 |= (uint16)((_cur_palette[i].r >> 3) & 0x1f) << 10;
 				clr16 |= (uint16)((_cur_palette[i].g >> 3) & 0x1f) << 5;
 				clr16 |= (uint16)((_cur_palette[i].b >> 3) & 0x1f);
-				palette16[i] = clr16;
+				this->palette[i] = clr16;
 			}
 			break;
 	}
