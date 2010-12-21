@@ -395,7 +395,7 @@ void CocoaDialog(const char* title, const char* message, const char* buttonLabel
 		return;
 	}
 
-	NSRunAlertPanel([NSString stringWithCString: title], [NSString stringWithCString: message], [NSString stringWithCString: buttonLabel], nil, nil);
+	NSRunAlertPanel([ NSString stringWithUTF8String:title ], [ NSString stringWithUTF8String:message ], [ NSString stringWithUTF8String:buttonLabel ], nil, nil);
 
 	if (!wasstarted && _video_driver != NULL) _video_driver->Stop();
 
@@ -432,6 +432,26 @@ void cocoaReleaseAutoreleasePool()
 }
 
 
+/**
+ * Re-implement the system cursor in order to allow hiding and showing it nicely
+ */
+@implementation NSCursor (OTTD_CocoaCursor)
++ (NSCursor *) clearCocoaCursor
+{
+	/* RAW 16x16 transparent GIF */
+	unsigned char clearGIFBytes[] = {
+		0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x10, 0x00, 0x10, 0x00, 0x80, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0xF9, 0x04, 0x01, 0x00,
+		0x00, 0x01, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x00,
+		0x00, 0x02, 0x0E, 0x8C, 0x8F, 0xA9, 0xCB, 0xED, 0x0F, 0xA3, 0x9C, 0xB4,
+		0xDA, 0x8B, 0xB3, 0x3E, 0x05, 0x00, 0x3B};
+	NSData *clearGIFData = [ NSData dataWithBytesNoCopy:&clearGIFBytes[0] length:55 freeWhenDone:NO ];
+	NSImage *clearImg = [ [ NSImage alloc ] initWithData:clearGIFData ];
+	return [ [ NSCursor alloc ] initWithImage:clearImg hotSpot:NSMakePoint(0.0,0.0) ];
+}
+@end
+
+
 
 @implementation OTTD_CocoaWindow
 
@@ -449,8 +469,6 @@ void cocoaReleaseAutoreleasePool()
 
 	/* window is hidden now */
 	driver->active = false;
-
-	QZ_ShowMouse();
 
 	[ super miniaturize:sender ];
 }
@@ -562,6 +580,76 @@ void cocoaReleaseAutoreleasePool()
 - (void)drawRect:(NSRect)invalidRect
 {
 	return;
+}
+/**
+ * Allow to handle events
+ */
+- (BOOL)acceptsFirstResponder
+{
+	return YES;
+}
+/**
+ * Actually handle events
+ */
+- (BOOL)becomeFirstResponder
+{
+	return YES;
+}
+/**
+ * Define the rectangle where we draw our application window
+ */
+- (void)setTrackingRect
+{
+	NSPoint loc = [ self convertPoint:[ [ self window ] mouseLocationOutsideOfEventStream ] fromView:nil ];
+	BOOL inside = ([ self hitTest:loc ]==self);
+	if(inside) [ [ self window] makeFirstResponder:self ];
+	trackingtag = [ self addTrackingRect:[self visibleRect] owner:self userData:nil assumeInside:inside ];
+}
+/**
+ * Return responsibility for the application window to system
+ */
+- (void)clearTrackingRect
+{
+	[ self removeTrackingRect:trackingtag ];
+}
+/**
+ * Declare responsibility for the cursor within our application rect
+ */
+- (void)resetCursorRects
+{
+	[ super resetCursorRects ];
+	[ self clearTrackingRect ];
+	[ self setTrackingRect ];
+	[ self addCursorRect:[ self bounds ] cursor:[ NSCursor clearCocoaCursor ] ];
+}
+/**
+ * Prepare for moving the application window
+ */
+- (void)viewWillMoveToWindow:(NSWindow *)win
+{
+	if (!win && [ self window ]) [ self clearTrackingRect ];
+}
+/**
+ * Restore our responsibility for our application window after moving
+ */
+- (void)viewDidMoveToWindow
+{
+	if([ self window ]) [ self setTrackingRect ];
+}
+/**
+ * Make OpenTTD aware that it has control over the mouse
+ */
+- (void)mouseEntered:(NSEvent *)theEvent
+{
+	_cursor.in_window = true;
+}
+/**
+ * Make OpenTTD aware that it has NOT control over the mouse
+ */
+- (void)mouseExited:(NSEvent *)theEvent
+{
+	if (_cocoa_subdriver != NULL) UndrawMouseCursor();
+	_cursor.in_window = false;
 }
 @end
 
