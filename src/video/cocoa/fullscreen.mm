@@ -67,7 +67,8 @@ struct OTTD_QuartzGammaTable {
 
 
 
-uint QZ_ListModes(OTTD_Point* modes, uint max_modes, CGDirectDisplayID display_id, int display_depth)
+
+uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
 {
 	CFArrayRef mode_list;
 	CFIndex num_modes;
@@ -90,7 +91,7 @@ uint QZ_ListModes(OTTD_Point* modes, uint max_modes, CGDirectDisplayID display_i
 		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayBitsPerPixel);
 		CFNumberGetValue (number, kCFNumberSInt32Type, &bpp);
 
-		if (bpp != display_depth) continue;
+		if (bpp != device_depth) continue;
 
 		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayWidth);
 		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
@@ -156,12 +157,12 @@ bool QZ_CanDisplay8bpp()
 }
 
 class FullscreenSubdriver: public CocoaSubdriver {
-	int                display_width;
-	int                display_height;
-	int                display_depth;
-	int                screen_pitch;
-	void*              screen_buffer;
-	void*              pixel_buffer;
+	int                device_width;
+	int                device_height;
+	int                device_depth;
+	int                window_pitch;
+	void              *window_buffer;
+	void              *pixel_buffer;
 
 	CGDirectDisplayID  display_id;         /* 0 == main display (only support single display) */
 	CFDictionaryRef    cur_mode;           /* current mode of the display */
@@ -260,8 +261,6 @@ class FullscreenSubdriver: public CocoaSubdriver {
 	{
 		/* The VBL delay is based on Ian Ollmann's RezLib <iano@cco.caltech.edu> */
 		double refreshRate;
-		double linesPerSecond;
-		double target;
 		double position;
 		double adjustment;
 		CFNumberRef refreshRateCFNumber;
@@ -274,8 +273,8 @@ class FullscreenSubdriver: public CocoaSubdriver {
 
 		if (refreshRate == 0) return;
 
-		linesPerSecond = refreshRate * display_height;
-		target = display_height;
+		double linesPerSecond = refreshRate * this->device_height;
+		double target = this->device_height;
 
 		/* Figure out the first delay so we start off about right */
 		position = CGDisplayBeamPosition(display_id);
@@ -289,7 +288,6 @@ class FullscreenSubdriver: public CocoaSubdriver {
 
 	bool SetVideoMode(int w, int h)
 	{
-		boolean_t exact_match;
 		CFNumberRef number;
 		int bpp;
 		int gamma_error;
@@ -305,13 +303,14 @@ class FullscreenSubdriver: public CocoaSubdriver {
 		}
 
 		/* See if requested mode exists */
-		cur_mode = CGDisplayBestModeForParameters(display_id, display_depth, w, h, &exact_match);
+		boolean_t exact_match;
+		this->cur_mode = CGDisplayBestModeForParameters(this->display_id, this->device_depth, w, h, &exact_match);
 
 		/* If the mode wasn't an exact match, check if it has the right bpp, and update width and height */
 		if (!exact_match) {
 			number = (const __CFNumber*) CFDictionaryGetValue(cur_mode, kCGDisplayBitsPerPixel);
 			CFNumberGetValue(number, kCFNumberSInt32Type, &bpp);
-			if (bpp != display_depth) {
+			if (bpp != this->device_depth) {
 				DEBUG(driver, 0, "Failed to find display resolution");
 				goto ERR_NO_MATCH;
 			}
@@ -322,6 +321,17 @@ class FullscreenSubdriver: public CocoaSubdriver {
 			number = (const __CFNumber*)CFDictionaryGetValue(cur_mode, kCGDisplayHeight);
 			CFNumberGetValue(number, kCFNumberSInt32Type, &h);
 		}
+
+		/* Capture the main screen */
+		CGDisplayCapture(this->display_id);
+
+		/* Store the mouse coordinates relative to the total screen */
+		mouseLocation = [ NSEvent mouseLocation ];
+		mouseLocation.x /= this->device_width;
+		mouseLocation.y /= this->device_height;
+
+		/* Hide mouse in order to avoid glitch in 8bpp */
+		QZ_HideMouse();
 
 		/* Fade display to zero gamma */
 		gamma_error = FadeGammaOut(&gamma_table);
@@ -340,20 +350,20 @@ class FullscreenSubdriver: public CocoaSubdriver {
 			goto ERR_NO_SWITCH;
 		}
 
-		screen_buffer = CGDisplayBaseAddress(display_id);
-		screen_pitch  = CGDisplayBytesPerRow(display_id);
+		this->window_buffer = CGDisplayBaseAddress(this->display_id);
+		this->window_pitch  = CGDisplayBytesPerRow(this->display_id);
 
-		display_width = CGDisplayPixelsWide(display_id);
-		display_height = CGDisplayPixelsHigh(display_id);
+		this->device_width  = CGDisplayPixelsWide(this->display_id);
+		this->device_height = CGDisplayPixelsHigh(this->display_id);
 
 		/* Setup double-buffer emulation */
-		pixel_buffer = malloc(display_width * display_height * display_depth / 8);
-		if (pixel_buffer == NULL) {
+		this->pixel_buffer = malloc(this->device_width * this->device_height * this->device_depth / 8);
+		if (this->pixel_buffer == NULL) {
 			DEBUG(driver, 0, "Failed to allocate memory for double buffering");
 			goto ERR_DOUBLEBUF;
 		}
 
-		if (display_depth == 8 && !CGDisplayCanSetPalette(display_id)) {
+		if (this->device_depth == 8 && !CGDisplayCanSetPalette(this->display_id)) {
 			DEBUG(driver, 0, "Not an indexed display mode.");
 			goto ERR_NOT_INDEXED;
 		}
@@ -369,14 +379,15 @@ class FullscreenSubdriver: public CocoaSubdriver {
 		 * As a result, coordinate translation produces incorrect results.
 		 * We can hack around this bug by setting the screen rect ourselves.
 		 * This hack should be removed if/when the bug is fixed.
-		*/
-		screen_rect = NSMakeRect(0, 0, display_width, display_height);
+		 */
+		screen_rect = NSMakeRect(0, 0, this->device_width, this->device_height);
 		[ [ NSScreen mainScreen ] setFrame:screen_rect ];
 
 
-		pt = [ NSEvent mouseLocation ];
-		pt.y = display_height - pt.y;
-		if (MouseIsInsideView(&pt)) QZ_HideMouse();
+		/* Move the mouse cursor to approx the same location */
+		CGPoint display_mouseLocation;
+		display_mouseLocation.x = mouseLocation.x * this->device_width;
+		display_mouseLocation.y = this->device_height - (mouseLocation.y * this->device_height);
 
 		UpdatePalette(0, 256);
 
@@ -393,8 +404,8 @@ ERR_NO_SWITCH:
 ERR_NO_CAPTURE:
 		if (!gamma_error) FadeGammaIn(&gamma_table);
 ERR_NO_MATCH:
-		display_width = 0;
-		display_height = 0;
+		this->device_width = 0;
+		this->device_height = 0;
 
 		return false;
 	}
@@ -428,8 +439,8 @@ ERR_NO_MATCH:
 
 		if (!gamma_error) FadeGammaIn(&gamma_table);
 
-		display_width = 0;
-		display_height = 0;
+		this->device_width  = CGDisplayPixelsWide(this->display_id);
+		this->device_height = CGDisplayPixelsHigh(this->display_id);
 	}
 
 public:
@@ -445,10 +456,10 @@ public:
 
 		if (bpp == 8) palette = CGPaletteCreateDefaultColorPalette();
 
-		display_width  = 0;
-		display_height = 0;
-		display_depth  = bpp;
-		pixel_buffer   = NULL;
+		this->device_width  = CGDisplayPixelsWide(this->display_id);
+		this->device_height = CGDisplayPixelsHigh(this->display_id);
+		this->device_depth  = bpp;
+		this->pixel_buffer   = NULL;
 
 		num_dirty_rects = MAX_DIRTY_RECTS;
 	}
@@ -460,28 +471,27 @@ public:
 
 	virtual void Draw()
 	{
-		const uint8* src   = (uint8*) pixel_buffer;
-		uint8* dst         = (uint8*) screen_buffer;
-		uint pitch         = screen_pitch;
-		uint width         = display_width;
-		uint num_dirty     = num_dirty_rects;
-		uint bytesperpixel = display_depth / 8;
-		uint i;
+		const uint8 *src   = (uint8 *)this->pixel_buffer;
+		uint8 *dst         = (uint8 *)this->window_buffer;
+		uint pitch         = this->window_pitch;
+		uint width         = this->device_width;
+		uint num_dirty     = this->num_dirty_rects;
+		uint bytesperpixel = this->device_depth / 8;
 
 		/* Check if we need to do anything */
 		if (num_dirty == 0) return;
 
 		if (num_dirty >= MAX_DIRTY_RECTS) {
 			num_dirty = 1;
-			dirty_rects[0].left   = 0;
-			dirty_rects[0].top    = 0;
-			dirty_rects[0].right  = display_width;
-			dirty_rects[0].bottom = display_height;
+			this->dirty_rects[0].left   = 0;
+			this->dirty_rects[0].top    = 0;
+			this->dirty_rects[0].right  = this->device_width;
+			this->dirty_rects[0].bottom = this->device_height;
 		}
 
 		WaitForVerticalBlank();
 		/* Build the region of dirty rectangles */
-		for (i = 0; i < num_dirty; i++) {
+		for (uint i = 0; i < num_dirty; i++) {
 			uint y      = dirty_rects[i].top;
 			uint left   = dirty_rects[i].left;
 			uint length = dirty_rects[i].right - left;
@@ -508,14 +518,11 @@ public:
 
 	virtual void UpdatePalette(uint first_color, uint num_colors)
 	{
-		CGTableCount  index;
-		CGDeviceColor color;
+		if (this->device_depth != 8) return;
 
-		if (display_depth != 8)
-			return;
-
-		for (index = first_color; index < first_color+num_colors; index++) {
+		for (uint32 index = first_color; index < first_color+num_colors; index++) {
 			/* Clamp colors between 0.0 and 1.0 */
+			CGDeviceColor color;
 			color.red   = _cur_palette[index].r / 255.0;
 			color.blue  = _cur_palette[index].b / 255.0;
 			color.green = _cur_palette[index].g / 255.0;
@@ -528,13 +535,13 @@ public:
 
 	virtual uint ListModes(OTTD_Point* modes, uint max_modes)
 	{
-		return QZ_ListModes(modes, max_modes, display_id, display_depth);
+		return QZ_ListModes(modes, max_modes, this->display_id, this->device_depth);
 	}
 
 	virtual bool ChangeResolution(int w, int h)
 	{
-		int old_width  = display_width;
-		int old_height = display_height;
+		int old_width  = this->device_width;
+		int old_height = this->device_height;
 
 		if (SetVideoMode(w, h))
 			return true;
@@ -552,12 +559,12 @@ public:
 
 	virtual int GetWidth()
 	{
-		return display_width;
+		return this->device_width;
 	}
 
 	virtual int GetHeight()
 	{
-		return display_height;
+		return this->device_height;
 	}
 
 	virtual void *GetPixelBuffer()
@@ -581,17 +588,15 @@ public:
 
 	virtual NSPoint GetMouseLocation(NSEvent *event)
 	{
-		NSPoint pt;
-
-		pt = [ NSEvent mouseLocation ];
-		pt.y = display_height - pt.y;
+		NSPoint pt = [ NSEvent mouseLocation ];
+		pt.y = this->device_height - pt.y;
 
 		return pt;
 	}
 
 	virtual bool MouseIsInsideView(NSPoint *pt)
 	{
-		return pt->x >= 0 && pt->y >= 0 && pt->x < display_width && pt->y < display_height;
+		return pt->x >= 0 && pt->y >= 0 && pt->x < this->device_width && pt->y < this->device_height;
 	}
 
 	virtual bool IsActive()

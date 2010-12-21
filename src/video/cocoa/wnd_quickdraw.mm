@@ -76,7 +76,7 @@ class WindowQuickdrawSubdriver: public CocoaSubdriver {
 	void *pixel_buffer;
 	void *window_buffer;
 
-	OTTD_QuickdrawWindow *window;
+	id window;
 
 	#define MAX_DIRTY_RECTS 100
 	Rect dirty_rects[MAX_DIRTY_RECTS];
@@ -88,7 +88,7 @@ public:
 	bool active;
 	bool setup;
 
-	NSQuickDrawView *qdview;
+	id cocoaview;
 
 private:
 	void GetDeviceInfo();
@@ -194,7 +194,7 @@ public:
 	driver->SetPortAlphaOpaque();
 
 	/* save current visible surface */
-	[ self cacheImageInRect:[ driver->qdview frame ] ];
+	[ self cacheImageInRect:[ driver->cocoaview frame ] ];
 
 	/* let the window manager redraw controls, border, etc */
 	[ super display ];
@@ -228,7 +228,7 @@ public:
 	driver->SetPortAlphaOpaque ();
 
 	/* save current visible surface */
-	[ self cacheImageInRect:[ driver->qdview frame ] ];
+	[ self cacheImageInRect:[ driver->cocoaview frame ] ];
 }
 
 - (void)appDidUnhide:(NSNotification*)note
@@ -350,7 +350,6 @@ bool WindowQuickdrawSubdriver::SetVideoMode(int width, int height)
 	NSString *nsscaption;
 	unsigned int style;
 	NSRect contentRect;
-	BOOL isCustom = NO;
 	bool ret;
 
 	setup = true;
@@ -408,13 +407,12 @@ bool WindowQuickdrawSubdriver::SetVideoMode(int width, int height)
 		[ window setDelegate: [ delegate autorelease ] ];
 	} else {
 		/* We already have a window, just change its size */
-		if (!isCustom) {
-			[ window setContentSize:contentRect.size ];
-			// Ensure frame height - title bar height >= view height
-			contentRect.size.height = Clamp(height, 0, [ window frame ].size.height - 22 /* 22 is the height of title bar of window*/);
-			height = contentRect.size.height;
-			[ qdview setFrameSize:contentRect.size ];
-		}
+		[ this->window setContentSize:contentRect.size ];
+		/* Ensure frame height - title bar height >= view height
+		 * The height of title bar of the window is 22 pixels */
+		contentRect.size.height = Clamp(height, 0, [ this->window frame ].size.height - 22);
+		height = contentRect.size.height;
+		[ this->cocoaview setFrameSize:contentRect.size ];
 	}
 
 	// Update again
@@ -424,18 +422,18 @@ bool WindowQuickdrawSubdriver::SetVideoMode(int width, int height)
 	[ window center ];
 
 	/* Only recreate the view if it doesn't already exist */
-	if (qdview == nil) {
-		qdview = [ [ NSQuickDrawView alloc ] initWithFrame:contentRect ];
-		if (qdview == nil) {
+	if (this->cocoaview == nil) {
+		this->cocoaview = [ [ NSQuickDrawView alloc ] initWithFrame:contentRect ];
+		if (this->cocoaview == nil) {
 			DEBUG(driver, 0, "Could not create the Quickdraw view.");
 			setup = false;
 			return false;
 		}
 
-		[ qdview setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable ];
-		[ [ window contentView ] addSubview:qdview ];
-		[ qdview release ];
-		[ window makeKeyAndOrderFront:nil ];
+		[ this->cocoaview setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable ];
+		[ [ this->window contentView ] addSubview:this->cocoaview ];
+		[ this->cocoaview release ];
+		[ this->window makeKeyAndOrderFront:nil ];
 	}
 
 	ret = WindowResized();
@@ -551,8 +549,8 @@ WindowQuickdrawSubdriver::WindowQuickdrawSubdriver(int bpp)
 	active        = false;
 	setup         = false;
 
-	window = nil;
-	qdview = nil;
+	this->window = nil;
+	this->cocoaview = nil;
 
 	num_dirty_rects = MAX_DIRTY_RECTS;
 }
@@ -613,7 +611,7 @@ void WindowQuickdrawSubdriver::Draw()
 	DrawResizeIcon();
 
 	/* Flush the dirty region */
-	QDFlushPortBuffer( (OpaqueGrafPtr*) [ qdview qdPort ], dirty);
+	QDFlushPortBuffer( (OpaqueGrafPtr*) [ this->cocoaview qdPort ], dirty);
 	DisposeRgn(dirty);
 	DisposeRgn(temp);
 
@@ -684,31 +682,24 @@ bool WindowQuickdrawSubdriver::ChangeResolution(int w, int h)
 /* Convert local coordinate to window server (CoreGraphics) coordinate */
 CGPoint WindowQuickdrawSubdriver::PrivateLocalToCG(NSPoint* p)
 {
-	CGPoint cgp;
+	*p = [ this->cocoaview convertPoint:*p toView: nil ];
+	*p = [ this->window convertBaseToScreen:*p ];
+	p->y = this->device_height - p->y;
 
-	*p = [ qdview convertPoint:*p toView: nil ];
-	*p = [ window convertBaseToScreen:*p ];
-	p->y = device_height - p->y;
-
-	cgp.x = p->x;
-	cgp.y = p->y;
-
-	return cgp;
+	return CGPointMake(p->x, p->y);
 }
 
 NSPoint WindowQuickdrawSubdriver::GetMouseLocation(NSEvent *event)
 {
-	NSPoint pt;
-
-	pt = [ event locationInWindow ];
-	pt = [ qdview convertPoint:pt fromView:nil ];
+	NSPoint pt = [ event locationInWindow ];
+	pt = [ this->cocoaview convertPoint:pt fromView:nil ];
 
 	return pt;
 }
 
 bool WindowQuickdrawSubdriver::MouseIsInsideView(NSPoint *pt)
 {
-	return [ qdview mouse:*pt inRect:[ qdview bounds ] ];
+	return [ this->cocoaview mouse:*pt inRect:[ this->cocoaview bounds ] ];
 }
 
 
@@ -733,11 +724,10 @@ void WindowQuickdrawSubdriver::SetPortAlphaOpaque()
 
 bool WindowQuickdrawSubdriver::WindowResized()
 {
-	if (window == nil || qdview == nil) return true;
+	if (this->window == nil || this->cocoaview == nil) return true;
 
-	NSRect   newframe = [ qdview frame ];
-	CGrafPtr thePort  = (OpaqueGrafPtr*) [ qdview qdPort ];
-	int voff, hoff;
+	NSRect   newframe = [ this->cocoaview frame ];
+	CGrafPtr thePort  = (OpaqueGrafPtr*) [ this->cocoaview qdPort ];
 
 	LockPortBits(thePort);
 	window_buffer = GetPixBaseAddr(GetPortPixMap(thePort));
@@ -747,9 +737,9 @@ bool WindowQuickdrawSubdriver::WindowResized()
 	/* _cocoa_video_data.realpixels now points to the window's pixels
 	 * We want it to point to the *view's* pixels
 	 */
-	voff = [ window frame ].size.height - newframe.size.height - newframe.origin.y;
-	hoff = [ qdview frame ].origin.x;
-	window_buffer = (uint8*)window_buffer + (voff * window_pitch) + hoff * (device_depth / 8);
+	int voff = [ this->window frame ].size.height - newframe.size.height - newframe.origin.y;
+	int hoff = [ this->cocoaview frame ].origin.x;
+	this->window_buffer = (uint8*)this->window_buffer + (voff * this->window_pitch) + hoff * (this->device_depth / 8);
 
 	window_width = newframe.size.width;
 	window_height = newframe.size.height;
