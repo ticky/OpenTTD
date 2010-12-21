@@ -52,15 +52,10 @@ class WindowQuartzSubdriver;
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)styleMask backing:(NSBackingStoreType)backingType defer:(BOOL)flag;
 @end
 
-/* Subclass of NSView to fix Quartz rendering */
-@interface OTTD_QuartzView : NSView {
-	WindowQuartzSubdriver *driver;
-}
-
+/* Subclass of OTTD_CocoaView to fix Quartz rendering */
+@interface OTTD_QuartzView : OTTD_CocoaView
 - (void)setDriver:(WindowQuartzSubdriver*)drv;
-
-- (void)drawRect:(NSRect)rect;
-- (BOOL)isOpaque;
+- (void)drawRect:(NSRect)invalidRect;
 @end
 
 class WindowQuartzSubdriver: public CocoaSubdriver {
@@ -241,13 +236,6 @@ static CGColorSpaceRef QZ_GetCorrectColorSpace()
 {
 	driver = drv;
 }
-
-
-- (BOOL)isOpaque
-{
-	return YES;
-}
-
 - (void)drawRect:(NSRect)invalidRect
 {
 	CGImageRef    fullImage;
