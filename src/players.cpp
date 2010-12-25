@@ -81,8 +81,8 @@ uint16 GetDrawStringPlayerColor(PlayerID player)
 {
 	/* Get the color for DrawString-subroutines which matches the color
 	 * of the player */
-	if (!IsValidPlayer(player)) return _colour_gradient[COLOUR_WHITE][4] | IS_PALETTE_COLOR;
-	return (_colour_gradient[_player_colors[player]][4]) | IS_PALETTE_COLOR;
+	if (!IsValidPlayer(player)) return _colour_gradient[COLOUR_WHITE][4] | TC_IS_PALETTE_COLOUR;
+	return (_colour_gradient[_player_colors[player]][4]) | TC_IS_PALETTE_COLOUR;
 }
 
 void DrawPlayerIcon(PlayerID p, int x, int y)

@@ -114,7 +114,7 @@ void CDECL AddChatMessage(TextColour colour, uint8 duration, const char *message
 
 		/* The default colour for a message is player colour. Replace this with
 		 * white for any additional lines */
-		cmsg->colour = (bufp == buf && colour & IS_PALETTE_COLOR) ? colour : (TextColour)(0x1D - 15) | IS_PALETTE_COLOR;
+		cmsg->colour = (bufp == buf && colour & TC_IS_PALETTE_COLOUR) ? colour : (TextColour)(0x1D - 15) | TC_IS_PALETTE_COLOUR;
 		cmsg->end_date = _date + duration;
 
 		bufp += strlen(bufp) + 1; // jump to 'next line' in the formatted string
