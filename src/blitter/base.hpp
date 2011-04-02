@@ -104,8 +104,9 @@ public:
 	 * @param screen_width The width of the screen you are drawing in (to avoid buffer-overflows).
 	 * @param screen_height The height of the screen you are drawing in (to avoid buffer-overflows).
 	 * @param colour A 8bpp mapping colour.
+	 * @param width The width of line to draw.
 	 */
-	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour);
+	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width);
 
 	/**
 	 * Copy from a buffer to the screen.
