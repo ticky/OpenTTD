@@ -417,6 +417,7 @@ blitter/8bpp_optimized.cpp
 blitter/8bpp_optimized.hpp
 blitter/8bpp_simple.cpp
 blitter/8bpp_simple.hpp
+blitter/base.cpp
 blitter/base.hpp
 blitter/factory.hpp
 blitter/null.cpp

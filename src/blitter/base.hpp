@@ -95,7 +95,7 @@ public:
 	virtual void DrawRect(void *video, int width, int height, uint8 color) = 0;
 
 	/**
-	 * Draw a line with a given color.
+	 * Draw a line with a given colour.
 	 * @param video The destination pointer (video-buffer).
 	 * @param x The x coordinate from where the line starts.
 	 * @param y The y coordinate from where the line starts.
@@ -103,9 +103,9 @@ public:
 	 * @param y2 The y coordinate to where the lines goes.
 	 * @param screen_width The width of the screen you are drawing in (to avoid buffer-overflows).
 	 * @param screen_height The height of the screen you are drawing in (to avoid buffer-overflows).
-	 * @param color A 8bpp mapping color.
+	 * @param colour A 8bpp mapping colour.
 	 */
-	virtual void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 color) = 0;
+	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour);
 
 	/**
 	 * Copy from a buffer to the screen.
