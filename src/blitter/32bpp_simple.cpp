@@ -12,6 +12,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the simple 32bpp blitter factory. */
 static FBlitter_32bppSimple iFBlitter_32bppSimple;
 
 void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)

@@ -8,6 +8,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the simple 8bpp blitter factory. */
 static FBlitter_8bppSimple iFBlitter_8bppSimple;
 
 void Blitter_8bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)

@@ -8,12 +8,10 @@
 #include "base.hpp"
 #include "../core/bitmath_func.hpp"
 
+/** Base for all 32bpp blitters. */
 class Blitter_32bppBase : public Blitter {
 public:
 	/* virtual */ uint8 GetScreenDepth() { return 32; }
-//	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
-//	/* virtual */ void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal);
-//	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
 	/* virtual */ void *MoveTo(const void *video, int x, int y);
 	/* virtual */ void SetPixel(void *video, int x, int y, uint8 color);
 	/* virtual */ void DrawRect(void *video, int width, int height, uint8 color);

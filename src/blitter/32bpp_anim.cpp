@@ -15,6 +15,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the 32bpp with animation blitter factory. */
 static FBlitter_32bppAnim iFBlitter_32bppAnim;
 
 template <BlitterMode mode>

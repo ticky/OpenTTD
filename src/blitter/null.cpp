@@ -7,6 +7,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the null blitter factory. */
 static FBlitter_Null iFBlitter_Null;
 
 Sprite *Blitter_Null::Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator)

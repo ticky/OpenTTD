@@ -8,6 +8,7 @@
 #include "8bpp_base.hpp"
 #include "factory.hpp"
 
+/** Most trivial 8bpp blitter. */
 class Blitter_8bppSimple : public Blitter_8bppBase {
 public:
 	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
@@ -16,6 +17,7 @@ public:
 	/* virtual */ const char *GetName() { return "8bpp-simple"; }
 };
 
+/** Factory for the most trivial 8bpp blitter. */
 class FBlitter_8bppSimple: public BlitterFactory<FBlitter_8bppSimple> {
 public:
 	/* virtual */ const char *GetName() { return "8bpp-simple"; }

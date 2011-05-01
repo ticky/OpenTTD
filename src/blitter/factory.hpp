@@ -19,7 +19,7 @@ bool QZ_CanDisplay8bpp();
  */
 class BlitterFactoryBase {
 private:
-	const char *name;
+	const char *name; ///< The name of the blitter factory.
 
 	struct StringCompare {
 		bool operator () (const char *a, const char *b) const
@@ -28,14 +28,22 @@ private:
 		}
 	};
 
-	typedef std::map<const char *, BlitterFactoryBase *, StringCompare> Blitters;
+	typedef std::map<const char *, BlitterFactoryBase *, StringCompare> Blitters; ///< Map of blitter factories.
 
+	/**
+	 * Get the map with currently known blitters.
+	 * @return The known blitters.
+	 */
 	static Blitters &GetBlitters()
 	{
 		static Blitters &s_blitters = *new Blitters();
 		return s_blitters;
 	}
 
+	/**
+	 * Get the currently active blitter.
+	 * @return The currently active blitter.
+	 */
 	static Blitter **GetActiveBlitter()
 	{
 		static Blitter *s_blitter = NULL;
@@ -123,7 +131,12 @@ public:
 		return *GetActiveBlitter();
 	}
 
-
+	/**
+	 * Fill a buffer with information about the blitters.
+	 * @param p The buffer to fill.
+	 * @param last The last element of the buffer.
+	 * @return p The location till where we filled the buffer.
+	 */
 	static char *GetBlittersInfo(char *p, const char *last)
 	{
 		p += seprintf(p, last, "List of blitters:\n");

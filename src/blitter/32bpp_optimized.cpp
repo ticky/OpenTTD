@@ -12,6 +12,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the optimized 32bpp blitter factory. */
 static FBlitter_32bppOptimized iFBlitter_32bppOptimized;
 
 /**
