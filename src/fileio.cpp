@@ -618,8 +618,9 @@ extern void DetermineBasePaths(const char *exe);
  * in the same way we remove the name from the executable name.
  * @param exe the path to the executable
  */
-void ChangeWorkingDirectory(const char *exe)
+static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 {
+	bool success = false;
 #ifdef WITH_COCOA
 	char *app_bundle = strchr(exe, '.');
 	while (app_bundle != NULL && strncasecmp(app_bundle, ".app", 4) != 0) app_bundle = strchr(&app_bundle[1], '.');
@@ -629,12 +630,17 @@ void ChangeWorkingDirectory(const char *exe)
 	char *s = strrchr(exe, PATHSEPCHAR);
 	if (s != NULL) {
 		*s = '\0';
-		chdir(exe);
+		if (chdir(exe) != 0) {
+			DEBUG(misc, 0, "Directory with the binary does not exist?");
+		} else {
+			success = true;
+		}
 		*s = PATHSEPCHAR;
 	}
 #ifdef WITH_COCOA
 	if (app_bundle != NULL) app_bundle[0] = '.';
 #endif /* WITH_COCOA */
+	return success;
 }
 
 /**
@@ -677,10 +683,20 @@ void DetermineBasePaths(const char *exe)
 #endif
 
 	/* Change the working directory to that one of the executable */
-	ChangeWorkingDirectory((char*)exe);
-	getcwd(tmp, MAX_PATH);
-	AppendPathSeparator(tmp, MAX_PATH);
-	_searchpaths[SP_BINARY_DIR] = strdup(tmp);
+	if (ChangeWorkingDirectoryToExecutable(exe)) {
+		if (getcwd(tmp, MAX_PATH) == NULL) *tmp = '\0';
+		AppendPathSeparator(tmp, MAX_PATH);
+		_searchpaths[SP_BINARY_DIR] = strdup(tmp);
+	} else {
+		_searchpaths[SP_BINARY_DIR] = NULL;
+	}
+
+	if (_searchpaths[SP_WORKING_DIR] != NULL) {
+		/* Go back to the current working directory. */
+		if (chdir(_searchpaths[SP_WORKING_DIR]) != 0) {
+			DEBUG(misc, 0, "Failed to return to working directory!");
+		}
+	}
 
 #if defined(__MORPHOS__) || defined(__AMIGA__)
 	_searchpaths[SP_INSTALLATION_DIR] = NULL;
