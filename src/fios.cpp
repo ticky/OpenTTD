@@ -144,36 +144,55 @@ char *FiosBrowseTo(const FiosItem *item)
 	return NULL;
 }
 
-void FiosMakeSavegameName(char *buf, const char *name, size_t size)
+/**
+ * Construct a filename from its components in destination buffer \a buf.
+ * @param buf Destination buffer.
+ * @param path Directory path, may be \c NULL.
+ * @param name Filename.
+ * @param ext Filename extension (use \c "" for no extension).
+ * @param size Size of \a buf.
+ */
+static void FiosMakeFilename(char *buf, const char *path, const char *name, const char *ext, size_t size)
 {
-	const char *extension, *period;
-
-	extension = (_game_mode == GM_EDITOR) ? ".scn" : ".sav";
+	const char *period;
 
 	/* Don't append the extension if it is already there */
 	period = strrchr(name, '.');
-	if (period != NULL && strcasecmp(period, extension) == 0) extension = "";
+	if (period != NULL && strcasecmp(period, ext) == 0) ext = "";
 #if  defined(__MORPHOS__) || defined(__AMIGAOS__)
-	if (_fios_path != NULL) {
-		unsigned char sepchar = _fios_path[(strlen(_fios_path) - 1)];
+	if (path != NULL) {
+		unsigned char sepchar = path[(strlen(path) - 1)];
 
 		if (sepchar != ':' && sepchar != '/') {
-			snprintf(buf, size, "%s" PATHSEP "%s%s", _fios_path, name, extension);
+			snprintf(buf, size, "%s" PATHSEP "%s%s", path, name, ext);
 		} else {
-			snprintf(buf, size, "%s%s%s", _fios_path, name, extension);
+			snprintf(buf, size, "%s%s%s", path, name, ext);
 		}
 	} else {
-		snprintf(buf, size, "%s%s", name, extension);
+		snprintf(buf, size, "%s%s", name, ext);
 	}
 #else
-	snprintf(buf, size, "%s" PATHSEP "%s%s", _fios_path, name, extension);
+	snprintf(buf, size, "%s" PATHSEP "%s%s", path, name, ext);
 #endif
 }
 
-#if defined(WIN32)
-# define unlink _tunlink
-#endif
+/**
+ * Make a save game or scenario filename from a name.
+ * @param buf Destination buffer for saving the filename.
+ * @param name Name of the file.
+ * @param size Length of buffer \a buf.
+ */
+void FiosMakeSavegameName(char *buf, const char *name, size_t size)
+{
+	const char *extension = (_game_mode == GM_EDITOR) ? ".scn" : ".sav";
 
+	FiosMakeFilename(buf, _fios_path, name, extension, size);
+}
+
+/**
+ * Delete a file.
+ * @param name Filename to delete.
+ */
 bool FiosDelete(const char *name)
 {
 	char filename[512];
