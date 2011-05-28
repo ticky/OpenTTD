@@ -11,6 +11,7 @@
 #include "fios.h"
 #include "fileio.h"
 #include "functions.h"
+#include "screenshot.h"
 #include "string_func.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -187,6 +188,21 @@ void FiosMakeSavegameName(char *buf, const char *name, size_t size)
 	const char *extension = (_game_mode == GM_EDITOR) ? ".scn" : ".sav";
 
 	FiosMakeFilename(buf, _fios_path, name, extension, size);
+}
+
+/**
+ * Construct a filename for a height map.
+ * @param buf Destination buffer.
+ * @param name Filename.
+ * @param size Size of \a buf.
+ */
+void FiosMakeHeightmapName(char *buf, const char *name, size_t size)
+{
+	char ext[5];
+	ext[0] = '.';
+	strecpy(ext + 1, GetCurrentScreenshotExtension(), lastof(ext));
+
+	FiosMakeFilename(buf, _fios_path, name, ext, size);
 }
 
 /**

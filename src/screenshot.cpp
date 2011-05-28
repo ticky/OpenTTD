@@ -467,6 +467,13 @@ static const ScreenshotFormat _screenshot_formats[] = {
 	{"PCX", "pcx", &MakePCXImage},
 };
 
+/** Get filename extension of current screenshot file format. */
+const char *GetCurrentScreenshotExtension()
+{
+	return _screenshot_formats[_cur_screenshot_format].extension;
+}
+
+/** Initialize screenshot format information on startup, with #_screenshot_format_name filled from the loadsave code. */
 void InitializeScreenshotFormats()
 {
 	int i, j;
@@ -484,7 +491,7 @@ const char *GetScreenshotFormatDesc(int i)
 	return _screenshot_formats[i].name;
 }
 
-void SetScreenshotFormat(int i)
+void SetScreenshotFormat(uint i)
 {
 	_cur_screenshot_format = i;
 	strcpy(_screenshot_format_name, _screenshot_formats[i].extension);

@@ -95,7 +95,7 @@ char *FiosBrowseTo(const FiosItem *item);
 StringID FiosGetDescText(const char **path, uint32 *total_free);
 /* Delete a name */
 bool FiosDelete(const char *name);
-/* Make a filename from a name */
+void FiosMakeHeightmapName(char *buf,const char *name, size_t size);
 void FiosMakeSavegameName(char *buf, const char *name, size_t size);
 /* Allocate a new FiosItem */
 FiosItem *FiosAlloc();
