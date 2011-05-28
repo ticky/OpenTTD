@@ -1479,6 +1479,7 @@ void BuildFileList()
 		case SLD_SAVE_SCENARIO:
 			FiosGetScenarioList(_saveload_mode); break;
 		case SLD_LOAD_HEIGHTMAP:
+		case SLD_SAVE_HEIGHTMAP:
 			FiosGetHeightmapList(_saveload_mode); break;
 
 		default: FiosGetSavegameList(_saveload_mode); break;
@@ -1555,6 +1556,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 				break;
 
 			case SLD_LOAD_HEIGHTMAP:
+			case SLD_SAVE_HEIGHTMAP:
 				FioGetDirectory(o_dir.name, lengthof(o_dir.name), HEIGHTMAP_DIR);
 				break;
 
@@ -1587,7 +1589,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 			if (y >= w->vscroll.cap * 10 + w->widget[7].top + 1) break;
 		}
 
-		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
+		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP) {
 			DrawEditBox(w, &WP(w, querystr_d), 10);
 		}
 		break;
@@ -1640,7 +1642,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 					DeleteWindow(w);
 					ShowHeightmapLoad();
 				} else {
-					/* SLD_SAVE_GAME, SLD_SAVE_SCENARIO copy clicked name to editbox */
+					/* SLD_SAVE_GAME, SLD_SAVE_SCENARIO, SLD_SAVE_HEIGHTMAP copy clicked name to editbox */
 					ttd_strlcpy(WP(w, querystr_d).text.buf, file->title, WP(w, querystr_d).text.maxsize);
 					UpdateTextBufferSize(&WP(w, querystr_d).text);
 					w->InvalidateWidget(10);
@@ -1658,7 +1660,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 		}
 		break;
 	case WE_MOUSELOOP:
-		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
+		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP) {
 			HandleEditBox(w, &WP(w, querystr_d), 10);
 		}
 		break;
@@ -1668,15 +1670,15 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 			return;
 		}
 
-		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
+		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP) {
 			if (HandleEditBoxKey(w, &WP(w, querystr_d), 10, e) == 1) // Press Enter
 					w->HandleButtonClick(12);
 		}
 		break;
 	case WE_TIMEOUT:
 		/* This test protects against using widgets 11 and 12 which are only available
-		 * in those two saveload mode  */
-		if (!(_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO)) break;
+		 * in those saveload modes. */
+		if (!(_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP)) break;
 
 		if (w->IsWidgetLowered(11)) { // Delete button clicked
 			if (!FiosDelete(WP(w, querystr_d).text.buf)) {
@@ -1690,8 +1692,13 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 			UpdateTextBufferSize(&WP(w, querystr_d).text);
 			SetWindowDirty(w);
 		} else if (w->IsWidgetLowered(12)) { // Save button clicked
-			_switch_mode = SM_SAVE_GAME;
-			FiosMakeSavegameName(_file_to_saveload.name, WP(w, querystr_d).text.buf, sizeof(_file_to_saveload.name));
+			if (_saveload_mode  == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
+ 				_switch_mode = SM_SAVE_GAME;
+ 				FiosMakeSavegameName(_file_to_saveload.name, WP(w, querystr_d).text.buf, sizeof(_file_to_saveload.name));
+ 			} else {
+ 				_switch_mode = SM_SAVE_HEIGHTMAP;
+ 				FiosMakeHeightmapName(_file_to_saveload.name, WP(w, querystr_d).text.buf, sizeof(_file_to_saveload.name));
+ 			}
 
 			/* In the editor set up the vehicle engines correctly (date might have changed) */
 			if (_game_mode == GM_EDITOR) StartupEngines();
@@ -1713,7 +1720,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 		w->widget[3].right += e->we.sizing.diff.x;
 
 		/* Same for widget 11 and 12 in save-dialog */
-		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
+		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP) {
 			w->widget[11].right += diff;
 			w->widget[12].left  += diff;
 			w->widget[12].right += e->we.sizing.diff.x;
@@ -1748,6 +1755,7 @@ static const FileType _file_modetotype[] = {
 	FT_SAVEGAME,  ///< used for SLD_SAVE_GAME
 	FT_SCENARIO,  ///< used for SLD_SAVE_SCENARIO
 	FT_HEIGHTMAP, ///< used for SLD_LOAD_HEIGHTMAP
+	FT_HEIGHTMAP, ///< used for SLD_SAVE_HEIGHTMAP
 	FT_SAVEGAME,  ///< SLD_NEW_GAME
 };
 
@@ -1759,6 +1767,7 @@ void ShowSaveLoadDialog(SaveLoadDialogMode mode)
 		STR_4000_SAVE_GAME,
 		STR_0299_SAVE_SCENARIO,
 		STR_LOAD_HEIGHTMAP,
+		STR_SAVELOAD_SAVE_HEIGHTMAP,
 	};
 
 	Window *w;
@@ -1776,9 +1785,10 @@ void ShowSaveLoadDialog(SaveLoadDialogMode mode)
 	 * by current file mode */
 	_file_to_saveload.filetype = _file_modetotype[mode];
 	switch (mode) {
-		case SLD_SAVE_GAME:     GenerateFileName(); break;
-		case SLD_SAVE_SCENARIO: strcpy(_edit_str_buf, "UNNAMED"); break;
-		default:                sld = &_load_dialog_desc; break;
+		case SLD_SAVE_GAME:      GenerateFileName(); break;
+		case SLD_SAVE_HEIGHTMAP:
+		case SLD_SAVE_SCENARIO:  strcpy(_edit_str_buf, "UNNAMED"); break;
+		default:                 sld = &_load_dialog_desc; break;
 	}
 
 	assert((uint)mode < lengthof(saveload_captions));

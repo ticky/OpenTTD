@@ -190,9 +190,10 @@ static void MenuClickSaveLoad(int index)
 		switch (index) {
 			case 0: ShowSaveLoadDialog(SLD_SAVE_SCENARIO);  break;
 			case 1: ShowSaveLoadDialog(SLD_LOAD_SCENARIO);  break;
-			case 2: ShowSaveLoadDialog(SLD_LOAD_HEIGHTMAP); break;
-			case 3: AskExitToGameMenu();                    break;
-			case 5: HandleExitGameRequest();                break;
+			case 2: ShowSaveLoadDialog(SLD_SAVE_HEIGHTMAP); break;
+			case 3: ShowSaveLoadDialog(SLD_LOAD_HEIGHTMAP); break;
+			case 4: AskExitToGameMenu();                    break;
+			case 6: HandleExitGameRequest();                break;
 		}
 	} else {
 		switch (index) {
@@ -993,7 +994,7 @@ static void ToolbarOptionsClick(Window *w)
 
 static void ToolbarScenSaveOrLoad(Window *w)
 {
-	PopupMainToolbMenu(w, 3, STR_0292_SAVE_SCENARIO, 6, 0);
+	PopupMainToolbMenu(w, 3, STR_0292_SAVE_SCENARIO, 7, 0);
 }
 
 static void ToolbarScenDateBackward(Window *w)

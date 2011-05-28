@@ -1954,6 +1954,7 @@ STR_400E_SELECT_NEW_GAME_TYPE                                   :{WHITE}Select N
 STR_400F_SELECT_SCENARIO_GREEN_PRE                              :{BLACK}Select scenario (green), pre-set game (blue), or random new game
 STR_4010_GENERATE_RANDOM_NEW_GAME                               :Generate random new game
 STR_LOAD_HEIGHTMAP                                              :{WHITE}Load Heightmap
+STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Save Heightmap
 
 ##id 0x4800
 STR_4800_IN_THE_WAY                                             :{WHITE}{STRING} in the way

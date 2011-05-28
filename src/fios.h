@@ -26,12 +26,14 @@ enum {
 	MAX_FILE_SLOTS = 64
 };
 
-enum SaveLoadDialogMode{
-	SLD_LOAD_GAME,
-	SLD_LOAD_SCENARIO,
-	SLD_SAVE_GAME,
-	SLD_SAVE_SCENARIO,
-	SLD_LOAD_HEIGHTMAP,
+/** Mode of the file dialogue window. */
+enum SaveLoadDialogMode {
+	SLD_LOAD_GAME,      ///< Load a game.
+	SLD_LOAD_SCENARIO,  ///< Load a scenario.
+	SLD_SAVE_GAME,      ///< Save a game.
+	SLD_SAVE_SCENARIO,  ///< Save a scenario.
+	SLD_LOAD_HEIGHTMAP, ///< Load a heightmap.
+	SLD_SAVE_HEIGHTMAP, ///< Save a heightmap.
 	SLD_NEW_GAME,
 };
 
