@@ -25,6 +25,8 @@
 
 #include "safeguards.h"
 
+static const char * const SCREENSHOT_NAME = "screenshot"; ///< Default filename of a saved screenshot.
+
 char _screenshot_format_name[8];
 uint _num_screenshot_formats;
 uint _cur_screenshot_format;
@@ -549,13 +551,19 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 	_screen_disable_anim = old_disable_anim;
 }
 
-static char *MakeScreenshotName(const char *ext)
+/**
+ * Construct a pathname for a screenshot file.
+ * @param default_fn Default filename.
+ * @param ext        Extension to use.
+ * @return Pathname for a screenshot file.
+ */
+static const char *MakeScreenshotName(const char *default_fn, const char *ext)
 {
 	bool generate = StrEmpty(_screenshot_name);
 
 	if (generate) {
 		if (_game_mode == GM_EDITOR || _game_mode == GM_MENU || _local_player == PLAYER_SPECTATOR) {
-			strecpy(_screenshot_name, "screenshot", lastof(_screenshot_name));
+			strecpy(_screenshot_name, default_fn, lastof(_screenshot_name));
 		} else {
 			GenerateDefaultSaveName(_screenshot_name, lastof(_screenshot_name));
 		}
@@ -584,7 +592,8 @@ static char *MakeScreenshotName(const char *ext)
 static bool MakeSmallScreenshot()
 {
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
-	return sf->proc(MakeScreenshotName(sf->extension), CurrentScreenCallback, NULL, _screen.width, _screen.height, BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette);
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), CurrentScreenCallback, NULL, _screen.width, _screen.height,
+			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette);
 }
 
 /** Make a zoomed-in screenshot of the currently visible area. */
@@ -604,7 +613,8 @@ static bool MakeZoomedInScreenshot()
 	vp.height = vp.virtual_height;
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
-	return sf->proc(MakeScreenshotName(sf->extension), LargeWorldCallback, &vp, vp.width, vp.height, BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette);
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), LargeWorldCallback, &vp, vp.width, vp.height,
+			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette);
 }
 
 /** Make a screenshot of the whole map. */
@@ -624,7 +634,8 @@ static bool MakeWorldScreenshot()
 	vp.height = vp.virtual_height;
 
 	sf = _screenshot_formats + _cur_screenshot_format;
-	return sf->proc(MakeScreenshotName(sf->extension), LargeWorldCallback, &vp, vp.width, vp.height, BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette);
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), LargeWorldCallback, &vp, vp.width, vp.height,
+			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette);
 }
 
 /**
