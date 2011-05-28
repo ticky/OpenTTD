@@ -12,11 +12,13 @@ void SetScreenshotFormat(int i);
 
 /** Type of requested screenshot */
 enum ScreenshotType {
-	SC_VIEWPORT, ///< Screenshot of viewport
-	SC_ZOOMEDIN, ///< Zoomed in screenshot of the visible area
-	SC_WORLD,    ///< World screenshot
+	SC_VIEWPORT,  ///< Screenshot of viewport.
+	SC_ZOOMEDIN,  ///< Zoomed in screenshot of the visible area.
+	SC_WORLD,     ///< World screenshot.
+	SC_HEIGHTMAP, ///< Heightmap of the world.
 };
 
+bool MakeHeightmapScreenshot(const char *filename);
 bool MakeScreenshot(ScreenshotType t, const char *name);
 
 extern char _screenshot_format_name[8];
