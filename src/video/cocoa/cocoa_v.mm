@@ -153,6 +153,11 @@ static void setupWindowMenu()
 	[windowMenuItem setSubmenu:windowMenu];
 	[[NSApp mainMenu] addItem:windowMenuItem];
 
+	if(MacOSVersionIsAtLeast(10, 7, 0)) {
+		/* The OS will change the name of this menu item automatically */
+		[ windowMenu addItemWithTitle:@"Fullscreen" action:@selector(toggleFullScreen:) keyEquivalent:@"^f" ];
+	}
+
 	/* Tell the application object that this is now the window menu */
 	[NSApp setWindowsMenu:windowMenu];
 
@@ -253,13 +258,33 @@ static CocoaSubdriver *QZ_CreateWindowSubdriver(int width, int height, int bpp)
 	return NULL;
 }
 
-
+/**
+ * Find a suitable cocoa subdriver.
+ *
+ * @param width Width of display area.
+ * @param height Height of display area.
+ * @param bpp Colour depth of display area.
+ * @param fullscreen Whether a fullscreen mode is requested.
+ * @param fallback Whether we look for a fallback driver.
+ * @return Pointer to window subdriver.
+ */
 static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool fullscreen, bool fallback)
 {
-	CocoaSubdriver *ret;
+	CocoaSubdriver *ret = NULL;
+	/* OSX 10.7 allows to toggle fullscreen mode differently */
+	if (MacOSVersionIsAtLeast(10, 7, 0)) {
+		ret = QZ_CreateWindowSubdriver(width, height, bpp);
+	} else {
+		ret = fullscreen ? QZ_CreateFullscreenSubdriver(width, height, bpp) : QZ_CreateWindowSubdriver(width, height, bpp);
+	}
 
-	ret = fullscreen ? QZ_CreateFullscreenSubdriver(width, height, bpp) : QZ_CreateWindowSubdriver(width, height, bpp);
-	if (ret != NULL) return ret;
+	if (ret != NULL) {
+			/* We cannot set any fullscreen mode on OSX 10.7 when not compiled against SDK 10.7 */
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+		if (fullscreen) { ret->ToggleFullscreen(); }
+#endif
+		return ret;
+	}
 
 	if (!fallback) return NULL;
 
@@ -268,7 +293,7 @@ static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool f
 	ret = QZ_CreateWindowSubdriver(640, 480, bpp);
 	if (ret != NULL) return ret;
 
-#ifdef _DEBUG
+#ifdef _DEBUG && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
 	/* Try fullscreen too when in debug mode */
 	DEBUG(driver, 0, "Setting video mode failed, falling back to 640x480 fullscreen mode.");
 	ret = QZ_CreateFullscreenSubdriver(640, 480, bpp);
@@ -354,11 +379,12 @@ bool VideoDriver_Cocoa::ChangeResolution(int w, int h)
 
 bool VideoDriver_Cocoa::ToggleFullscreen(bool full_screen)
 {
-	bool oldfs;
-
 	assert(_cocoa_subdriver != NULL);
 
-	oldfs = _cocoa_subdriver->IsFullscreen();
+	/* For 10.7 and later, we try to toggle using the quartz subdriver. */
+	if (_cocoa_subdriver->ToggleFullscreen()) return true;
+
+	bool oldfs = _cocoa_subdriver->IsFullscreen();
 	if (full_screen != oldfs) {
 		int width  = _cocoa_subdriver->GetWidth();
 		int height = _cocoa_subdriver->GetHeight();
