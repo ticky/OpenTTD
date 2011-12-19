@@ -19,6 +19,7 @@ enum Owner {
 	OWNER_TOWN      = 0x0F, ///< A town owns the tile, or a town is expanding
 	OWNER_NONE      = 0x10, ///< The tile has no ownership
 	OWNER_WATER     = 0x11, ///< The tile/execution is done by "water"
+	OWNER_DEITY     = 0x12, ///< The object is owned by a superuser / goal script
 	OWNER_END,              ///< Last + 1 owner
 	INVALID_OWNER   = 0xFF, ///< An invalid owner
 	INVALID_PLAYER  = 0xFF, ///< And a valid owner

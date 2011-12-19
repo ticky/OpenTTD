@@ -303,10 +303,11 @@ enum {
  *
  * This enumeration defines flags for the _command_proc_table.
  */
-enum {
-	CMD_SERVER  = 0x1, ///< the command can only be initiated by the server
-	CMD_OFFLINE = 0x2, ///< the command cannot be executed in a multiplayer game; single-player only
-	CMD_AUTO    = 0x4, ///< set the DC_AUTO flag on this command
+enum CommandFlags {
+	CMD_SERVER  = 0x001, ///< the command can only be initiated by the server
+	CMD_OFFLINE = 0x002, ///< the command cannot be executed in a multiplayer game; single-player only
+	CMD_AUTO    = 0x004, ///< set the DC_AUTO flag on this command
+	CMD_DEITY   = 0x100, ///< the command may be executed by COMPANY_DEITY
 };
 
 /**
