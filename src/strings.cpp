@@ -255,7 +255,7 @@ static char *FormatCommaNumber(char *buff, int64 number, const char *last)
 			quot = num / divisor;
 			num = num % divisor;
 		}
-		if (tot |= quot || i == 19) {
+		if ((tot |= quot) || i == 19) {
 			*buff++ = '0' + quot;
 			if ((i % 3) == 1 && i != 19) *buff++ = ',';
 		}

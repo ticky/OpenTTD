@@ -1,5 +1,5 @@
 OpenTTD README
-Last updated:    2008-10-01
+Last updated:    2012-02-12
 Release version: 0.6.3
 ------------------------------------------------------------------------
 
@@ -267,6 +267,58 @@ MorphOS:
 OS/2:
   A comprehensive GNU build environment is required to build the OS/2 version.
   See the docs/Readme_OS2.txt file for more information.
+
+
+7.1) Required/optional libraries
+---- ---------------------------
+The following libraries are used by OpenTTD for:
+  - libSDL/liballegro: hardware access (video, sound, mouse)
+  - zlib: (de)compressing of old (0.3.0-1.0.5) savegames, content downloads,
+    heightmaps
+  - liblzo2: (de)compressing of old (pre 0.3.0) savegames
+  - libpng: making screenshots and loading heightmaps
+  - libfreetype: loading generic fonts and rendering them
+  - libfontconfig: searching for fonts, resolving font names to actual fonts
+
+OpenTTD does not require any of the libraries to be present, but without
+liblzma you cannot open most recent savegames and without zlib you cannot
+open most older savegames or use the content downloading system.
+Without libSDL/liballegro on non-Windows and non-MacOS X machines you have
+no graphical user interface; you would be building a dedicated server.
+
+To recompile the extra graphics needed to play with the original Transport
+Tycoon Deluxe graphics you need GRFCodec (which includes NFORenum) as well.
+GRFCodec can be found at: http://www.openttd.org/download-grfcodec
+The compilation of these extra graphics does generally not happen, unless
+you remove the graphics file using "make maintainer-clean".
+
+7.2) Supported compilers
+---- -------------------
+The following compilers are known to compile OpenTTD:
+  - Microsoft Visual C++ (MSVC) 2005, 2008 and 2010.
+    Version 2005 gives bogus warnings about scoping issues.
+  - GNU Compiler Collection (GCC) 3.3 - 4.7.
+    Versions 4.1 and earlier give bogus warnings about uninitialised variables.
+    Versions 4.4 - 4.6 give bogus warnings about freeing non-heap objects.
+    Versions 4.5 and later give invalid warnings when lto is enabled.
+  - Intel C++ Compiler (ICC) 12.0.
+  - Clang/LLVM 2.9 - 3.0
+    Version 2.9 gives bogus warnings about code nonconformity.
+
+The following compilers are known not to compile OpenTTD:
+  - Microsoft Visual C++ (MSVC) 2003 and earlier.
+  - GNU Compiler Collection (GCC) 3.2 and earlier.
+    These old versions fail due to OpenTTD's template usage.
+  - Intel C++ Compiler (ICC) 11.1 and earlier.
+    Version 10.0 and earlier fail a configure check and fail with recent system
+        headers.
+    Version 10.1 fails to compile station_gui.cpp.
+    Version 11.1 fails with an internal error when compiling network.cpp.
+  - Clang/LLVM 2.8 and earlier.
+  - (Open) Watcom.
+
+If any of these compilers can compile OpenTTD again, please let us know.
+Patches to support more compilers are welcome.
 
 
 8.0) Translating:
