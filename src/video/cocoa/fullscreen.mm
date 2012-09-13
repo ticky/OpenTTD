@@ -58,7 +58,7 @@ struct OTTD_QuartzGammaTable {
 @end
 
 @implementation NSScreen (NSScreenAccess)
-- (void) setFrame:(NSRect)frame;
+- (void) setFrame:(NSRect)frame
 {
 /* The 64 bits libraries don't seem to know about _frame, so this hack won't work. */
 #ifndef __LP64__

@@ -11,8 +11,8 @@
 #define CPU_SUBTYPE_POWERPC_970 ((cpu_subtype_t) 100)
 #endif
 
-// this function is a lightly modified version of some code from Apple's developer homepage to detect G5 CPUs at runtime
-main()
+/* this function is a lightly modified version of some code from Apple's developer homepage to detect G5 CPUs at runtime */
+int main()
 {
 	host_basic_info_data_t hostInfo;
 	mach_msg_type_number_t infoCount;
