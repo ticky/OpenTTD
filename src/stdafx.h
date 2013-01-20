@@ -21,25 +21,55 @@
 
 /* It seems that we need to include stdint.h before anything else
  * We need INT64_MAX, which for most systems comes from stdint.h. However, MSVC
- * does not have stdint.h and apparently neither does MorphOS, so define
- * INT64_MAX for them ourselves.
- * Sometimes OSX headers manages to include stdint.h before this but without
- * __STDC_LIMIT_MACROS so it will be without INT64_*. We need to define those
- * too if this is the case. */
-#if !defined(_MSC_VER) && !defined( __MORPHOS__) && !defined(_STDINT_H_)
+ * does not have stdint.h and apparently neither does MorphOS.
+ * For OSX the inclusion is already done in osx_stdafx.h. */
+#if !defined(__APPLE__) && !defined(_MSC_VER) && !defined(__MORPHOS__)
 	#if defined(SUNOS)
 		/* SunOS/Solaris does not have stdint.h, but inttypes.h defines everything
 		 * stdint.h defines and we need. */
 		#include <inttypes.h>
-	# else
+	#else
 		#define __STDC_LIMIT_MACROS
 		#include <stdint.h>
 	#endif
-#else
-	#define INT64_MAX (9223372036854775807LL)
-	#define INT64_MIN (-INT64_MAX - 1)
-	#define INT16_MAX (32767)
-	#define INT16_MIN (-INT16_MAX - 1)
+#endif
+
+/* The conditions for these constants to be available are way too messy; so check them one by one */
+#if !defined(UINT64_MAX)
+	#define UINT64_MAX (18446744073709551615ULL)
+#endif
+#if !defined(INT64_MAX)
+	#define INT64_MAX  (9223372036854775807LL)
+#endif
+#if !defined(INT64_MIN)
+	#define INT64_MIN  (-INT64_MAX - 1)
+#endif
+#if !defined(UINT32_MAX)
+	#define UINT32_MAX (4294967295U)
+#endif
+#if !defined(INT32_MAX)
+	#define INT32_MAX  (2147483647)
+#endif
+#if !defined(INT32_MIN)
+	#define INT32_MIN  (-INT32_MAX - 1)
+#endif
+#if !defined(UINT16_MAX)
+	#define UINT16_MAX (65535U)
+#endif
+#if !defined(INT16_MAX)
+	#define INT16_MAX  (32767)
+#endif
+#if !defined(INT16_MIN)
+	#define INT16_MIN  (-INT16_MAX - 1)
+#endif
+#if !defined(UINT8_MAX)
+	#define UINT8_MAX  (255)
+#endif
+#if !defined(INT8_MAX)
+	#define INT8_MAX   (127)
+#endif
+#if !defined(INT8_MIN)
+	#define INT8_MIN   (-INT8_MAX - 1)
 #endif
 
 #include <cstdio>
