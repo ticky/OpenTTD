@@ -1136,7 +1136,7 @@ void IConsoleCmdExec(const char *cmdstr)
 		}
 	}
 
-	if (tokens[0] == '\0') return; // don't execute empty commands
+	if (StrEmpty(tokens[0])) return; // don't execute empty commands
 	/* 2. Determine type of command (cmd, alias or variable) and execute
 	 * First try commands, then aliases, and finally variables. Execute
 	 * the found action taking into account its hooking code
