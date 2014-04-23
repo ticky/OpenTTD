@@ -11,6 +11,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 TransparencyOptionBits _transparency_opt;
 TransparencyOptionBits _transparency_lock;
 

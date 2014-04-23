@@ -52,6 +52,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 #define INVALID_COORD (0x7fffffff)
 #define GEN_HASH(x, y) ((GB((y), 6, 6) << 6) + GB((x), 7, 6))
 

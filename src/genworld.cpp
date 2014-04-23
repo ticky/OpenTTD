@@ -28,6 +28,8 @@
 
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 void GenerateClearTile();
 void GenerateIndustries();
 void GenerateUnmovables();

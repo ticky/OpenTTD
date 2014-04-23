@@ -30,6 +30,8 @@
 #undef Point
 #undef Rect
 
+#include "../safeguards.h"
+
 static FSoundDriver_Cocoa iFSoundDriver_Cocoa;
 
 static AudioUnit _outputAudioUnit;

@@ -10,6 +10,8 @@
 #include "core/math_func.hpp"
 #include "map_func.h"
 
+#include "safeguards.h"
+
 #if defined(_MSC_VER) && _MSC_VER >= 1400 /* VStudio 2005 is stupid! */
 /* Why the hell is that not in all MSVC headers?? */
 extern "C" _CRTIMP void __cdecl _assert(void *, void *, unsigned);

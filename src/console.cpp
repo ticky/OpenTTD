@@ -21,6 +21,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 #define ICON_BUFFER 79
 #define ICON_HISTORY_SIZE 20
 #define ICON_LINE_HEIGHT 12

@@ -19,6 +19,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Convert RGB colors to Grayscale using 29.9% Red, 58.7% Green, 11.4% Blue
  *  (average luminosity formula) -- Dalestan

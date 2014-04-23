@@ -19,6 +19,8 @@
 #include "saveload.h"
 #endif
 
+#include "safeguards.h"
+
 Year      _cur_year;
 Month     _cur_month;
 Date      _date;

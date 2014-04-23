@@ -78,6 +78,8 @@ static const char *LoadSdlDLL()
 
 #endif // DYNAMICALLY_LOADED_SDL
 
+#include "safeguards.h"
+
 
 #ifdef UNIX
 static void SdlAbort(int sig)

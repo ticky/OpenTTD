@@ -8,6 +8,8 @@
 
 #include "../table/sprites.h"
 
+#include "../safeguards.h"
+
 static FBlitter_32bppSimple iFBlitter_32bppSimple;
 
 void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)

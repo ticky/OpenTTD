@@ -26,6 +26,8 @@
 #include "table/sprites.h"
 #include "table/town_land.h"
 
+#include "safeguards.h"
+
 static BuildingCounts    _building_counts;
 static HouseClassMapping _class_mapping[HOUSE_CLASS_MAX];
 

@@ -12,6 +12,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 DEFINE_OLD_POOL_GENERIC(Depot, Depot)
 
 /**

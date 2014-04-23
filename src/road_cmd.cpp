@@ -37,6 +37,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 #define M(x) (1 << (x))
 /* Level crossings may only be built on these slopes */
 static const uint32 VALID_LEVEL_CROSSING_SLOPES = (M(SLOPE_SEN) | M(SLOPE_ENW) | M(SLOPE_NWS) | M(SLOPE_NS) | M(SLOPE_WSE) | M(SLOPE_EW) | M(SLOPE_FLAT));

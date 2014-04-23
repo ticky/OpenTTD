@@ -12,6 +12,8 @@
 #include "core.h"
 #include "packet.h"
 
+#include "../../safeguards.h"
+
 #ifdef __MORPHOS__
 /* the library base is required here */
 struct Library *SocketBase = NULL;

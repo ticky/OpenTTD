@@ -27,6 +27,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 bool _ignore_restrictions;
 
 /** Names of the widgets of the dynamic place industries gui */

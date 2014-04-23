@@ -20,6 +20,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 void CcBuildWagon(bool success, TileIndex tile, uint32 p1, uint32 p2)
 {
 	Vehicle *v, *found;

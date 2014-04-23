@@ -25,6 +25,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 TileIndex _backup_orders_tile;
 BackuppedOrders _backup_orders_data;
 

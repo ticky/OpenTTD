@@ -30,6 +30,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 char _name_array[512][32];
 
 void InitializeVehicles();

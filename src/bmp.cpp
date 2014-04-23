@@ -7,6 +7,8 @@
 #include "core/bitmath_func.hpp"
 #include "core/alloc_func.hpp"
 
+#include "safeguards.h"
+
 void BmpInitializeBuffer(BmpBuffer *buffer, FILE *file)
 {
 	buffer->pos      = -1;

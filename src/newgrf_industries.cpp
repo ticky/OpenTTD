@@ -25,6 +25,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static uint32 _industry_creation_random_bits;
 
 /* Since the industry IDs defined by the GRF file don't necessarily correlate

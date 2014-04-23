@@ -21,6 +21,8 @@
 
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 struct MD5File {
 	const char * filename;     ///< filename
 	uint8 hash[16];            ///< md5 sum of the file

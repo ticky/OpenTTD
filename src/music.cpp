@@ -4,6 +4,8 @@
 
 #include "music.h"
 
+#include "safeguards.h"
+
 const SongSpecs origin_songs_specs[NUM_SONGS_AVAILABLE] = {
 	{"gm_tt00.gm", "Tycoon DELUXE Theme"},
 	{"gm_tt02.gm", "Easy Driver"},

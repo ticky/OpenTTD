@@ -20,6 +20,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /* Bitmasks of player and cargo indices that shouldn't be drawn. */
 static uint _legend_excluded_players;
 static uint _legend_excluded_cargo;

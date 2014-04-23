@@ -29,6 +29,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 #define VIEWPORT_DRAW_MEM (65536 * 2)
 
 PlaceProc *_place_proc;

@@ -14,6 +14,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static const char *UPARROW   = "\xEE\x8A\xA0";
 static const char *DOWNARROW = "\xEE\x8A\xAA";
 

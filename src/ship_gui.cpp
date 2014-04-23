@@ -19,6 +19,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 void DrawShipImage(const Vehicle *v, int x, int y, VehicleID selection)
 {
 	DrawSprite(v->GetImage(DIR_W), GetVehiclePalette(v), x + 32, y + 10);

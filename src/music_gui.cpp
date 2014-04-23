@@ -19,6 +19,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 static byte _music_wnd_cursong;
 static bool _song_is_active;
 static byte _cur_playlist[NUM_SONGS_PLAYLIST];

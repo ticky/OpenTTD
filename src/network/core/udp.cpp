@@ -15,6 +15,8 @@
 #include "packet.h"
 #include "udp.h"
 
+#include "../../safeguards.h"
+
 /**
  * Start listening on the given host and port.
  * @param host      the host (ip) to listen on

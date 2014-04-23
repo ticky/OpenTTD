@@ -19,6 +19,8 @@
 #include "signal_func.h"
 #include "player_func.h"
 
+#include "safeguards.h"
+
 
 /** these are the maximums used for updating signal blocks */
 enum {

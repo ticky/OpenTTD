@@ -20,6 +20,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** @file news_gui.cpp
  *
  * News system is realized as a FIFO queue (in an array)

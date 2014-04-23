@@ -20,6 +20,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 SignID _new_sign_id;
 uint _total_signs;
 bool _sign_sort_dirty;

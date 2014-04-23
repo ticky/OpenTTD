@@ -9,6 +9,8 @@
 #include "../core/alloc_func.hpp"
 #include "grf.hpp"
 
+#include "../safeguards.h"
+
 bool SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, uint32 file_pos)
 {
 	/* Open the right file and go to the correct position */

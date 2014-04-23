@@ -18,6 +18,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static void HandleSubsidyClick(int y)
 {
 	const Subsidy *s;

@@ -13,6 +13,8 @@
 #include <windows.h>
 #include <tchar.h>
 
+#include "../safeguards.h"
+
 static struct {
 	HWND main_wnd;
 	HBITMAP dib_sect;

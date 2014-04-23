@@ -15,6 +15,8 @@
 #include <dmusicc.h>
 #include <dmusicf.h>
 
+#include "../safeguards.h"
+
 static FMusicDriver_DMusic iFMusicDriver_DMusic;
 
 /** the performance object controls manipulation of the segments */

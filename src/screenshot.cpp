@@ -21,6 +21,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 char _screenshot_format_name[8];
 uint _num_screenshot_formats;
 uint _cur_screenshot_format;

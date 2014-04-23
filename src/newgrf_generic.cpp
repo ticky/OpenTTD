@@ -13,6 +13,8 @@
 #include "tile_map.h"
 #include <list>
 
+#include "safeguards.h"
+
 
 struct GenericCallback {
 	const GRFFile *file;

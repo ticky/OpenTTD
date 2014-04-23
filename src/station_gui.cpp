@@ -28,6 +28,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 typedef int CDECL StationSortListingTypeFunction(const void*, const void*);
 
 static StationSortListingTypeFunction StationNameSorter;

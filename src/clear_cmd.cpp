@@ -23,6 +23,8 @@
 #include "table/sprites.h"
 #include "table/clear_land.h"
 
+#include "safeguards.h"
+
 static CommandCost ClearTile_Clear(TileIndex tile, byte flags)
 {
 	static const Money* clear_price_table[] = {

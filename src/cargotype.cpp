@@ -12,6 +12,8 @@
 #include "table/strings.h"
 #include "table/cargo_const.h"
 
+#include "safeguards.h"
+
 CargoSpec _cargo[NUM_CARGO];
 
 static const byte INVALID_CARGO = 0xFF;

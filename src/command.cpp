@@ -24,6 +24,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 const char *_cmd_text = NULL;
 StringID _error_message;
 

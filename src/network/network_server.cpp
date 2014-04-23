@@ -29,6 +29,8 @@
 
 #include "table/strings.h"
 
+#include "../safeguards.h"
+
 // This file handles all the server-commands
 
 static void NetworkHandleCommandQueue(NetworkTCPSocketHandler* cs);

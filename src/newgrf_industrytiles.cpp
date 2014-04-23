@@ -27,6 +27,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static uint32 GetGRFParameter(IndustryGfx indtile_id, byte parameter)
 {
 	const IndustryTileSpec *indtspec = GetIndustryTileSpec(indtile_id);

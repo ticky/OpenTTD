@@ -39,6 +39,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Describes the behaviour of a tile during flooding.
  */

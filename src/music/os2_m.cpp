@@ -12,6 +12,8 @@
 #include <os2.h>
 #include <os2me.h>
 
+#include "../safeguards.h"
+
 /**********************
  * OS/2 MIDI PLAYER
  **********************/

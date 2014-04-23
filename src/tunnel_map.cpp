@@ -7,6 +7,8 @@
 #include "tunnel_map.h"
 #include "tunnelbridge_map.h"
 
+#include "safeguards.h"
+
 
 /**
  * Gets the other end of the tunnel. Where a vehicle would reappear when it

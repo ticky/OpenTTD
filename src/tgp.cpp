@@ -18,6 +18,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /*
  *
  * Quickie guide to Perlin Noise

@@ -39,6 +39,8 @@
 #include "table/strings.h"
 #include "table/bridge_land.h"
 
+#include "safeguards.h"
+
 BridgeSpec _bridge[MAX_BRIDGES];
 
 /** Reset the data been eventually changed by the grf loaded. */

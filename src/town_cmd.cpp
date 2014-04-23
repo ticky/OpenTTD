@@ -43,6 +43,8 @@
 #include "table/sprites.h"
 #include "table/town_land.h"
 
+#include "safeguards.h"
+
 #include <map>
 
 uint _total_towns;

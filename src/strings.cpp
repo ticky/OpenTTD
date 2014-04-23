@@ -41,6 +41,8 @@
 #include "table/strings.h"
 #include "table/control_codes.h"
 
+#include "safeguards.h"
+
 DynamicLanguages _dynlang;
 char _userstring[128];
 uint64 _decode_parameters[20];

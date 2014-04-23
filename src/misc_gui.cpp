@@ -45,6 +45,7 @@
 #include "table/strings.h"
 #include "table/tree_land.h"
 
+#include "safeguards.h"
 
 /**
  * Try to retrive the current clipboard contents.

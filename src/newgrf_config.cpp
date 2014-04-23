@@ -14,6 +14,8 @@
 #include "core/alloc_func.hpp"
 #include "string_func.h"
 
+#include "safeguards.h"
+
 #include "fileio.h"
 #include "fios.h"
 #include <sys/stat.h>

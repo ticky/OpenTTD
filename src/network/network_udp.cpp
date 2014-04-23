@@ -26,6 +26,8 @@
 
 #include "core/udp.h"
 
+#include "../safeguards.h"
+
 enum {
 	ADVERTISE_NORMAL_INTERVAL = 30000, // interval between advertising in ticks (15 minutes)
 	ADVERTISE_RETRY_INTERVAL  =   300, // readvertise when no response after this many ticks (9 seconds)

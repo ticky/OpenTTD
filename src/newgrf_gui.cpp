@@ -19,6 +19,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /** Parse an integerlist string and set each found value
  * @param p the string to be parsed. Each element in the list is seperated by a
  * comma or a space character

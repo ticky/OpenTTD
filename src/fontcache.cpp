@@ -16,6 +16,8 @@
 #include "table/sprites.h"
 #include "table/control_codes.h"
 
+#include "safeguards.h"
+
 #ifdef WITH_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H

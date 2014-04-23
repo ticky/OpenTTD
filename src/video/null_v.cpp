@@ -8,6 +8,8 @@
 #include "../blitter/factory.hpp"
 #include "null_v.h"
 
+#include "../safeguards.h"
+
 static FVideoDriver_Null iFVideoDriver_Null;
 
 const char *VideoDriver_Null::Start(const char* const *parm)

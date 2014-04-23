@@ -14,6 +14,8 @@
 #include "date_func.h"
 #include "settings_type.h"
 
+#include "safeguards.h"
+
 static void SpriteGroupPoolCleanBlock(uint start_item, uint end_item);
 
 static uint _spritegroup_count = 0;

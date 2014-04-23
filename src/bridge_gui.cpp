@@ -20,6 +20,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static struct BridgeData {
 	uint8 last_size;
 	uint count;

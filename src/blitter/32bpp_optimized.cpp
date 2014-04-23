@@ -6,6 +6,8 @@
 #include "../debug.h"
 #include "32bpp_optimized.hpp"
 
+#include "../safeguards.h"
+
 static FBlitter_32bppOptimized iFBlitter_32bppOptimized;
 
 void Blitter_32bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)

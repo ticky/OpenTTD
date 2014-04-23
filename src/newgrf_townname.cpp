@@ -14,6 +14,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static GRFTownName *_grf_townnames = NULL;
 
 GRFTownName *GetGRFTownName(uint32 grfid)

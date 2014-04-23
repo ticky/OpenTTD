@@ -16,6 +16,8 @@
 #include "network_gamelist.h"
 #include "network_gui.h"
 
+#include "../safeguards.h"
+
 NetworkGameList *_network_game_list = NULL;
 
 /** Add a new item to the linked gamelist. If the IP and Port match

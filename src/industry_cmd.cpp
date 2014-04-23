@@ -41,6 +41,8 @@
 #include "table/industry_land.h"
 #include "table/build_industry.h"
 
+#include "safeguards.h"
+
 void ShowIndustryViewWindow(int industry);
 void BuildOilRig(TileIndex tile);
 

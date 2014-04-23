@@ -83,6 +83,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 void CallLandscapeTick();
 void IncreaseDate();
 void DoPaletteAnimations();

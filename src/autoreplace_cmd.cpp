@@ -25,6 +25,7 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
 
 /*
  * move the cargo from one engine to another if possible

@@ -27,8 +27,9 @@
 
 #include "table/strings.h"
 
-// This file handles all the client-commands
+#include "../safeguards.h"
 
+// This file handles all the client-commands
 
 // So we don't make too much typos ;)
 #define MY_CLIENT DEREF_CLIENT(0)

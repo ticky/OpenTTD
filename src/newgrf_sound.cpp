@@ -12,6 +12,8 @@
 #include "vehicle_base.h"
 #include "sound_func.h"
 
+#include "safeguards.h"
+
 static uint _sound_count = 0;
 STATIC_OLD_POOL(SoundInternal, FileEntry, 3, 1000, NULL, NULL)
 

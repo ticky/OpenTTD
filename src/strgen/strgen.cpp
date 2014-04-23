@@ -28,6 +28,8 @@
 #define stderr stdout
 #endif /* __MORPHOS__ */
 
+#include "../safeguards.h"
+
 /* Compiles a list of strings into a compiled string list */
 
 typedef void (*ParseCmdProc)(char *buf, int value);

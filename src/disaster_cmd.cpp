@@ -44,6 +44,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 enum DisasterSubType {
 	ST_Zeppeliner,
 	ST_Zeppeliner_Shadow,

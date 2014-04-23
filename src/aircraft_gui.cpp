@@ -18,6 +18,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
 * Draw the details for the given vehicle at the position (x,y)
 *

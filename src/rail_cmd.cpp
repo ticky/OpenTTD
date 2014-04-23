@@ -46,6 +46,8 @@
 #include "table/railtypes.h"
 #include "table/track_land.h"
 
+#include "safeguards.h"
+
 const byte _track_sloped_sprites[14] = {
 	14, 15, 22, 13,
 	 0, 21, 17, 12,

@@ -12,6 +12,8 @@
 #include "date_func.h"
 #include "settings_type.h"
 
+#include "safeguards.h"
+
 /* Uncomment this to print out a full report of the airport-structure
  * You should either use
  * - true: full-report, print out every state and choice with string-names

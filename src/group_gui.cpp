@@ -29,6 +29,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 struct Sorting {
 	Listing aircraft;
 	Listing roadveh;

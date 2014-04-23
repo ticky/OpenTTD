@@ -25,6 +25,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 enum TownAuthorityWidget {
 	TWA_CLOSEBOX = 0,
 	TWA_CAPTION,

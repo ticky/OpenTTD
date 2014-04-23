@@ -69,6 +69,8 @@
 #include "table/sprites.h"
 #include "table/elrail_data.h"
 
+#include "safeguards.h"
+
 static inline TLG GetTLG(TileIndex t)
 {
 	return (TLG)((HasBit(TileX(t), 0) << 1) + HasBit(TileY(t), 0));

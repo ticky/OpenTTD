@@ -32,6 +32,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /**
  * In what 'mode' the GenerateLandscapeWindowProc is.
  */

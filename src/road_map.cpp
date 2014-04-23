@@ -13,6 +13,8 @@
 #include "depot.h"
 #include "tunnelbridge_map.h"
 
+#include "safeguards.h"
+
 
 RoadBits GetAnyRoadBits(TileIndex tile, RoadType rt, bool straight_tunnel_bridge_entrance)
 {

@@ -40,6 +40,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static RailType _cur_railtype;
 static bool _remove_button_clicked;
 static DiagDirection _build_depot_direction;

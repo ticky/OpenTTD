@@ -27,6 +27,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static void ShowRVStationPicker(RoadStop::Type rs);
 static void ShowRoadDepotPicker();
 

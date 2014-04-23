@@ -10,6 +10,8 @@
 #include "sdl_s.h"
 #include <SDL.h>
 
+#include "../safeguards.h"
+
 static FSoundDriver_SDL iFSoundDriver_SDL;
 
 static void CDECL fill_sound_buffer(void *userdata, Uint8 *stream, int len)

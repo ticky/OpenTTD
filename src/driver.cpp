@@ -11,6 +11,8 @@
 #include "music/music_driver.hpp"
 #include "video/video_driver.hpp"
 
+#include "safeguards.h"
+
 VideoDriver *_video_driver;
 char _ini_videodriver[32];
 int _num_resolutions;

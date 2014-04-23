@@ -23,6 +23,8 @@
 
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 #include <stdarg.h> /* va_list */
 
 enum {

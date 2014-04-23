@@ -51,6 +51,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /**
  * Multiply two integer values and shift the results to right.
  *

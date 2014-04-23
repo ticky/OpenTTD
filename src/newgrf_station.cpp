@@ -27,6 +27,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static StationClass _station_classes[STAT_CLASS_MAX];
 
 enum {

@@ -6,6 +6,8 @@
 #include "random_func.hpp"
 #include "bitmath_func.hpp"
 
+#include "../safeguards.h"
+
 Randomizer _random, _interactive_random;
 
 uint32 Randomizer::Next()

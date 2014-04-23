@@ -11,6 +11,8 @@
 
 #include "packet.h"
 
+#include "../../safeguards.h"
+
 
 /* Do not want to include functions.h and all required headers */
 extern void NORETURN CDECL error(const char *str, ...);

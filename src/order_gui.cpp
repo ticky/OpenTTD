@@ -30,6 +30,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 enum OrderWindowWidgets {
 	ORDER_WIDGET_CLOSEBOX = 0,
 	ORDER_WIDGET_CAPTION,

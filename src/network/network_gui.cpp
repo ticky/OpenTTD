@@ -31,6 +31,8 @@
 #include "table/strings.h"
 #include "../table/sprites.h"
 
+#include "../safeguards.h"
+
 #define BGC 5
 #define BTC 15
 

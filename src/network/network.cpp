@@ -37,6 +37,8 @@
 
 #include "table/strings.h"
 
+#include "../safeguards.h"
+
 bool _network_reload_cfg;
 bool _network_server;     ///< network-server is active
 bool _network_available;  ///< is network mode available?

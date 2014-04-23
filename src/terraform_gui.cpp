@@ -27,6 +27,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 void CcTerraform(bool success, TileIndex tile, uint32 p1, uint32 p2)
 {
 	if (success) {

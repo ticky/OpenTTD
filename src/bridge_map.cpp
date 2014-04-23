@@ -10,6 +10,8 @@
 #include "landscape.h"
 #include "tunnelbridge_map.h"
 
+#include "safeguards.h"
+
 
 TileIndex GetBridgeEnd(TileIndex tile, DiagDirection dir)
 {

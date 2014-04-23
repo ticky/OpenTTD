@@ -4,6 +4,8 @@
 #include "../gfx_func.h"
 #include "32bpp_base.hpp"
 
+#include "../safeguards.h"
+
 void *Blitter_32bppBase::MoveTo(const void *video, int x, int y)
 {
 	return (uint32 *)video + x + y * _screen.pitch;

@@ -16,6 +16,8 @@
 #include "vehicle_base.h"
 #include "debug.h"
 
+#include "safeguards.h"
+
 static uint _file_count;
 static FileEntry *_files;
 MusicFileSettings msf;

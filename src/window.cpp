@@ -22,6 +22,8 @@
 
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /* delta between mouse cursor and upper left corner of dragged window */
 static Point _drag_delta;
 

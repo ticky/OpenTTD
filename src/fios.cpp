@@ -27,6 +27,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /* Variables to display file lists */
 int _fios_num;
 

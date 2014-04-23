@@ -6,6 +6,8 @@
 #include "newgrf_storage.h"
 #include <set>
 
+#include "safeguards.h"
+
 /** The changed storage arrays */
 static std::set<BaseStorageArray*> _changed_storage_arrays;
 

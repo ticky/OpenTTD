@@ -24,6 +24,8 @@
 	#include <dos.h>
 #endif
 
+#include "../../safeguards.h"
+
 #define INCL_WIN
 #define INCL_WINCLIPBOARD
 

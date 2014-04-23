@@ -52,6 +52,8 @@
 #include "table/strings.h"
 #include "table/train_cmd.h"
 
+#include "safeguards.h"
+
 static bool TrainCheckIfLineEnds(Vehicle *v);
 static void TrainController(Vehicle *v, Vehicle *nomove, bool update_image);
 static TileIndex TrainApproachingCrossingTile(const Vehicle *v);

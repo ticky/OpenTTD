@@ -17,6 +17,8 @@
 #include "settings_type.h"
 #include "tree_map.h"
 
+#include "safeguards.h"
+
 /** Constructor of generic class
  * @param offset end of original data for this entity. i.e: houses = 110
  * @param maximum of entities this manager can deal with. i.e: houses = 512

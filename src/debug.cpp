@@ -11,6 +11,8 @@
 #include "string_func.h"
 #include "network/core/core.h"
 
+#include "safeguards.h"
+
 #if defined(ENABLE_NETWORK)
 SOCKET _debug_socket = INVALID_SOCKET;
 #endif /* ENABLE_NETWORK */

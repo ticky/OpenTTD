@@ -13,6 +13,8 @@
 #include "settings_type.h"
 #include "date_func.h"
 
+#include "safeguards.h"
+
 bool IsPossibleCrossing(const TileIndex tile, Axis ax)
 {
 	return (IsTileType(tile, MP_RAILWAY) &&

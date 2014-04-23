@@ -23,6 +23,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static RailType _railtype_selected_in_replace_gui;
 
 static bool _rebuild_left_list;

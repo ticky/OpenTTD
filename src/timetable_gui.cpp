@@ -21,6 +21,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static int GetOrderFromTimetableWndPt(Window *w, int y, const Vehicle *v)
 {
 	/*

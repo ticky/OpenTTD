@@ -8,6 +8,8 @@
 #include "../core/alloc_func.hpp"
 #include "8bpp_optimized.hpp"
 
+#include "../safeguards.h"
+
 static FBlitter_8bppOptimized iFBlitter_8bppOptimized;
 
 void Blitter_8bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)

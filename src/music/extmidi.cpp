@@ -15,6 +15,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "../safeguards.h"
+
 static FMusicDriver_ExtMidi iFMusicDriver_ExtMidi;
 
 const char* MusicDriver_ExtMidi::Start(const char* const * parm)

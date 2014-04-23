@@ -25,6 +25,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** Change the player's face.
  * @param tile unused
  * @param flags operation to perform

@@ -10,6 +10,8 @@
 
 #include "splash.h"
 
+#include "../../safeguards.h"
+
 #ifdef WITH_PNG
 
 #include <png.h>

@@ -36,6 +36,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 Station::Station(TileIndex tile)
 {
 	DEBUG(station, cDebugCtorLevel, "I+%3d", index);

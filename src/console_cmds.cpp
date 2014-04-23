@@ -38,6 +38,8 @@
 	#include "table/strings.h"
 #endif /* ENABLE_NETWORK */
 
+#include "safeguards.h"
+
 // ** scriptfile handling ** //
 static FILE *_script_file;
 static bool _script_running;

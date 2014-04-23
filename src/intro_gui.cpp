@@ -22,6 +22,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 static const Widget _select_game_widgets[] = {
 {    WWT_CAPTION, RESIZE_NONE, 13,   0, 335,   0,  13, STR_0307_OPENTTD,         STR_NULL},
 {      WWT_PANEL, RESIZE_NONE, 13,   0, 335,  14, 194, 0x0,                      STR_NULL},

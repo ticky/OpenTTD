@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 
+#include "safeguards.h"
+
 /**
  * The text version of OpenTTD's revision.
  * This will be either "<major>.<minor>.<build>[-RC<rc>]",

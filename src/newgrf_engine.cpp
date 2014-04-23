@@ -27,6 +27,8 @@
 #include "rail.h"
 #include "aircraft.h"
 
+#include "safeguards.h"
+
 
 int _traininfo_vehicle_pitch = 0;
 int _traininfo_vehicle_width = 29;

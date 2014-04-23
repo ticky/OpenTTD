@@ -10,6 +10,8 @@
 #include "core/math_func.hpp"
 #include "town.h"
 
+#include "safeguards.h"
+
 /** This function implements the town variables that newGRF defines.
  * @param variable that is queried
  * @param parameter unused

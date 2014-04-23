@@ -46,6 +46,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 DEFINE_OLD_POOL_GENERIC(Station, Station)
 DEFINE_OLD_POOL_GENERIC(RoadStop, RoadStop)
 

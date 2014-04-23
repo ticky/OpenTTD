@@ -21,6 +21,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 void DrawRoadVehDetails(const Vehicle *v, int x, int y)
 {
 	uint y_offset = RoadVehHasArticPart(v) ? 15 : 0;

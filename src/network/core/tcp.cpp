@@ -17,6 +17,8 @@
 
 #include "table/strings.h"
 
+#include "../../safeguards.h"
+
 /** Very ugly temporary hack !!! */
 void NetworkTCPSocketHandler::Initialize()
 {

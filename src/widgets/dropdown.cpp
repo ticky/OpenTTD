@@ -15,6 +15,8 @@
 #include "../table/sprites.h"
 #include "table/strings.h"
 
+#include "../safeguards.h"
+
 StringID DropDownListItem::String() const
 {
 	return STR_NULL;

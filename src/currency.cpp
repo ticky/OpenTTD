@@ -11,6 +11,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 	//   exchange rate    prefix             symbol_pos
 	//   |  separator        |     postfix   |
 	//   |   |    Euro year  |       |       |    name

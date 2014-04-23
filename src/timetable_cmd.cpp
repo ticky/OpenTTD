@@ -14,6 +14,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 time, bool is_journey)
 {
 	Order *order = GetVehicleOrder(v, order_number);

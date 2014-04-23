@@ -24,6 +24,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static void ShowBuildDockStationPicker();
 static void ShowBuildDocksDepotPicker();
 

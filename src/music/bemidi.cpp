@@ -9,6 +9,8 @@
 // BeOS System Includes
 #include <MidiSynthFile.h>
 
+#include "../safeguards.h"
+
 static BMidiSynthFile midiSynthFile;
 
 static FMusicDriver_BeMidi iFMusicDriver_BeMidi;

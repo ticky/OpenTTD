@@ -4,6 +4,8 @@
 #include "../gfx_func.h"
 #include "8bpp_base.hpp"
 
+#include "../safeguards.h"
+
 void Blitter_8bppBase::DrawColorMappingRect(void *dst, int width, int height, int pal)
 {
 	const uint8 *ctab = GetNonSprite(pal) + 1;

@@ -415,6 +415,8 @@ Station *ComposeWaypointStation(TileIndex tile)
 	return &stat;
 }
 
+#include "safeguards.h"
+
 /**
  * Draw a waypoint
  * @param x coordinate

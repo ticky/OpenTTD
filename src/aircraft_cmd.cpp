@@ -40,6 +40,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 void Aircraft::UpdateDeltaXY(Direction direction)
 {
 	uint32 x;

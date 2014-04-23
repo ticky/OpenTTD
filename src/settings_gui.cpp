@@ -31,6 +31,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static const StringID _units_dropdown[] = {
 	STR_UNITS_IMPERIAL,
 	STR_UNITS_METRIC,

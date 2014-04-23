@@ -13,6 +13,8 @@
 #include <stdarg.h>
 #include <ctype.h> // required for tolower()
 
+#include "safeguards.h"
+
 void ttd_strlcat(char *dst, const char *src, size_t size)
 {
 	assert(size > 0);

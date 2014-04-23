@@ -23,6 +23,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Update the num engines of a groupID. Decrease the old one and increase the new one
  * @note called in SetTrainGroupID and UpdateTrainGroupID

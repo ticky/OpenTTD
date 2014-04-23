@@ -7,6 +7,8 @@
 #include "tile_map.h"
 #include "core/math_func.hpp"
 
+#include "safeguards.h"
+
 Slope GetTileSlope(TileIndex tile, uint *h)
 {
 	uint a;

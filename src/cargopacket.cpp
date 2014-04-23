@@ -8,6 +8,8 @@
 #include "cargopacket.h"
 #include "saveload.h"
 
+#include "safeguards.h"
+
 /* Initialize the cargopacket-pool */
 DEFINE_OLD_POOL_GENERIC(CargoPacket, CargoPacket)
 

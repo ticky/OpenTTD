@@ -19,6 +19,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 static StringID GetEngineCategoryName(EngineID engine)
 {
 	switch (GetEngine(engine)->type) {

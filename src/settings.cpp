@@ -59,6 +59,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 GameOptions _opt;
 GameOptions _opt_newgame;
 GameOptions *_opt_ptr;

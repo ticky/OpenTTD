@@ -12,6 +12,7 @@
 #include "newgrf_engine.h"
 #include "vehicle_func.h"
 
+#include "safeguards.h"
 
 uint CountArticulatedParts(EngineID engine_type, bool purchase_window)
 {
