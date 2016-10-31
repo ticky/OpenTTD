@@ -151,18 +151,25 @@ static CGColorSpaceRef QZ_GetCorrectColorSpace()
 {
 	static CGColorSpaceRef colorSpace = NULL;
 
-	if (colorSpace == NULL)
-	{
-		CMProfileRef sysProfile;
-
-		if (CMGetSystemProfile(&sysProfile) == noErr)
+	if (colorSpace == NULL) {
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+		if (MacOSVersionIsAtLeast(10, 5, 0)) {
+			colorSpace = CGDisplayCopyColorSpace(CGMainDisplayID());
+		} else
+#endif
 		{
-			colorSpace = CGColorSpaceCreateWithPlatformColorSpace(sysProfile);
-			CMCloseProfile(sysProfile);
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !defined(HAVE_OSX_1011_SDK)
+			CMProfileRef sysProfile;
+			if (CMGetSystemProfile(&sysProfile) == noErr) {
+				colorSpace = CGColorSpaceCreateWithPlatformColorSpace(sysProfile);
+				CMCloseProfile(sysProfile);
+			}
+#endif
 		}
 
-		if (colorSpace == NULL)
-			error("Could not get system colour space. You might need to recalibrate your monitor.");
+		if (colorSpace == NULL) colorSpace = CGColorSpaceCreateDeviceRGB();
+
+		if (colorSpace == NULL) error("Could not get system colour space. You might need to recalibrate your monitor.");
 	}
 
 	return colorSpace;

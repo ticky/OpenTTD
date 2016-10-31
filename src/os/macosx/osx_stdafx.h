@@ -1,8 +1,28 @@
 /* $Id$ */
 
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file osx_stdafx.h OSX is different on some places. */
+
 #ifndef MACOS_STDAFX_H
 #define MACOS_STDAFX_H
 
+
+#include <AvailabilityMacros.h>
+
+/* We assume if these macros are defined, the SDK is also at least this version or later. */
+#ifdef MAC_OS_X_VERSION_10_7
+#define HAVE_OSX_107_SDK
+#endif
+
+#ifdef MAC_OS_X_VERSION_10_11
+#define HAVE_OSX_1011_SDK
+#endif
 
 /* It would seem that to ensure backward compability we have to ensure that we have defined MAC_OS_X_VERSION_10_x everywhere */
 #ifndef MAC_OS_X_VERSION_10_3
@@ -48,19 +68,23 @@
 #	error "Compiling 64 bits without _SQ64 set! (or vice versa)"
 #endif
 
-#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_3
-#include <AvailabilityMacros.h>
-
 /* Name conflict */
 #define Rect        OTTDRect
 #define Point       OTTDPoint
 #define WindowClass OTTDWindowClass
+#define ScriptOrder OTTDScriptOrder
+#define Palette     OTTDPalette
+#define GlyphID     OTTDGlyphID
 
 #include <CoreServices/CoreServices.h>
+#include <ApplicationServices/ApplicationServices.h>
 
 #undef Rect
 #undef Point
 #undef WindowClass
+#undef ScriptOrder
+#undef Palette
+#undef GlyphID
 
 /* remove the variables that CoreServices defines, but we define ourselves too */
 #undef bool
