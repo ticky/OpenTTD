@@ -620,26 +620,25 @@ extern void DetermineBasePaths(const char *exe);
  */
 static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 {
+	char tmp[MAX_PATH];
+	strecpy(tmp, exe, lastof(tmp));
+
 	bool success = false;
 #ifdef WITH_COCOA
-	char *app_bundle = strchr(exe, '.');
+	char *app_bundle = strchr(tmp, '.');
 	while (app_bundle != NULL && strncasecmp(app_bundle, ".app", 4) != 0) app_bundle = strchr(&app_bundle[1], '.');
 
-	if (app_bundle != NULL) app_bundle[0] = '\0';
+	if (app_bundle != NULL) *app_bundle = '\0';
 #endif /* WITH_COCOA */
-	char *s = strrchr(exe, PATHSEPCHAR);
+	char *s = strrchr(tmp, PATHSEPCHAR);
 	if (s != NULL) {
 		*s = '\0';
-		if (chdir(exe) != 0) {
+		if (chdir(tmp) != 0) {
 			DEBUG(misc, 0, "Directory with the binary does not exist?");
 		} else {
 			success = true;
 		}
-		*s = PATHSEPCHAR;
 	}
-#ifdef WITH_COCOA
-	if (app_bundle != NULL) app_bundle[0] = '.';
-#endif /* WITH_COCOA */
 	return success;
 }
 
