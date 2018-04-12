@@ -1,3 +1,10 @@
+# $Id$
+
+# This file is part of OpenTTD.
+# OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+# OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+
 CC_HOST        = !!CC_HOST!!
 CXX_HOST       = !!CXX_HOST!!
 CC_BUILD       = !!CC_BUILD!!
@@ -16,7 +23,9 @@ BIN_DIR        = !!BIN_DIR!!
 LANG_DIR       = !!LANG_DIR!!
 SRC_OBJS_DIR   = !!SRC_OBJS_DIR!!
 LANG_OBJS_DIR  = !!LANG_OBJS_DIR!!
+SETTING_OBJS_DIR= !!SETTING_OBJS_DIR!!
 SRC_DIR        = !!SRC_DIR!!
+SCRIPT_SRC_DIR = !!SCRIPT_SRC_DIR!!
 MEDIA_DIR      = !!MEDIA_DIR!!
 TTD            = !!TTD!!
 STRGEN         = !!STRGEN!!
@@ -28,7 +37,6 @@ STAGE          = !!STAGE!!
 MAKEDEPEND     = !!MAKEDEPEND!!
 CFLAGS_MAKEDEP = !!CFLAGS_MAKEDEP!!
 SORT           = !!SORT!!
-REVISION       = !!REVISION!!
 AWK            = !!AWK!!
 CONFIG_CACHE_COMPILER = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_COMPILER!!
 CONFIG_CACHE_LINKER   = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_LINKER!!
@@ -44,28 +52,18 @@ OBJS     := $(OBJS_C) $(OBJS_CPP) $(OBJS_MM) $(OBJS_RC)
 SRCS     := !!SRCS!!
 
 # All C-files depend on those 3 files
-FILE_DEP := $(CONFIG_CACHE_COMPILER) $(LANG_OBJS_DIR)/table/strings.h endian_target.h
+FILE_DEP := $(CONFIG_CACHE_COMPILER) endian_target.h
 # Create all dirs and subdirs
 RES      := $(shell mkdir -p $(BIN_DIR) $(sort $(dir $(OBJS))))
 
 # Make sure endian_target.h is reasable as if it was in the src/ dir
-CFLAGS += -I $(SRC_OBJS_DIR) -I $(LANG_OBJS_DIR)
+CFLAGS += -I $(SRC_OBJS_DIR) -I $(LANG_OBJS_DIR) -I $(SETTING_OBJS_DIR)
+CFLAGS_MAKEDEP += -I $(SRC_OBJS_DIR) -I $(LANG_OBJS_DIR) -I $(SETTING_OBJS_DIR)
+ifdef SCRIPT_SRC_DIR
+	CFLAGS_MAKEDEP += -I $(SCRIPT_SRC_DIR)
+endif
 
 ENDIAN_TARGETS := endian_target.h $(ENDIAN_CHECK)
-
-# This 'sed' basicly just removes 'const' from the line if it is a 2+D array
-# For more information, please check:
-#  http://maillist.openttd.org/pipermail/devs/2007-April/000284.html
-#  http://maillist.openttd.org/pipermail/devs/2007-February/000248.html
-GCC295_FIX=sed -r 's/^(\t*)(.*)( const )([A-Za-z0-9_ ]+(\[.*\]){2,})(( = \{)|(;))(.*)$$/\1\2 \4\6\8\9/g'
-# This 'sed' removes the 3rd '4' in the # lines of the -E output of
-#  gcc 2.95.3 and lower, as it should indicate that it is a C-linkage, but the
-#  compiler can't handle that information (just don't ask). So we remove it
-#  and then it compiles happily and without bitching :)
-# Furthermore gcc 2.95 has some trouble with protected and private when
-#  accessing the protected/private stuff of the enclosing class (or the
-#  super class of the enclosing class).
-GCC295_FIX_2=sed -e 's|\(^\# [0-9][0-9]* "[^"]*"[ 0-9]*\) 4$$|\1|g;s|private:|public:|g;s|protected:|public:|g'
 
 # Check if we want to show what we are doing
 ifdef VERBOSE
@@ -93,35 +91,29 @@ $(LANG_OBJS_DIR)/table/strings.h: $(LANG_DIR)/english.txt $(LANG_OBJS_DIR)/$(STR
 # Always run version detection, so we always have an accurate modified
 # flag
 VERSIONS := $(shell AWK="$(AWK)" "$(ROOT_DIR)/findversion.sh")
-MODIFIED := $(shell echo "$(VERSIONS)" | cut -f 3)
+MODIFIED := $(shell echo "$(VERSIONS)" | cut -f 3 -d'	')
 
-ifdef REVISION
-# Use specified revision (which should be of the form "r000").
-REV := $(REVISION)
-REV_NR := $(shell echo $(REVISION) | sed "s/[^0-9]//g")
-else
 # Use autodetected revisions
-REV      := $(shell echo "$(VERSIONS)" | cut -f 1)
-REV_NR   := $(shell echo "$(VERSIONS)" | cut -f 2)
-endif
+VERSION  := $(shell echo "$(VERSIONS)" | cut -f 1 -d'	')
+ISODATE  := $(shell echo "$(VERSIONS)" | cut -f 2 -d'	')
 
-# Make sure we have something in REV and REV_NR
-ifeq ($(REV),)
-REV := norev000
+# Make sure we have something in VERSION and ISODATE
+ifeq ($(VERSION),)
+VERSION := norev000
 endif
-ifeq ($(REV_NR),)
-REV_NR := 0
+ifeq ($(ISODATE),)
+ISODATE := 00000000
 endif
 
 # This helps to recompile if flags change
-RES := $(shell if [ "`cat $(CONFIG_CACHE_COMPILER) 2>/dev/null`" != "$(CXXFLAGS) $(CFLAGS)" ]; then echo "$(CXXFLAGS) $(CFLAGS)" > $(CONFIG_CACHE_COMPILER); fi )
+RES := $(shell if [ "`cat $(CONFIG_CACHE_COMPILER) 2>/dev/null`" != "$(CFLAGS) $(CXXFLAGS)" ]; then echo "$(CFLAGS) $(CXXFLAGS)" > $(CONFIG_CACHE_COMPILER); fi )
 RES := $(shell if [ "`cat $(CONFIG_CACHE_LINKER) 2>/dev/null`" != "$(LDFLAGS) $(LIBS)" ]; then echo "$(LDFLAGS) $(LIBS)" > $(CONFIG_CACHE_LINKER); fi )
 RES := $(shell if [ "`cat $(CONFIG_CACHE_ENDIAN) 2>/dev/null`" != "$(ENDIAN_FORCE)" ]; then echo "$(ENDIAN_FORCE)" > $(CONFIG_CACHE_ENDIAN); fi )
 
 # If there is a change in the source-file-list, make sure we recheck the deps
 RES := $(shell if [ "`cat $(CONFIG_CACHE_SOURCE) 2>/dev/null`" != "$(SRCS)" ]; then echo "$(SRCS)" > $(CONFIG_CACHE_SOURCE); fi )
 # If there is a change in the revision, make sure we recompile rev.cpp
-RES := $(shell if [ "`cat $(CONFIG_CACHE_VERSION) 2>/dev/null`" != "$(REV) $(MODIFIED)" ]; then echo "$(REV) $(MODIFIED)" > $(CONFIG_CACHE_VERSION); fi )
+RES := $(shell if [ "`cat $(CONFIG_CACHE_VERSION) 2>/dev/null`" != "$(VERSION) $(MODIFIED)" ]; then echo "$(VERSION) $(MODIFIED)" > $(CONFIG_CACHE_VERSION); fi )
 
 ifndef MAKEDEPEND
 # The slow, but always correct, dep-check
@@ -143,18 +135,18 @@ endif
 
 $(OBJS_C:%.o=%.d): %.d: $(SRC_DIR)/%.c $(FILE_DEP)
 	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.c=%.c)'
-	$(Q)$(CC_HOST) $(CFLAGS) -MM $< | sed 's#^$(@F:%.d=%.o):#$@ $(@:%.d=%.o):#' > $@
+	$(Q)$(CC_HOST) $(CFLAGS) -MM $< | sed 's@^$(@F:%.d=%.o):@$@ $(@:%.d=%.o):@' > $@
 
 $(OBJS_CPP:%.o=%.d): %.d: $(SRC_DIR)/%.cpp $(FILE_DEP)
 	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.cpp=%.cpp)'
-	$(Q)$(CXX_HOST) $(CXXFLAGS) $(CFLAGS) -MM $< | sed 's@^$(@F:%.d=%.o):@$@ $(@:%.d=%.o):@' > $@
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -MM $< | sed 's@^$(@F:%.d=%.o):@$@ $(@:%.d=%.o):@' > $@
 
 $(OBJS_MM:%.o=%.d): %.d: $(SRC_DIR)/%.mm $(FILE_DEP)
 	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.mm=%.mm)'
 	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -MM $< | sed 's@^$(@F:%.d=%.o):@$@ $(@:%.d=%.o):@' > $@
 
 $(OBJS_RC:%.o=%.d): %.d: $(SRC_DIR)/%.rc $(FILE_DEP)
-	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.mm=%.mm)'
+	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.rc=%.rc)'
 	$(Q)touch $@
 
 else
@@ -171,14 +163,14 @@ ifeq ("$(SRC_OBJS_DIR)/$(DEPEND)","$(MAKEDEPEND)")
 DEP := $(MAKEDEPEND)
 $(SRC_OBJS_DIR)/$(DEPEND): $(SRC_DIR)/depend/depend.cpp
 	$(E) '$(STAGE) Compiling and linking $(DEPEND)'
-	$(Q)$(CXX_BUILD) $(CXXFLAGS_BUILD) $(CFLAGS_BUILD) $(LDFLAGS_BUILD) -o $@ $<
+	$(Q)$(CXX_BUILD) $(CFLAGS_BUILD) $(CXXFLAGS_BUILD) $(LDFLAGS_BUILD) -o $@ $<
 endif
 
 # Make sure that only 'make depend' ALWAYS triggers a recheck
 ifeq ($(filter depend, $(MAKECMDGOALS)),)
-Makefile.dep: $(FILE_DEP) $(SRCS:%=$(SRC_DIR)/%) $(CONFIG_CACHE_SOURCE)
+Makefile.dep: $(FILE_DEP) $(SRCS:%=$(SRC_DIR)/%) $(CONFIG_CACHE_SOURCE) $(DEP)
 else
-Makefile.dep: FORCE
+Makefile.dep: $(FILE_DEP) $(SRCS:%=$(SRC_DIR)/%) $(DEP) FORCE
 endif
 	$(E) '$(STAGE) DEP CHECK (all files)'
 	$(Q)rm -f Makefile.dep.tmp
@@ -189,7 +181,7 @@ endif
 
 # Convert x:/... paths to /x/... for mingw
 ifeq ($(OS), MINGW)
-	@cat Makefile.dep.tmp | sed 's@\([a-zA-Z]\):\/@\/\1\/@g' > Makefile.dep.tmp.mingw
+	@cat Makefile.dep.tmp | sed 's@/\([a-zA-Z]\):\/@\/\1\/@g' > Makefile.dep.tmp.mingw
 	@cp Makefile.dep.tmp.mingw Makefile.dep.tmp
 	@rm -f Makefile.dep.tmp.mingw
 endif
@@ -199,10 +191,10 @@ endif
 	@$(AWK) '                           \
 	/^# DO NOT/ { print $$0 ; next}     \
 	/^#/ {next}                         \
-	/:/ {                               \
+	/: / {                               \
 		left = NF - 1;                    \
 		for (n = 2; n <= NF; n++) {       \
-			if (match($$n, "^$(SRC_DIR)") == 0) { \
+			if (match($$n, "^$(ROOT_DIR)") == 0) { \
 				$$n = "";                     \
 				left--;                       \
 			}                               \
@@ -218,16 +210,16 @@ endif
 	{                                   \
 		print $$0                         \
 	}                                   \
-	' < Makefile.dep.tmp | sed 's/  */ /g;s/ $$//' | $(SORT) > Makefile.dep
+	' < Makefile.dep.tmp | sed 's@  *@ @g;s@ $$@@' | LC_ALL=C $(SORT) > Makefile.dep
 
 	$(Q)rm -f Makefile.dep.tmp Makefile.dep.tmp.bak
 
 endif
 
-# Avoid problems with deps if a .h/.hpp file is deleted without the deps
+# Avoid problems with deps if a .h/.hpp/.hpp.sq file is deleted without the deps
 #  being updated. Now the Makefile continues, the deps are recreated
 #  and all will be fine.
-%.h %.hpp:
+%.h %.hpp %.hpp.sq:
 	@true
 
 
@@ -237,9 +229,21 @@ $(OBJS_C): %.o: $(SRC_DIR)/%.c $(DEP_MASK) $(FILE_DEP)
 	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.c=%.c)'
 	$(Q)$(CC_HOST) $(CFLAGS) -c -o $@ $<
 
-$(OBJS_CPP): %.o: $(SRC_DIR)/%.cpp $(DEP_MASK) $(FILE_DEP)
+$(filter-out %sse2.o, $(filter-out %ssse3.o, $(filter-out %sse4.o, $(OBJS_CPP)))): %.o: $(SRC_DIR)/%.cpp $(DEP_MASK) $(FILE_DEP)
 	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.cpp=%.cpp)'
-	$(Q)$(CXX_HOST) $(CXXFLAGS) $(CFLAGS) -c -o $@ $<
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
+
+$(filter %sse2.o, $(OBJS_CPP)): %.o: $(SRC_DIR)/%.cpp $(DEP_MASK) $(FILE_DEP)
+	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.cpp=%.cpp)'
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -c -msse2 -o $@ $<
+
+$(filter %ssse3.o, $(OBJS_CPP)): %.o: $(SRC_DIR)/%.cpp $(DEP_MASK) $(FILE_DEP)
+	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.cpp=%.cpp)'
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -c -mssse3 -o $@ $<
+
+$(filter %sse4.o, $(OBJS_CPP)): %.o: $(SRC_DIR)/%.cpp $(DEP_MASK) $(FILE_DEP)
+	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.cpp=%.cpp)'
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -c -msse4.1 -o $@ $<
 
 $(OBJS_MM): %.o: $(SRC_DIR)/%.mm $(DEP_MASK) $(FILE_DEP)
 	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.mm=%.mm)'
@@ -247,10 +251,16 @@ $(OBJS_MM): %.o: $(SRC_DIR)/%.mm $(DEP_MASK) $(FILE_DEP)
 
 $(OBJS_RC): %.o: $(SRC_DIR)/%.rc $(FILE_DEP)
 	$(E) '$(STAGE) Compiling resource $(<:$(SRC_DIR)/%.rc=%.rc)'
-	$(Q)$(WINDRES) -o $@ -I $(MEDIA_DIR) $<
+	$(Q)$(WINDRES) -o $@ -I `basename $<` $<
 
 $(BIN_DIR)/$(TTD): $(TTD)
-	$(Q)cp $< $@
+	$(Q)cp $(TTD) $(BIN_DIR)/$(TTD)
+ifeq ($(OS), UNIX)
+	$(Q)cp $(MEDIA_DIR)/openttd.32.bmp $(BIN_DIR)/baseset/
+endif
+ifeq ($(OS), OSX)
+	$(Q)cp $(ROOT_DIR)/os/macosx/splash.png $(BIN_DIR)/baseset/
+endif
 
 $(TTD): $(OBJS) $(CONFIG_CACHE_LINKER)
 	$(E) '$(STAGE) Linking $@'
@@ -258,12 +268,16 @@ ifeq ($(OS), PSP)
 	# Because of a bug in the PSP GCC tools, linking via CXX results
 	#  in total chaos and more problems then you can handle. So we need
 	#  CC to link OpenTTD for PSP
-	$(Q)$(CC_HOST) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+	$(Q)+$(CC_HOST) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
 else
-	$(Q)$(CXX_HOST) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+	$(Q)+$(CXX_HOST) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
 endif
 ifdef STRIP
 	$(Q)$(STRIP) $@
+endif
+ifeq ($(OS), DOS)
+	$(E) '$(STAGE) Adding CWSDPMI stub to $@'
+	$(Q)$(ROOT_DIR)/os/dos/make_dos_binary_selfcontained.sh $(SRC_OBJS_DIR)/$@
 endif
 
 # The targets to compile the endian-code
@@ -274,15 +288,15 @@ endian_target.h: $(ENDIAN_CHECK) $(CONFIG_CACHE_ENDIAN)
 
 $(ENDIAN_CHECK): $(SRC_DIR)/endian_check.cpp
 	$(E) '$(STAGE) Compiling and Linking $@'
-	$(Q)$(CXX_BUILD) $(CXXFLAGS_BUILD) $(CFLAGS_BUILD) $< -o $@
+	$(Q)$(CXX_BUILD) $(CFLAGS_BUILD) $(CXXFLAGS_BUILD) $(LDFLAGS_BUILD) $< -o $@
 
 # Revision files
 
 $(SRC_DIR)/rev.cpp: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/rev.cpp.in
-	$(Q)cat $(SRC_DIR)/rev.cpp.in      | sed "s#@@REVISION@@#$(REV_NR)#g;s#@@VERSION@@#$(REV)#g;s#@@MODIFIED@@#$(MODIFIED)#g;s#@@DATE@@#`date +%d.%m.%y`#g" > $(SRC_DIR)/rev.cpp
+	$(Q)cat $(SRC_DIR)/rev.cpp.in      | sed "s@\!\!ISODATE\!\!@$(ISODATE)@g;s@!!VERSION!!@$(VERSION)@g;s@!!MODIFIED!!@$(MODIFIED)@g;s@!!DATE!!@`date +%d.%m.%y`@g" > $(SRC_DIR)/rev.cpp
 
-$(SRC_DIR)/ottdres.rc: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/ottdres.rc.in
-	$(Q)cat $(SRC_DIR)/ottdres.rc.in | sed "s#@@REVISION@@#$(REV_NR)#g;s#@@VERSION@@#$(REV)#g;s#@@DATE@@#`date +%d.%m.%y`#g" > $(SRC_DIR)/ottdres.rc
+$(SRC_DIR)/os/windows/ottdres.rc: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/os/windows/ottdres.rc.in
+	$(Q)cat $(SRC_DIR)/os/windows/ottdres.rc.in | sed "s@\!\!ISODATE\!\!@$(ISODATE)@g;s@!!VERSION!!@$(VERSION)@g;s@!!DATE!!@`date +%d.%m.%y`@g" > $(SRC_DIR)/os/windows/ottdres.rc
 
 FORCE:
 
@@ -290,10 +304,10 @@ depend: $(DEPS)
 
 clean:
 	$(E) '$(STAGE) Cleaning up object files'
-	$(Q)rm -f $(DEPS) $(OBJS) $(TTD) $(TTD:%=$(BIN_DIR)/%) $(CONFIG_CACHE_COMPILER) $(CONFIG_CACHE_LINKER) $(CONFIG_CACHE_ENDIAN) $(CONFIG_CACHE_SOURCE) $(ENDIAN_TARGETS)
+	$(Q)rm -f $(DEPS) $(OBJS) $(TTD) $(DEPEND) $(TTD:%=$(BIN_DIR)/%) $(BIN_DIR)/baseset/openttd.32.bmp $(CONFIG_CACHE_COMPILER) $(CONFIG_CACHE_LINKER) $(CONFIG_CACHE_ENDIAN) $(CONFIG_CACHE_SOURCE) $(ENDIAN_TARGETS)
 
 mrproper: clean
-	$(Q)rm -f $(SRC_DIR)/rev.cpp $(SRC_DIR)/ottdres.rc
+	$(Q)rm -f $(SRC_DIR)/rev.cpp $(SRC_DIR)/os/windows/ottdres.rc
 
 %.o:
 	@echo '$(STAGE) No such source-file: $(@:%.o=%).[c|cpp|mm|rc]'

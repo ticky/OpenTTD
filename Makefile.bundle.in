@@ -1,23 +1,26 @@
+# $Id$
+
+# This file is part of OpenTTD.
+# OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+# OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+
 #
 # Creation of bundles
 #
 
 # The revision is needed for the bundle name and creating an OSX application bundle.
-ifdef REVISION
-REV := $(REVISION)
-else
 # Detect the revision
 VERSIONS := $(shell AWK="$(AWK)" "$(ROOT_DIR)/findversion.sh")
-REV      := $(shell echo "$(VERSIONS)" | cut -f 1)
-endif
+VERSION  := $(shell echo "$(VERSIONS)" | cut -f 1 -d'	')
 
-# Make sure we have something in REV
-ifeq ($(REV),)
-REV := norev000
+# Make sure we have something in VERSION
+ifeq ($(VERSION),)
+VERSION := norev000
 endif
 
 ifndef BUNDLE_NAME
-BUNDLE_NAME = OTTD-$(OS)-custom-$(REV)
+BUNDLE_NAME = openttd-custom-$(VERSION)-$(OS)
 endif
 
 # An OSX application bundle needs the data files, lang files and openttd executable in a different location.
@@ -33,8 +36,8 @@ endif
 
 bundle: all
 	@echo '[BUNDLE] Constructing bundle'
-	$(Q)rm -rf   "${BUNDLE_DIR}"
-	$(Q)mkdir -p "${BUNDLE_DIR}"
+	$(Q)rm -rf   "$(BUNDLE_DIR)"
+	$(Q)mkdir -p "$(BUNDLE_DIR)"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/docs"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/scenario"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/scenario/heightmap"
@@ -46,7 +49,7 @@ ifdef OSXAPP
 	$(Q)mkdir -p "$(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources"
 	$(Q)echo "APPL????" >                                          "$(BUNDLE_DIR)/$(OSXAPP)/Contents/PkgInfo"
 	$(Q)cp    "$(ROOT_DIR)/os/macosx/openttd.icns"                 "$(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/openttd.icns"
-	$(Q)$(ROOT_DIR)/os/macosx/plistgen.sh                          "${BUNDLE_DIR}/$(OSXAPP)" "$(REV)"
+	$(Q)$(ROOT_DIR)/os/macosx/plistgen.sh                          "$(BUNDLE_DIR)/$(OSXAPP)" "$(REV)"
 	$(Q)cp    "$(ROOT_DIR)/docs/OSX_install_instructions.txt"      "$(BUNDLE_DIR)/docs/"
 	$(Q)cp    "$(ROOT_DIR)/os/macosx/splash.png"                   "$(DATA_DIR)"
 endif
@@ -63,7 +66,7 @@ endif
 ifdef MAN_DIR
 	$(Q)mkdir -p "$(BUNDLE_DIR)/man/"
 	$(Q)cp "$(ROOT_DIR)/docs/openttd.6"       "$(BUNDLE_DIR)/man/"
-	$(Q)gzip "$(BUNDLE_DIR)/man/openttd.6"
+	$(Q)gzip -9 "$(BUNDLE_DIR)/man/openttd.6"
 endif
 	$(Q)cp "$(ROOT_DIR)/media/openttd.32.xpm" "$(BUNDLE_DIR)/media/"
 	$(Q)cp "$(ROOT_DIR)/media/openttd."*.png  "$(BUNDLE_DIR)/media/"
@@ -147,23 +150,25 @@ install: bundle
 ifdef ICON_THEME_DIR
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)"
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)/16x16/apps"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.16.png" "$(INSTALL_ICON_THEME_DIR)/16x16/apps"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.16.png" "$(INSTALL_ICON_THEME_DIR)/16x16/apps/${BINARY_NAME}.png"
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)/32x32/apps"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.32.png" "$(INSTALL_ICON_THEME_DIR)/32x32/apps"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.32.png" "$(INSTALL_ICON_THEME_DIR)/32x32/apps/${BINARY_NAME}.png"
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)/48x48/apps"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.48.png" "$(INSTALL_ICON_THEME_DIR)/48x48/apps"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.48.png" "$(INSTALL_ICON_THEME_DIR)/48x48/apps/${BINARY_NAME}.png"
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)/64x64/apps"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.64.png" "$(INSTALL_ICON_THEME_DIR)/64x64/apps"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.64.png" "$(INSTALL_ICON_THEME_DIR)/64x64/apps/${BINARY_NAME}.png"
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)/128x128/apps"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.128.png" "$(INSTALL_ICON_THEME_DIR)/128x128/apps"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.128.png" "$(INSTALL_ICON_THEME_DIR)/128x128/apps/${BINARY_NAME}.png"
 	$(Q)install -d "$(INSTALL_ICON_THEME_DIR)/256x256/apps"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.256.png" "$(INSTALL_ICON_THEME_DIR)/256x256/apps"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/media/openttd.256.png" "$(INSTALL_ICON_THEME_DIR)/256x256/apps/${BINARY_NAME}.png"
 else
 	$(Q)install -m 644 "$(BUNDLE_DIR)/media/"*.png "$(INSTALL_ICON_DIR)"
 endif
 ifdef MAN_DIR
+ifndef DO_NOT_INSTALL_MAN
 	$(Q)install -d "$(INSTALL_MAN_DIR)"
-	$(Q)install -m 644 "$(BUNDLE_DIR)/man/openttd.6.gz" "$(INSTALL_MAN_DIR)"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/man/openttd.6.gz" "$(INSTALL_MAN_DIR)/${BINARY_NAME}.6.gz"
+endif
 endif
 ifdef MENU_DIR
 	$(Q)install -d "$(INSTALL_MENU_DIR)"

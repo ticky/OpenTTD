@@ -1,12 +1,16 @@
 //Microsoft Developer Studio generated resource script.
 // $Id$
 //
-#define APSTUDIO_READONLY_SYMBOLS
+// This file is part of OpenTTD.
+// OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+// OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+//
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "resource.h"
+#define APSTUDIO_READONLY_SYMBOLS
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
@@ -35,27 +39,36 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-100                     ICON    DISCARDABLE     "../media/openttd.ico"
-101                     ICON    DISCARDABLE     "../media/mainicon.ico"
+100                     ICON    DISCARDABLE     "../../../media/openttd.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-100 DIALOG DISCARDABLE  0, 0, 305, 77
+100 DIALOG DISCARDABLE  0, 0, 305, 99
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Fatal Application Failure"
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "&Close",12,7,58,50,14
-    PUSHBUTTON      "&Submit report",14,81,58,68,14,WS_DISABLED
-    PUSHBUTTON      "&Emergency save",13,155,58,68,14
-    PUSHBUTTON      "",15,243,58,55,14
-    EDITTEXT        11,7,79,291,118,ES_MULTILINE | ES_READONLY | WS_VSCROLL |
+    PUSHBUTTON      "&Close",12,7,80,50,14
+    PUSHBUTTON      "&Emergency save",13,155,80,68,14
+    PUSHBUTTON      "",15,243,80,55,14
+    EDITTEXT        11,7,101,291,118,ES_MULTILINE | ES_READONLY | WS_VSCROLL |
                     WS_HSCROLL | NOT WS_TABSTOP
-    LTEXT           "",10,36,7,262,43
+    LTEXT           "",10,36,7,262,65
     ICON            100,IDC_STATIC,9,9,20,20
+END
+
+
+101 DIALOG DISCARDABLE  0, 0, 600, 400
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "OpenTTD command line help"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "&OK",12,274,378,50,14,BS_CENTER
+    EDITTEXT        11,7,6,583,365,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
 END
 
 
@@ -66,8 +79,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,0,@@REVISION@@
- PRODUCTVERSION 0,6,0,@@REVISION@@
+ FILEVERSION 1,9,0,!!ISODATE!!
+ PRODUCTVERSION 1,9,0,!!ISODATE!!
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -82,17 +95,17 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "This program is licensed under the GNU General Public License.\0"
+            VALUE "Comments", "This program is licensed under the GNU General Public License version 2.\0"
             VALUE "CompanyName", "OpenTTD Development Team\0"
             VALUE "FileDescription", "OpenTTD\0"
-            VALUE "FileVersion", "Development @@VERSION@@\0"
+            VALUE "FileVersion", "!!VERSION!!\0"
             VALUE "InternalName", "openttd\0"
-            VALUE "LegalCopyright", "Copyright © OpenTTD Developers 2002-2008. All Rights Reserved.\0"
+            VALUE "LegalCopyright", "Copyright \xA9 OpenTTD Developers 2002-2018. All Rights Reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "openttd.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "OpenTTD\0"
-            VALUE "ProductVersion", "Development @@VERSION@@\0"
+            VALUE "ProductVersion", "!!VERSION!!\0"
             VALUE "SpecialBuild", "-\0"
         END
     END
