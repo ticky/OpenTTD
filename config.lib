@@ -819,15 +819,10 @@ check_params() {
 		fi
 	fi
 
-	if [ -n "$released_version" ]; then
-		log 1 "checking revision... release ($released_version)"
-		if [ -n "$revision" ] && [ "$revision" != "$released_version" ]; then
-			log 1 "WARNING: overriding of the revision is NOT possible for releases"
-			log 1 "WARNING: the given revision is IGNORED"
-
-			sleep 5
-		fi
-		revision=$released_version
+	if { [ -d "$ROOT_DIR/.git" ] || [ -f "$ROOT_DIR/.git" ]; } && [ -n "`git help 2>/dev/null`" ]; then
+		log 1 "checking revision... git detection"
+	elif [ -f "$ROOT_DIR/.ottdrev" ]; then
+		log 1 "checking revision... source tarball"
 	else
 		if [ -n "$revision" ]; then
 			log 1 "checking revision... $revision"
