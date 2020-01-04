@@ -170,4 +170,39 @@ extern byte _colour_gradient[16][8];
 
 extern bool _use_dos_palette;
 
+/**
+ * Return the colour for a particular greyscale level.
+ * @param level Intensity, 0 = black, 15 = white
+ * @return colour
+ */
+#define GREY_SCALE(level) (level)
+
+static const uint8 PC_BLACK              = GREY_SCALE(1);  ///< Black palette colour.
+static const uint8 PC_DARK_GREY          = GREY_SCALE(6);  ///< Dark grey palette colour.
+static const uint8 PC_GREY               = GREY_SCALE(10); ///< Grey palette colour.
+static const uint8 PC_WHITE              = GREY_SCALE(15); ///< White palette colour.
+
+static const uint8 PC_VERY_DARK_RED      = 0xB2;           ///< Almost-black red palette colour.
+static const uint8 PC_DARK_RED           = 0xB4;           ///< Dark red palette colour.
+static const uint8 PC_RED                = 0xB8;           ///< Red palette colour.
+
+static const uint8 PC_VERY_DARK_BROWN    = 0x56;           ///< Almost-black brown palette colour.
+
+static const uint8 PC_ORANGE             = 0xC2;           ///< Orange palette colour.
+
+static const uint8 PC_YELLOW             = 0xBF;           ///< Yellow palette colour.
+static const uint8 PC_LIGHT_YELLOW       = 0x44;           ///< Light yellow palette colour.
+static const uint8 PC_VERY_LIGHT_YELLOW  = 0x45;           ///< Almost-white yellow palette colour.
+
+static const uint8 PC_GREEN              = 0xD0;           ///< Green palette colour.
+
+static const uint8 PC_DARK_BLUE          = 0x9D;           ///< Dark blue palette colour.
+static const uint8 PC_LIGHT_BLUE         = 0x98;           ///< Light blue palette colour.
+
+static const uint8 PC_ROUGH_LAND         = 0x52;           ///< Dark green palette colour for rough land.
+static const uint8 PC_GRASS_LAND         = 0x54;           ///< Dark green palette colour for grass land.
+static const uint8 PC_BARE_LAND          = 0x37;           ///< Brown palette colour for bare land.
+static const uint8 PC_FIELDS             = 0x25;           ///< Light brown palette colour for fields.
+static const uint8 PC_TREES              = 0x57;           ///< Green palette colour for trees.
+static const uint8 PC_WATER              = 0xC9;           ///< Dark blue palette colour for water.
 #endif /* GFX_FUNC_H */

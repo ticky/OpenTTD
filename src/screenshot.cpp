@@ -16,6 +16,7 @@
 #include "core/endian_func.hpp"
 #include "map_func.h"
 #include "saveload.h"
+#include "player_base.h"
 #include "player_func.h"
 #include "strings_func.h"
 #include "gui.h"
@@ -45,9 +46,11 @@ struct ScreenshotFormat {
 	ScreenshotHandlerProc *proc;
 };
 
-//************************************************
-//*** SCREENSHOT CODE FOR WINDOWS BITMAP (.BMP)
-//************************************************
+#define MKCOLOUR(x)         TO_LE32X(x)
+
+/*************************************************
+ **** SCREENSHOT CODE FOR WINDOWS BITMAP (.BMP)
+ *************************************************/
 #if defined(_MSC_VER) || defined(__WATCOMC__)
 #pragma pack(push, 1)
 #endif
@@ -721,6 +724,10 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 			break;
 		}
 
+		case SC_MINIMAP:
+			ret = MakeMinimapWorldScreenshot();
+			break;
+
 		default:
 			NOT_REACHED();
 	}
@@ -733,4 +740,81 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 	}
 
 	return ret;
+}
+
+
+/**
+ * Return the owner of a tile to display it with in the small map in mode "Owner".
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The owner of tile in the small map in mode "Owner"
+ */
+static Owner GetMinimapOwner(TileIndex tile)
+{
+	Owner o;
+
+	if (IsTileType(tile, MP_VOID)) {
+		return OWNER_END;
+	} else {
+		switch (GetTileType(tile)) {
+		case MP_INDUSTRY: o = OWNER_DEITY;        break;
+		case MP_HOUSE:    o = OWNER_TOWN;         break;
+		default:          o = GetTileOwner(tile); break;
+			/* FIXME: For MP_ROAD there are multiple owners.
+			 * GetTileOwner returns the rail owner (level crossing) resp. the owner of ROADTYPE_ROAD (normal road),
+			 * even if there are no ROADTYPE_ROAD bits on the tile.
+			 */
+		}
+
+		return o;
+	}
+}
+
+static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	uint32 *ubuf;
+	uint num, row, col;
+	byte val;
+	byte owner_colours[OWNER_END + 1];
+
+	/* Fill with the player colours */
+	Player *p;
+	FOR_ALL_PLAYERS(p) {
+		owner_colours[p->index] = MKCOLOUR(_colour_gradient[_player_colors[p->index]][5]);
+	}
+
+	/* Fill with some special colours */
+	owner_colours[OWNER_TOWN]    = PC_DARK_RED;
+	owner_colours[OWNER_NONE]    = PC_GRASS_LAND;
+	owner_colours[OWNER_WATER]   = PC_WATER;
+	owner_colours[OWNER_DEITY]   = PC_DARK_GREY; // industry
+	owner_colours[OWNER_END]     = PC_BLACK;
+
+	ubuf = (uint32 *)buf;
+	num = (pitch * n);
+	for (uint i = 0; i < num; i++) {
+		row = y + (int)(i / pitch);
+		col = (MapSizeX() - 1) - (i % pitch);
+
+		TileIndex tile = TileXY(col, row);
+		Owner o = GetMinimapOwner(tile);
+		val = owner_colours[o];
+
+		uint32 colour_buf = 0;
+		colour_buf  = (_cur_palette[val].b << 0);
+		colour_buf |= (_cur_palette[val].g << 8);
+		colour_buf |= (_cur_palette[val].r << 16);
+
+		*ubuf = colour_buf;
+		*ubuf++;   // Skip alpha
+	}
+}
+
+/**
+ * Make a minimap screenshot.
+ */
+bool MakeMinimapWorldScreenshot()
+{
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette);
 }

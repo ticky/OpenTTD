@@ -398,6 +398,11 @@ static void MenuClickZoomedInScreenshot()
 	MakeScreenshot(SC_ZOOMEDIN, NULL);
 }
 
+static void MenuClickMinimapScreenshot()
+{
+	MakeScreenshot(SC_MINIMAP, NULL);
+}
+
 static void MenuClickHelp(int index)
 {
 	switch (index) {
@@ -406,7 +411,8 @@ static void MenuClickHelp(int index)
 		case 3: MenuClickSmallScreenshot();    break;
 		case 4: MenuClickZoomedInScreenshot(); break;
 		case 5: MenuClickWorldScreenshot();    break;
-		case 6: ShowAboutWindow();             break;
+		case 6: MenuClickMinimapScreenshot();  break;
+		case 7: ShowAboutWindow();             break;
 	}
 }
 
@@ -971,7 +977,7 @@ static void ToolbarNewspaperClick(Window *w)
 
 static void ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, 26, STR_02D5_LAND_BLOCK_INFO, 7, 0);
+	PopupMainToolbMenu(w, 26, STR_02D5_LAND_BLOCK_INFO, 8, 0);
 }
 
 static void ToolbarOptionsClick(Window *w)
@@ -1317,6 +1323,7 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 		case WKC_CTRL  | 'S': MenuClickSmallScreenshot(); break;
 		case WKC_CTRL  | 'P': MenuClickZoomedInScreenshot(); break;
 		case WKC_CTRL  | 'G': MenuClickWorldScreenshot(); break;
+		case WKC_CTRL  | 'M': MenuClickMinimapScreenshot(); break;
 		case WKC_CTRL | WKC_ALT | 'C': if (!_networking) ShowCheatWindow(); break;
 		case 'A': if (CanBuildVehicleInfrastructure(VEH_TRAIN)) ShowBuildRailToolbar(_last_built_railtype, 4); break; // Invoke Autorail
 		case 'L': ShowTerraformToolbar(); break;
@@ -1550,6 +1557,7 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 			case WKC_CTRL | 'S': MenuClickSmallScreenshot(); break;
 			case WKC_CTRL | 'P': MenuClickZoomedInScreenshot(); break;
 			case WKC_CTRL | 'G': MenuClickWorldScreenshot(); break;
+			case WKC_CTRL | 'M': MenuClickMinimapScreenshot(); break;
 
 			/* those following are all fall through */
 			case WKC_NUM_PLUS:
