@@ -2763,9 +2763,9 @@ const Livery *GetEngineLivery(EngineID engine_type, PlayerID player, EngineID pa
 }
 
 
-static PaletteID GetEngineColourMap(EngineID engine_type, CompanyID company, EngineID parent_engine_type, const Vehicle *v)
+static PaletteID GetEngineColourMap(EngineID engine_type, PlayerID player, EngineID parent_engine_type, const Vehicle *v)
 {
-	PaletteID map = (v != NULL) ? v->colourmap : PAL_NONE;
+	PaletteID map = (v != NULL) ? v->colormap : PAL_NONE;
 
 	/* Return cached value if any */
 	if (map != PAL_NONE) return map;
@@ -2801,7 +2801,7 @@ static PaletteID GetEngineColourMap(EngineID engine_type, CompanyID company, Eng
 	return map;
 }
 
-PaletteID GetEnginePalette(EngineID engine_type, CompanyID company)
+PaletteID GetEnginePalette(EngineID engine_type, PlayerID player)
 {
 	return GetEngineColourMap(engine_type, player, INVALID_ENGINE, NULL);
 }
