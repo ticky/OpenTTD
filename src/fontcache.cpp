@@ -418,9 +418,6 @@ const Sprite *GetGlyph(FontSize size, WChar key)
 	unsigned int width  = max(1U, (unsigned int)slot->bitmap.width + (size == FS_NORMAL));
 	unsigned int height = max(1U, (unsigned int)slot->bitmap.rows  + (size == FS_NORMAL));
 
-	/* Limit glyph size to prevent overflows later on. */
-	if (width > 256 || height > 256) usererror("Font glyph is too large");
-
 	/* FreeType has rendered the glyph, now we allocate a sprite and copy the image into it */
 	sprite.data = CallocT<SpriteLoader::CommonPixel>(width * height);
 	sprite.width = width;
