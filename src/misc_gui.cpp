@@ -1290,7 +1290,7 @@ void ShowQueryString(StringID str, StringID caption, uint maxsize, uint maxwidth
 	w = AllocateWindowDesc(&_query_string_desc);
 	w->parent = parent;
 
-	GetString(_edit_str_buf, str, _edit_str_buf[maxsize - 1]);
+	GetString(_edit_str_buf, str, lastof(_edit_str_buf));
 	_edit_str_buf[maxsize - 1] = '\0';
 
 	if (maxsize & 0x1000) {
