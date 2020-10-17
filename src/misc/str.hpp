@@ -124,7 +124,7 @@ struct CStrT : public CBlobT<Tchar>
 		int ret;
 		int err = 0;
 		for (;;) {
-			Tchar *buf = MakeFreeSpace(addSize);
+			Tchar *buf = this->MakeFreeSpace(addSize);
 			ret = Api::SPrintFL(buf, base::GetReserve(), format, args);
 			if (ret >= base::GetReserve()) {
 				/* Greater return than given count means needed buffer size. */
