@@ -594,7 +594,6 @@ check_params() {
 		fi
 	fi
 
-	detect_allegro
 	detect_sdl
 	detect_cocoa
 
