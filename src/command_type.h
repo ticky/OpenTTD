@@ -105,7 +105,7 @@ public:
  *
  * @see _command_proc_table
  */
-enum {
+enum Commands: uint32 {
 	CMD_BUILD_RAILROAD_TRACK,         ///< build a rail track
 	CMD_REMOVE_RAILROAD_TRACK,        ///< remove a rail track
 	CMD_BUILD_SINGLE_RAIL,            ///< build a single rail track
