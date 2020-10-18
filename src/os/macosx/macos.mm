@@ -2,6 +2,7 @@
 
 #include "../../stdafx.h"
 #include "../../core/bitmath_func.hpp"
+#include "../../string_func.h"
 
 #define Rect  OTTDRect
 #define Point OTTDPoint
