@@ -287,10 +287,6 @@ bool WindowQuartzSubdriver::SetVideoMode(int width, int height)
 		 */
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
 		if ([this->window respondsToSelector:@selector(toggleFullScreen:)]) {
-			/* Constants needed to build on pre-10.7 systems. Source: NSWindow documentation. */
-			const int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
-			const int NSWindowFullScreenButton = 7;
-
 			NSWindowCollectionBehavior behavior = [this->window collectionBehavior];
 			behavior |= NSWindowCollectionBehaviorFullScreenPrimary;
 			[window setCollectionBehavior:behavior];
