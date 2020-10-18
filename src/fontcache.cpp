@@ -15,8 +15,7 @@
 
 #include "table/sprites.h"
 #include "table/control_codes.h"
-
-#include "safeguards.h"
+#include "table/unicode.h"
 
 #ifdef WITH_FREETYPE
 #include <ft2build.h>
@@ -25,8 +24,19 @@
 
 #ifdef WITH_FONTCONFIG
 #include <fontconfig/fontconfig.h>
-#endif
+#endif /* WITH_FONTCONFIG */
 
+#ifdef WIN32
+#include <windows.h>
+#include <tchar.h>
+#include <shlobj.h> // SHGetFolderPath
+#include "win32.h"
+#endif /* WIN32 */
+#endif /* WITH_FREETYPE */
+
+#include "safeguards.h"
+
+#ifdef WITH_FREETYPE
 static FT_Library _library = NULL;
 static FT_Face _face_small = NULL;
 static FT_Face _face_medium = NULL;
@@ -42,11 +52,6 @@ enum {
 /** Get the font loaded into a Freetype face by using a font-name.
  * If no appropiate font is found, the function returns an error */
 #ifdef WIN32
-#include <windows.h>
-#include <tchar.h>
-#include <shlobj.h> // SHGetFolderPath
-#include "win32.h"
-
 /* Get the font file to be loaded into Freetype by looping the registry
  * location where windows lists all installed fonts. Not very nice, will
  * surely break if the registry path changes, but it works. Much better
@@ -227,7 +232,7 @@ static FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 FT_Error GetFontByFaceName(const char *font_name, FT_Face *face) {return FT_Err_Cannot_Open_Resource;}
 # endif /* WITH_FONTCONFIG */
 
-#endif
+# endif /* WIN32 */
 
 /**
  * Loads the freetype font.
@@ -484,8 +489,6 @@ uint GetGlyphWidth(FontSize size, WChar key)
 #endif /* WITH_FREETYPE */
 
 /* Sprite based glyph mapping */
-
-#include "table/unicode.h"
 
 static SpriteID **_unicode_glyph_map[FS_END];
 
