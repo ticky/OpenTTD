@@ -1,8 +1,13 @@
 OpenTTD README
-Last updated:    2012-02-12
-Release version: 0.6.3
+Last updated:    2020-10-18
+Release version: 0.6.4-beta1
 ------------------------------------------------------------------------
 
+NOTE: This is an unsupported, and unaffiliated fork of OpenTTD.
+Please disregard later parts of this file which direct bug reports or
+contact to the original authors. Additionally, note that the compilation
+instructions may be out of date or broken, and the list of supported platforms,
+likewise, is about twelve years out of date.
 
 Table of Contents:
 ------------------
@@ -410,6 +415,9 @@ put them in the data/ folder and you're set to go.
 
 X.X) Credits:
 ---- --------
+The gal behind this weird fork:
+  Jessica Stokes (ticky)          - Has too much time on her hands (since 0.6.4)
+
 The OpenTTD team (in alphabetical order):
   Albert Hofkamp (Alberth)        - GUI expert (since 0.7)
   Matthijs Kooijman (blathijs)    - Pathfinder-guru, Debian port (since 0.3)
