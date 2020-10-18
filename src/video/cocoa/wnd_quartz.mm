@@ -322,11 +322,10 @@ bool WindowQuartzSubdriver::SetVideoMode(int width, int height)
 		[ this->window setDelegate:[ delegate autorelease ] ];
 	} else {
 		/* We already have a window, just change its size */
-		if (!isCustom) {
-			[ window setContentSize: contentRect.size ];
+		[ window setContentSize: contentRect.size ];
 
-			// Ensure frame height - title bar height >= view height
-			contentRect.size.height = Clamp(height, 0, [ window frame ].size.height - 22 /* 22 is the height of title bar of window*/);
+		// Ensure frame height - title bar height >= view height
+		contentRect.size.height = Clamp(height, 0, [ window frame ].size.height - 22 /* 22 is the height of title bar of window*/);
 
 		if (this->cocoaview != nil) {
 			height = contentRect.size.height;
