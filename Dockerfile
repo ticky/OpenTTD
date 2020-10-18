@@ -3,7 +3,7 @@ MAINTAINER  Jessica Stokes <hello@jessicastokes.net>
 
 WORKDIR /tmp/workdir
 
-ADD .
+ADD . /tmp/workdir
 
 RUN apk add \
       --no-cache \
