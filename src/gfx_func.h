@@ -71,11 +71,8 @@ void CSleep(int milliseconds);
 void UpdateWindows();
 
 void DrawChatMessage();
-void DrawMouseCursor();
-void ScreenSizeChanged();
 void HandleExitGameRequest();
 void GameSizeChanged();
-void UndrawMouseCursor();
 
 void RedrawScreenRect(int left, int top, int right, int bottom);
 void GfxScroll(int left, int top, int width, int height, int xo, int yo);
@@ -140,9 +137,6 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom);
 void SetMouseCursor(CursorID cursor, PaletteID pal);
 void SetAnimatedMouseCursor(const AnimCursor *table);
 void CursorTick();
-void DrawMouseCursor();
-void ScreenSizeChanged();
-void UndrawMouseCursor();
 bool ChangeResInGame(int w, int h);
 void SortResolutions(int count);
 bool ToggleFullScreen(bool fs);
@@ -152,6 +146,9 @@ bool ToggleFullScreen(bool fs);
 extern FontSize _cur_fontsize;
 
 byte GetCharacterWidth(FontSize size, uint32 key);
+void DrawMouseCursor();
+void ScreenSizeChanged();
+void UndrawMouseCursor();
 
 static inline byte GetCharacterHeight(FontSize size)
 {

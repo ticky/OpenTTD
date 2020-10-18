@@ -6,6 +6,12 @@
 #include "random_func.hpp"
 #include "bitmath_func.hpp"
 
+#ifdef RANDOM_DEBUG
+#include "../network/network_data.h"
+#include "../variables.h" /* _frame_counter */
+#include "../player_func.h"
+#endif /* RANDOM_DEBUG */
+
 #include "../safeguards.h"
 
 Randomizer _random, _interactive_random;
@@ -132,10 +138,6 @@ void SetRandomSeed(uint32 seed)
 }
 
 #ifdef RANDOM_DEBUG
-#include "../network/network_data.h"
-#include "../variables.h" /* _frame_counter */
-#include "../player_func.h"
-
 uint32 DoRandom(int line, const char *file)
 {
 	if (_networking && (DEREF_CLIENT(0)->status != STATUS_INACTIVE || !_network_server)) {
