@@ -252,7 +252,7 @@ DEF_CONSOLE_CMD(ConLoad)
 	if (item != NULL) {
 		switch (item->type) {
 			case FIOS_TYPE_FILE: case FIOS_TYPE_OLDFILE: {
-				_switch_mode = SM_LOAD;
+				_switch_mode = SM_LOAD_GAME;
 				SetFiosType(item->type);
 
 				ttd_strlcpy(_file_to_saveload.name, FiosBrowseTo(item), sizeof(_file_to_saveload.name));

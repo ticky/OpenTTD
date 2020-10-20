@@ -48,18 +48,20 @@ enum GameModes {
 	GM_EDITOR
 };
 
+/** Mode which defines what mode we're switching to. */
 enum SwitchModes {
-	SM_NONE            =  0,
-	SM_NEWGAME         =  1,
-	SM_EDITOR          =  2,
-	SM_LOAD            =  3,
-	SM_MENU            =  4,
-	SM_SAVE            =  5,
-	SM_GENRANDLAND     =  6,
-	SM_LOAD_SCENARIO   =  9,
-	SM_START_SCENARIO  = 10,
-	SM_START_HEIGHTMAP = 11,
-	SM_LOAD_HEIGHTMAP  = 12,
+	SM_NONE,
+	SM_NEWGAME,         ///< New Game --> 'Random game'.
+	SM_EDITOR,          ///< Switch to scenario editor.
+	SM_LOAD_GAME,       ///< Load game, Play Scenario.
+	SM_MENU,            ///< Switch to game intro menu.
+	SM_SAVE_GAME,       ///< Save game.
+	SM_SAVE_HEIGHTMAP,  ///< Save heightmap.
+	SM_GENRANDLAND,     ///< Generate random land within scenario editor.
+	SM_LOAD_SCENARIO,   ///< Load scenario from scenario editor.
+	SM_START_SCENARIO,
+	SM_START_HEIGHTMAP, ///< Load a heightmap and start a new game from it.
+	SM_LOAD_HEIGHTMAP,  ///< Load heightmap from scenario editor.
 };
 
 

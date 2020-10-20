@@ -414,8 +414,8 @@ int ttd_main(int argc, char *argv[])
 		case 'i': _use_dos_palette = true; break;
 		case 'g':
 			if (mgo.opt != NULL) {
-				ttd_strlcpy(_file_to_saveload.name, mgo.opt, sizeof(_file_to_saveload.name));
-				_switch_mode = SM_LOAD;
+				strecpy(_file_to_saveload.name, mgo.opt, lastof(_file_to_saveload.name));
+				_switch_mode = SM_LOAD_GAME;
 				_file_to_saveload.mode = SL_LOAD;
 
 				/* if the file doesn't exist or it is not a valid savegame, let the saveload code show an error */
@@ -838,10 +838,10 @@ void SwitchMode(int new_mode)
 {
 #ifdef ENABLE_NETWORK
 	/* If we are saving something, the network stays in his current state */
-	if (new_mode != SM_SAVE) {
+	if (new_mode != SM_SAVE_GAME) {
 		/* If the network is active, make it not-active */
 		if (_networking) {
-			if (_network_server && (new_mode == SM_LOAD || new_mode == SM_NEWGAME)) {
+			if (_network_server && (new_mode == SM_LOAD_GAME || new_mode == SM_NEWGAME)) {
 				NetworkReboot();
 				NetworkUDPCloseAll();
 			} else {
@@ -893,7 +893,7 @@ void SwitchMode(int new_mode)
 		StartScenario();
 		break;
 
-	case SM_LOAD: { /* Load game, Play Scenario */
+	case SM_LOAD_GAME: { /* Load game, Play Scenario */
 		_opt_ptr = &_opt;
 		ResetGRFConfig(true);
 		ResetWindowSystem();
@@ -953,7 +953,7 @@ void SwitchMode(int new_mode)
 		LoadIntroGame();
 		break;
 
-	case SM_SAVE: /* Save game */
+	case SM_SAVE_GAME: /* Save game */
 		/* Make network saved games on pause compatible to singleplayer */
 		if (_networking && _pause_game == 1) _pause_game = 2;
 		if (SaveOrLoad(_file_to_saveload.name, SL_SAVE, NO_DIRECTORY) != SL_OK) {
@@ -963,6 +963,11 @@ void SwitchMode(int new_mode)
 			DeleteWindowById(WC_SAVELOAD, 0);
 		}
 		if (_networking && _pause_game == 2) _pause_game = 1;
+		break;
+
+	case SM_SAVE_HEIGHTMAP: // Save heightmap.
+		MakeHeightmapScreenshot(_file_to_saveload.name);
+		DeleteWindowById(WC_SAVELOAD, 0);
 		break;
 
 	case SM_GENRANDLAND: /* Generate random land within scenario editor */

@@ -262,8 +262,8 @@ void VideoDriver_Dedicated::MainLoop()
 	_network_playas = PLAYER_SPECTATOR;
 	_local_player = PLAYER_SPECTATOR;
 
-	/* If SwitchMode is SM_LOAD, it means that the user used the '-g' options */
-	if (_switch_mode != SM_LOAD) {
+	/* If SwitchMode is SM_LOAD_GAME, it means that the user used the '-g' options */
+	if (_switch_mode != SM_LOAD_GAME) {
 		StartNewGameWithoutGUI(GENERATE_NEW_SEED);
 		SwitchMode(_switch_mode);
 		_switch_mode = SM_NONE;
@@ -277,7 +277,7 @@ void VideoDriver_Dedicated::MainLoop()
 			_networking = false;
 		} else {
 			/* We can load this game, so go ahead */
-			SwitchMode(SM_LOAD);
+			SwitchMode(SM_LOAD_GAME);
 		}
 	}
 

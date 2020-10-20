@@ -1625,7 +1625,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 			char *name = FiosBrowseTo(file);
 			if (name != NULL) {
 				if (_saveload_mode == SLD_LOAD_GAME || _saveload_mode == SLD_LOAD_SCENARIO) {
-					_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD;
+					_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 
 					SetFiosType(file->type);
 					ttd_strlcpy(_file_to_saveload.name, name, sizeof(_file_to_saveload.name));
@@ -1690,7 +1690,7 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 			UpdateTextBufferSize(&WP(w, querystr_d).text);
 			SetWindowDirty(w);
 		} else if (w->IsWidgetLowered(12)) { // Save button clicked
-			_switch_mode = SM_SAVE;
+			_switch_mode = SM_SAVE_GAME;
 			FiosMakeSavegameName(_file_to_saveload.name, WP(w, querystr_d).text.buf, sizeof(_file_to_saveload.name));
 
 			/* In the editor set up the vehicle engines correctly (date might have changed) */
