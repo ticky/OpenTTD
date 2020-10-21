@@ -28,6 +28,7 @@
 #include "functions.h"
 #include "map_func.h"
 #include "date_func.h"
+#include "vehicle_base.h"
 #include "vehicle_func.h"
 #include "string_func.h"
 #include "player_func.h"
@@ -1486,6 +1487,28 @@ DEF_CONSOLE_CMD(ConListDumpVariables)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConListDumpVehicles)
+{
+	// TODO: Per-Player?
+	// size_t l = 0;
+
+	// if (argc == 0) {
+	// 	IConsoleHelp("List all variables with their value. Usage: 'dump_vars [<pre-filter>]'");
+	// 	return true;
+	// }
+
+	// if (argv[1] != NULL) l = strlen(argv[1]);
+
+	Vehicle *v;
+	FOR_ALL_VEHICLES(v) {
+		if (v->type != VEH_SPECIAL) {
+			IConsolePrintF(_icolour_def, "%d: \"%s\", %s vehicle at %d,%d (tile 0x%x)", v->index, v->name, v->GetTypeString(), v->x_pos, v->y_pos, v->tile);
+		}
+	}
+
+	return true;
+}
+
 
 #ifdef _DEBUG
 /* ****************************************** */
@@ -1517,6 +1540,7 @@ void IConsoleStdLibRegister()
 	/* default variables and functions */
 	IConsoleCmdRegister("debug_level",  ConDebugLevel);
 	IConsoleCmdRegister("dump_vars",    ConListDumpVariables);
+	IConsoleCmdRegister("dump_vehicles",ConListDumpVehicles);
 	IConsoleCmdRegister("echo",         ConEcho);
 	IConsoleCmdRegister("echoc",        ConEchoC);
 	IConsoleCmdRegister("exec",         ConExec);
