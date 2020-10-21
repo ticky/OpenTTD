@@ -1685,6 +1685,8 @@ static uint NewsDisplayLoadConfig(IniFile *ini, const char *grpname)
 			SB(res, news_item * 2, 2, 0);
 		} else if (strcasecmp(item->value, "summarized") == 0) {
 			SB(res, news_item * 2, 2, 1);
+		} else if (strcasecmp(item->value, "screenshot") == 0) {
+			SB(res, news_item * 2, 2, 3);
 		} else {
 			DEBUG(misc, 0, "Invalid display value: %s", item->value);
 			continue;
@@ -1760,7 +1762,7 @@ static void NewsDisplaySaveConfig(IniFile *ini, const char *grpname, uint news_d
 		const char *value;
 		int v = GB(news_display, i * 2, 2);
 
-		value = (v == 0 ? "off" : (v == 1 ? "summarized" : "full"));
+		value = (v == 0 ? "off" : (v == 1 ? "summarized" : (v == 2 ? "full" : "screenshot")));
 
 		*item = ini_item_alloc(group, _news_display_name[i], strlen(_news_display_name[i]));
 		(*item)->value = (char*)pool_strdup(&ini->pool, value, strlen(value));
