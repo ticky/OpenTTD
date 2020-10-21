@@ -116,6 +116,18 @@ void DrawNewsBorder(const Window *w)
 	DrawString(left + 2, top + 1, STR_00C6, TC_FROMSTRING);
 }
 
+/**
+ * Get the value of an item of the news-display settings. This is
+ * a little tricky since on/off/summary must use 2 bits to store the value
+ * @param item the item whose value is requested
+ * @return return the found value which is between 0-2
+ */
+static inline byte GetNewsDisplayValue(byte item)
+{
+	assert(item < NT_END && GB(_news_display_opt, item * 2, 2) <= 2);
+	return GB(_news_display_opt, item * 2, 2);
+}
+
 static void NewsWindowProc(Window *w, WindowEvent *e)
 {
 	switch (e->event) {
@@ -435,18 +447,6 @@ const char *_news_display_name[NT_END] = {
 	"subsidies",
 	"general",
 };
-
-/**
- * Get the value of an item of the news-display settings. This is
- * a little tricky since on/off/summary must use 2 bits to store the value
- * @param item the item whose value is requested
- * @return return the found value which is between 0-2
- */
-static inline byte GetNewsDisplayValue(byte item)
-{
-	assert(item < NT_END && GB(_news_display_opt, item * 2, 2) <= 2);
-	return GB(_news_display_opt, item * 2, 2);
-}
 
 /**
  * Set the value of an item in the news-display settings. This is
