@@ -507,16 +507,12 @@ static void CurrentScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	uint x = 0;
 	uint width = _screen.width;
 
-	DEBUG(misc, 2, "CurrentScreenCallback: start x=%d,y=%d,width=%d,n=%d,pitch=%d", x, y, width, n, pitch);
-
 	if (userdata != NULL) {
 		w     = (Window *)userdata;
 		x     = x + w->left;
 		y     = y + w->top;
 		width = w->width;
 	}
-
-	DEBUG(misc, 2, "CurrentScreenCallback: end x=%d,y=%d,width=%d,n=%d,pitch=%d", x, y, width, n, pitch);
 
 	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
 	void *src = blitter->MoveTo(_screen.dst_ptr, x, y);
@@ -843,8 +839,6 @@ bool MakeWindowScreenshot(Window *w, const char *filename)
 	if (filename != NULL) strecpy(_screenshot_name, filename, lastof(_screenshot_name));
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
-
-	DEBUG(misc, 0, "MakeWindowScreenshot: left=%d,top=%d,width=%d,height=%d", w->left, w->top, w->width, w->height);
 
 	return sf->proc(
 		MakeScreenshotName(SCREENSHOT_NAME, sf->extension),
