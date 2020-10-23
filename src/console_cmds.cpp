@@ -438,6 +438,24 @@ DEF_CONSOLE_CMD(ConToggleAI)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConPenance)
+{
+	if (argc == 0) {
+		IConsoleHelp("Clears your conscience of having used the cheats. Eternity be damned. Usage: 'penance'");
+		return true;
+	}
+
+	byte count = sizeof(_cheats)/sizeof(Cheat);
+	Cheat* cht = (Cheat*) &_cheats;
+	Cheat* cht_last = &cht[count];
+
+	for (; cht != cht_last; cht++) {
+		cht->been_used = false;
+	}
+
+	return true;
+}
+
 // ********************************* //
 // * Network Core Console Commands * //
 // ********************************* //
@@ -1616,6 +1634,8 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("clear",        ConClearBuffer);
 	IConsoleCmdRegister("patch",        ConPatch);
 	IConsoleCmdRegister("list_patches", ConListPatches);
+	IConsoleCmdRegister("penance",      ConPenance);
+	IConsoleCmdHookAdd("penance",       ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
 
 	IConsoleAliasRegister("dir",      "ls");
 	IConsoleAliasRegister("del",      "rm %+");
