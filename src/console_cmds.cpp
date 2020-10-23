@@ -368,6 +368,52 @@ DEF_CONSOLE_CMD(ConClearBuffer)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConPauseGame)
+{
+	if (argc == 0) {
+		IConsoleHelp("Pause a game. Usage: 'pause'");
+		return true;
+	}
+
+	if (_pause_game == 0) {
+		DoCommandP(0, 1, 0, NULL, CMD_PAUSE);
+		IConsolePrint(_icolour_def, "Game paused.");
+	} else {
+		IConsolePrint(_icolour_def, "Game is already paused.");
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConUnPauseGame)
+{
+	if (argc == 0) {
+		IConsoleHelp("Unpause a game. Usage: 'unpause'");
+		return true;
+	}
+
+	if (_pause_game != 0) {
+		DoCommandP(0, 0, 0, NULL, CMD_PAUSE);
+		IConsolePrint(_icolour_def, "Game unpaused.");
+	} else {
+		IConsolePrint(_icolour_def, "Game is already unpaused.");
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConFastForwardGame)
+{
+	if (argc == 0) {
+		IConsoleHelp("Toggle fast forward. Usage: 'fast_forward'");
+		return true;
+	}
+
+	_fast_forward ^= true;
+
+	return true;
+}
+
 
 // ********************************* //
 // * Network Core Console Commands * //
@@ -475,40 +521,6 @@ DEF_CONSOLE_CMD(ConBanList)
 	for (i = 0; i < lengthof(_network_ban_list); i++) {
 		if (_network_ban_list[i] != NULL)
 			IConsolePrintF(_icolour_def, "  %d) %s", i + 1, _network_ban_list[i]);
-	}
-
-	return true;
-}
-
-DEF_CONSOLE_CMD(ConPauseGame)
-{
-	if (argc == 0) {
-		IConsoleHelp("Pause a network game. Usage: 'pause'");
-		return true;
-	}
-
-	if (_pause_game == 0) {
-		DoCommandP(0, 1, 0, NULL, CMD_PAUSE);
-		IConsolePrint(_icolour_def, "Game paused.");
-	} else {
-		IConsolePrint(_icolour_def, "Game is already paused.");
-	}
-
-	return true;
-}
-
-DEF_CONSOLE_CMD(ConUnPauseGame)
-{
-	if (argc == 0) {
-		IConsoleHelp("Unpause a network game. Usage: 'unpause'");
-		return true;
-	}
-
-	if (_pause_game != 0) {
-		DoCommandP(0, 0, 0, NULL, CMD_PAUSE);
-		IConsolePrint(_icolour_def, "Game unpaused.");
-	} else {
-		IConsolePrint(_icolour_def, "Game is already unpaused.");
 	}
 
 	return true;
@@ -1564,6 +1576,10 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("scrollto",     ConScrollToTile);
 	IConsoleCmdRegister("alias",        ConAlias);
 	IConsoleCmdRegister("load",         ConLoad);
+	IConsoleCmdRegister("pause",        ConPauseGame);
+	IConsoleCmdRegister("unpause",      ConUnPauseGame);
+	IConsoleCmdRegister("fast_forward", ConFastForwardGame);
+	IConsoleCmdHookAdd("fast_forward",  ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
 	IConsoleCmdRegister("rm",           ConRemove);
 	IConsoleCmdRegister("save",         ConSave);
 	IConsoleCmdRegister("saveconfig",   ConSaveConfig);
@@ -1622,11 +1638,6 @@ void IConsoleStdLibRegister()
 	IConsoleCmdHookAdd("unban",            ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
 	IConsoleCmdRegister("banlist",         ConBanList);
 	IConsoleCmdHookAdd("banlist",          ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
-
-	IConsoleCmdRegister("pause",           ConPauseGame);
-	IConsoleCmdHookAdd("pause",            ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
-	IConsoleCmdRegister("unpause",         ConUnPauseGame);
-	IConsoleCmdHookAdd("unpause",          ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
 
 	/*** Networking variables ***/
 	IConsoleVarRegister("net_frame_freq",        &_network_frame_freq, ICONSOLE_VAR_BYTE, "The amount of frames before a command will be (visibly) executed. Default value: 1");
