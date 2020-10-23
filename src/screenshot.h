@@ -5,6 +5,8 @@
 #ifndef SCREENSHOT_H
 #define SCREENSHOT_H
 
+#include "window_gui.h"
+
 void InitializeScreenshotFormats();
 
 const char *GetScreenshotFormatDesc(int i);
@@ -22,6 +24,7 @@ enum ScreenshotType {
 
 bool MakeHeightmapScreenshot(const char *filename);
 bool MakeScreenshot(ScreenshotType t, const char *name);
+bool MakeWindowScreenshot(Window *w, const char *filename);
 bool MakeMinimapWorldScreenshot();
 
 extern char _screenshot_format_name[8];

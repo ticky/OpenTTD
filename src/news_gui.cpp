@@ -10,6 +10,7 @@
 #include "news.h"
 #include "settings_type.h"
 #include "transparency.h"
+#include "screenshot.h"
 #include "strings_func.h"
 #include "window_func.h"
 #include "date_func.h"
@@ -54,6 +55,8 @@
 
 typedef byte NewsID;
 #define INVALID_NEWS 255
+
+#define NEWS_DURATION 555
 
 NewsItem _statusbar_news_item;
 uint32 _news_display_opt;
@@ -115,6 +118,43 @@ void DrawNewsBorder(const Window *w)
 	GfxFillRect(left, bottom, right, bottom, 0xD7);
 
 	DrawString(left + 2, top + 1, STR_00C6, TC_FROMSTRING);
+}
+
+/**
+ * Retrieve an unformatted news message.
+ * @param *ni NewsItem being printed
+ */
+bool GetUnformattedString(char *buffer2, StringID str)
+{
+	char buffer[512];
+	const char *ptr;
+	char *dest;
+
+	GetString(buffer, str, lastof(buffer));
+	/* Copy the just gotten string to another buffer to remove any formatting
+	 * from it such as big fonts, etc. */
+	ptr  = buffer;
+	dest = buffer2;
+	WChar c_last = '\0';
+	for (;;) {
+		WChar c = Utf8Consume(&ptr);
+		if (c == 0) break;
+		/* Make a space from a newline, but ignore multiple newlines */
+		if (c == '\n' && c_last != '\n') {
+			dest[0] = ' ';
+			dest++;
+		} else if (c == '\r') {
+			dest[0] = dest[1] = dest[2] = dest[3] = ' ';
+			dest += 4;
+		} else if (IsPrintable(c)) {
+			dest += Utf8Encode(dest, c);
+		}
+		c_last = c;
+	}
+
+	*dest = '\0';
+
+	return true;
 }
 
 /**
@@ -232,23 +272,40 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 		break;
 
 	case WE_TICK: { // Scroll up newsmessages from the bottom in steps of 4 pixels
-		int diff;
 		int end_pos = _screen.height - w->height - 12 - w->message.msg;
+
+		int total_ticks = ((w->height + 12 + w->message.msg) / 4);
+		NewsItem *ni = WP(w, news_d).ni;
+		// On the tick after we've finished animating, and only that tick
+		if (ni->duration == NEWS_DURATION - total_ticks - 1) {
+			// If the news display value is "screenshot", take a screenshot of the window
+			if (GetNewsDisplayValue(ni->type) == 3) {
+				char date_buffr[512], message_buffr[512];
+
+				// Get date:
+				SetDParam(0, ni->date);
+				GetUnformattedString(date_buffr, STR_SHORT_DATE);
+
+				// Get caption:
+				CopyInDParam(0, ni->params, lengthof(ni->params));
+				GetUnformattedString(message_buffr, ni->string_id);
+
+				char *filename = str_fmt("%s - %s", date_buffr, message_buffr);
+
+				DEBUG(misc, 2, "News article, \"%s\"", filename);
+
+				MakeWindowScreenshot(w, filename);
+			}
+		}
+
 		int y = max(w->top - 4, end_pos);
 		if (y == w->top) return;
 
 		if (w->viewport != NULL)
 			w->viewport->top += y - w->top;
 
-		diff = Delta(w->top, y);
+		int diff = Delta(w->top, y);
 		w->top = y;
-
-		if (end_pos == w->top) {
-			NewsItem *ni = WP(w, news_d).ni;
-			if (GetNewsDisplayValue(ni->type) == 3) {
-				DEBUG(misc, 2, "Consider taking a screenshot now, maybe hopefully?");
-			}
-		}
 
 		SetDirtyBlocks(w->left, w->top - diff, w->left + w->width, w->top + w->height);
 	} break;
@@ -476,7 +533,7 @@ static void ShowNewspaper(NewsItem *ni)
 	SoundFx sound;
 	int top;
 	ni->flags &= ~NF_FORCE_BIG;
-	ni->duration = 555;
+	ni->duration = NEWS_DURATION;
 
 	sound = _news_sounds[ni->type];
 	if (sound != 0) SndPlayFx(sound);
@@ -622,7 +679,7 @@ static void ShowNewsMessage(NewsID i)
 
 	if (_forced_news != INVALID_NEWS) {
 		NewsItem *ni = &_news_items[_forced_news];
-		ni->duration = 555;
+		ni->duration = NEWS_DURATION;
 		ni->flags |= NF_FORCE_BIG;
 		DeleteWindowById(WC_NEWS_WINDOW, 0);
 		ShowNewspaper(ni);
@@ -673,9 +730,7 @@ static NewsID getNews(NewsID i)
  */
 static void DrawNewsString(int x, int y, uint16 color, const NewsItem *ni, uint maxw)
 {
-	char buffer[512], buffer2[512];
-	const char *ptr;
-	char *dest;
+	char buffer[512];
 	StringID str;
 
 	if (ni->display_mode == NM_CALLBACK) {
@@ -685,31 +740,10 @@ static void DrawNewsString(int x, int y, uint16 color, const NewsItem *ni, uint 
 		str = ni->string_id;
 	}
 
-	GetString(buffer, str, lastof(buffer));
-	/* Copy the just gotten string to another buffer to remove any formatting
-	 * from it such as big fonts, etc. */
-	ptr  = buffer;
-	dest = buffer2;
-	WChar c_last = '\0';
-	for (;;) {
-		WChar c = Utf8Consume(&ptr);
-		if (c == 0) break;
-		/* Make a space from a newline, but ignore multiple newlines */
-		if (c == '\n' && c_last != '\n') {
-			dest[0] = ' ';
-			dest++;
-		} else if (c == '\r') {
-			dest[0] = dest[1] = dest[2] = dest[3] = ' ';
-			dest += 4;
-		} else if (IsPrintable(c)) {
-			dest += Utf8Encode(dest, c);
-		}
-		c_last = c;
-	}
+	GetUnformattedString(buffer, str);
 
-	*dest = '\0';
 	/* Truncate and show string; postfixed by '...' if neccessary */
-	DoDrawStringTruncated(buffer2, x, y, color, maxw);
+	DoDrawStringTruncated(buffer, x, y, color, maxw);
 }
 
 
