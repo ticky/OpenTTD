@@ -16,6 +16,7 @@
 #include "network/network_udp.h"
 #include "command_func.h"
 #include "settings_func.h"
+#include "ai/ai.h"
 #include "fios.h"
 #include "fileio.h"
 #include "station.h"
@@ -414,6 +415,28 @@ DEF_CONSOLE_CMD(ConFastForwardGame)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConToggleAI)
+{
+	if (argc == 0) {
+		IConsoleHelp("Toggles AI for the human player. Usage: 'toggle_ai'");
+		return true;
+	}
+
+	Player *p = GetPlayer(PLAYER_FIRST);
+	p->is_ai ^= true;
+
+	if (p->is_ai) {
+		AI_StartNewAI(PLAYER_FIRST);
+		SetLocalPlayer(PLAYER_SPECTATOR);
+		IConsolePrint(_icolour_def, "Player became AI controlled.");
+	} else {
+		AI_PlayerDied(PLAYER_FIRST);
+		SetLocalPlayer(PLAYER_FIRST);
+		IConsolePrint(_icolour_def, "Player stopped being AI controlled.");
+	}
+
+	return true;
+}
 
 // ********************************* //
 // * Network Core Console Commands * //
@@ -1580,6 +1603,8 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("unpause",      ConUnPauseGame);
 	IConsoleCmdRegister("fast_forward", ConFastForwardGame);
 	IConsoleCmdHookAdd("fast_forward",  ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
+	IConsoleCmdRegister("toggle_ai",    ConToggleAI);
+	IConsoleCmdHookAdd("toggle_ai",     ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
 	IConsoleCmdRegister("rm",           ConRemove);
 	IConsoleCmdRegister("save",         ConSave);
 	IConsoleCmdRegister("saveconfig",   ConSaveConfig);
