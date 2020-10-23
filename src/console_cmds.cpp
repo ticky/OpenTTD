@@ -1524,20 +1524,22 @@ DEF_CONSOLE_CMD(ConListDumpVariables)
 
 DEF_CONSOLE_CMD(ConListDumpVehicles)
 {
-	// TODO: Per-Player?
-	// size_t l = 0;
-
-	// if (argc == 0) {
-	// 	IConsoleHelp("List all variables with their value. Usage: 'dump_vars [<pre-filter>]'");
-	// 	return true;
-	// }
-
-	// if (argv[1] != NULL) l = strlen(argv[1]);
+	if (argc == 0) {
+		IConsoleHelp("List all vehicles and their positions. Usage: 'dump_vehicles'");
+		return true;
+	}
 
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
-		if (v->type != VEH_SPECIAL) {
-			IConsolePrintF(_icolour_def, "%d: \"%s\", %s vehicle at %d,%d (tile 0x%x)", v->index, v->name, v->GetTypeString(), v->x_pos, v->y_pos, v->tile);
+		Vehicle *fv = v->First();
+		if (v->type != VEH_SPECIAL && v == fv) {
+			IConsolePrintF(
+				_icolour_def,
+				"Player %d, %s %d: at %d,%d (tile 0x%x)",
+				v->owner + 1, v->GetTypeString(), v->unitnumber,
+				v->x_pos, v->y_pos,
+				v->tile
+			);
 		}
 	}
 
