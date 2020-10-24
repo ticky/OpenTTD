@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 # Start the headless X server
 Xvfb "${X_SERVER_NUMBER}" \
