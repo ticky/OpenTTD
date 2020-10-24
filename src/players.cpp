@@ -546,6 +546,11 @@ static void MaybeStartNewPlayer()
 		if (p->is_active && p->is_ai) n++;
 	}
 
+	/* if we've got an AI controlled local player, allow for a full roster of AI players */
+	if (_local_player == PLAYER_SPECTATOR) {
+		n--;
+	}
+
 	/* when there's a lot of computers in game, the probability that a new one starts is lower */
 	if (n < (uint)_opt.diff.max_no_competitors &&
 			n < (_network_server ?
