@@ -838,6 +838,8 @@ bool MakeWindowScreenshot(Window *w, const char *filename)
 	_screenshot_name[0] = '\0';
 	if (filename != NULL) strecpy(_screenshot_name, filename, lastof(_screenshot_name));
 
+	UndrawMouseCursor();
+
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 
 	return sf->proc(
