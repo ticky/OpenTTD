@@ -41,4 +41,7 @@ WORKDIR /
 RUN apk del .makedepends && \
     rm -rf /tmp/workdir
 
+RUN useradd -m openttd
+USER openttd
+
 CMD ["openttd"]
