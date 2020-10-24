@@ -36,12 +36,9 @@ RUN ./configure \
     make && \
     make install
 
-WORKDIR /
+WORKDIR /openttd
 
 RUN apk del .makedepends && \
     rm -rf /tmp/workdir
-
-RUN useradd -m openttd
-USER openttd
 
 CMD ["openttd"]
