@@ -47,7 +47,7 @@ RUN apk del .makedepends && \
 ADD docker-entrypoint.sh /bin
 
 ENV DISPLAY=":0"
-ENV X_SCREEN_DIMENSIONS="640x480x8"
+ENV X_SCREEN_DIMENSIONS="640x480x24+32"
 ENV VNC_PASSWORD="OpenTTD"
 
 CMD ["docker-entrypoint.sh"]
