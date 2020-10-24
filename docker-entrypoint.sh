@@ -17,12 +17,13 @@ do
     fi
 done
 
-# Start the VNC server
-x11vnc -display "${DISPLAY}" \
-  -forever \
-  -nopw &
-
-wait $!
+if [ -n "${VNC_PASSWORD}" ]; then
+  # Start the VNC server, if a password is set
+  x11vnc -display "${DISPLAY}" \
+    -forever \
+    -passwd "${VNC_PASSWORD}" &
+  wait $!
+fi
 
 # Start OpenTTD
 openttd "$@"
