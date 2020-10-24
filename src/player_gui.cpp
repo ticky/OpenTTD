@@ -1521,10 +1521,12 @@ void ShowEndGameChart()
 			w->window_number = lengthof(_highscore_table) - 1;
 			WP(w, highscore_d).rank = SaveHighScoreValueNetwork();
 		} else {
-			/* in single player _local player is always valid */
-			const Player *p = GetPlayer(_local_player);
-			w->window_number = _opt.diff_level;
-			WP(w, highscore_d).rank = SaveHighScoreValue(p);
+			/* in single player _local_player is valid... unless they're not! */
+			if (_local_player != PLAYER_SPECTATOR) {
+				const Player *p = GetPlayer(_local_player);
+				w->window_number = _opt.diff_level;
+				WP(w, highscore_d).rank = SaveHighScoreValue(p);
+			}
 		}
 	}
 }
