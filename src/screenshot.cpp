@@ -503,9 +503,20 @@ void SetScreenshotFormat(uint i)
 /* screenshot generator that dumps the current video buffer */
 static void CurrentScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
+	Window *w;
+	uint x = 0;
+	uint width = _screen.width;
+
+	if (userdata != NULL) {
+		w     = (Window *)userdata;
+		x     = x + w->left;
+		y     = y + w->top;
+		width = w->width;
+	}
+
 	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
-	void *src = blitter->MoveTo(_screen.dst_ptr, 0, y);
-	blitter->CopyImageToBuffer(src, buf, _screen.width, n, pitch);
+	void *src = blitter->MoveTo(_screen.dst_ptr, x, y);
+	blitter->CopyImageToBuffer(src, buf, width, n, pitch);
 }
 
 /** generate a large piece of the world
@@ -817,4 +828,24 @@ bool MakeMinimapWorldScreenshot()
 {
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette);
+}
+
+/**
+ * Make a single-window screenshot.
+ */
+bool MakeWindowScreenshot(Window *w, const char *filename)
+{
+	_screenshot_name[0] = '\0';
+	if (filename != NULL) strecpy(_screenshot_name, filename, lastof(_screenshot_name));
+
+	UndrawMouseCursor();
+
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+
+	return sf->proc(
+		MakeScreenshotName(SCREENSHOT_NAME, sf->extension),
+		CurrentScreenCallback, w, w->width, w->height,
+		BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(),
+		_cur_palette
+	);
 }

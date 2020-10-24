@@ -16,6 +16,7 @@
 #include "network/network_udp.h"
 #include "command_func.h"
 #include "settings_func.h"
+#include "ai/ai.h"
 #include "fios.h"
 #include "fileio.h"
 #include "station.h"
@@ -28,6 +29,7 @@
 #include "functions.h"
 #include "map_func.h"
 #include "date_func.h"
+#include "vehicle_base.h"
 #include "vehicle_func.h"
 #include "string_func.h"
 #include "player_func.h"
@@ -367,6 +369,92 @@ DEF_CONSOLE_CMD(ConClearBuffer)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConPauseGame)
+{
+	if (argc == 0) {
+		IConsoleHelp("Pause a game. Usage: 'pause'");
+		return true;
+	}
+
+	if (_pause_game == 0) {
+		DoCommandP(0, 1, 0, NULL, CMD_PAUSE);
+		IConsolePrint(_icolour_def, "Game paused.");
+	} else {
+		IConsolePrint(_icolour_def, "Game is already paused.");
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConUnPauseGame)
+{
+	if (argc == 0) {
+		IConsoleHelp("Unpause a game. Usage: 'unpause'");
+		return true;
+	}
+
+	if (_pause_game != 0) {
+		DoCommandP(0, 0, 0, NULL, CMD_PAUSE);
+		IConsolePrint(_icolour_def, "Game unpaused.");
+	} else {
+		IConsolePrint(_icolour_def, "Game is already unpaused.");
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConFastForwardGame)
+{
+	if (argc == 0) {
+		IConsoleHelp("Toggle fast forward. Usage: 'fast_forward'");
+		return true;
+	}
+
+	_fast_forward ^= true;
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConToggleAI)
+{
+	if (argc == 0) {
+		IConsoleHelp("Toggles AI for the human player. Usage: 'toggle_ai'");
+		return true;
+	}
+
+	Player *p = GetPlayer(PLAYER_FIRST);
+	p->is_ai ^= true;
+
+	if (p->is_ai) {
+		AI_StartNewAI(PLAYER_FIRST);
+		SetLocalPlayer(PLAYER_SPECTATOR);
+		IConsolePrint(_icolour_def, "Player became AI controlled.");
+	} else {
+		AI_PlayerDied(PLAYER_FIRST);
+		SetLocalPlayer(PLAYER_FIRST);
+		IConsolePrint(_icolour_def, "Player stopped being AI controlled.");
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConPenance)
+{
+	if (argc == 0) {
+		IConsoleHelp("Clears your conscience of having used the cheats. Eternity be damned. Usage: 'penance'");
+		return true;
+	}
+
+	byte count = sizeof(_cheats)/sizeof(Cheat);
+	Cheat* cht = (Cheat*) &_cheats;
+	Cheat* cht_last = &cht[count];
+
+	for (; cht != cht_last; cht++) {
+		cht->been_used = false;
+	}
+
+	return true;
+}
 
 // ********************************* //
 // * Network Core Console Commands * //
@@ -474,40 +562,6 @@ DEF_CONSOLE_CMD(ConBanList)
 	for (i = 0; i < lengthof(_network_ban_list); i++) {
 		if (_network_ban_list[i] != NULL)
 			IConsolePrintF(_icolour_def, "  %d) %s", i + 1, _network_ban_list[i]);
-	}
-
-	return true;
-}
-
-DEF_CONSOLE_CMD(ConPauseGame)
-{
-	if (argc == 0) {
-		IConsoleHelp("Pause a network game. Usage: 'pause'");
-		return true;
-	}
-
-	if (_pause_game == 0) {
-		DoCommandP(0, 1, 0, NULL, CMD_PAUSE);
-		IConsolePrint(_icolour_def, "Game paused.");
-	} else {
-		IConsolePrint(_icolour_def, "Game is already paused.");
-	}
-
-	return true;
-}
-
-DEF_CONSOLE_CMD(ConUnPauseGame)
-{
-	if (argc == 0) {
-		IConsoleHelp("Unpause a network game. Usage: 'unpause'");
-		return true;
-	}
-
-	if (_pause_game != 0) {
-		DoCommandP(0, 0, 0, NULL, CMD_PAUSE);
-		IConsolePrint(_icolour_def, "Game unpaused.");
-	} else {
-		IConsolePrint(_icolour_def, "Game is already unpaused.");
 	}
 
 	return true;
@@ -1486,6 +1540,30 @@ DEF_CONSOLE_CMD(ConListDumpVariables)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConListDumpVehicles)
+{
+	if (argc == 0) {
+		IConsoleHelp("List all vehicles and their positions. Usage: 'dump_vehicles'");
+		return true;
+	}
+
+	Vehicle *v;
+	FOR_ALL_VEHICLES(v) {
+		Vehicle *fv = v->First();
+		if (v->type != VEH_SPECIAL && v == fv) {
+			IConsolePrintF(
+				_icolour_def,
+				"Player %d, %s %d: at %d,%d (tile 0x%x)",
+				v->owner + 1, v->GetTypeString(), v->unitnumber,
+				v->x_pos, v->y_pos,
+				v->tile
+			);
+		}
+	}
+
+	return true;
+}
+
 
 #ifdef _DEBUG
 /* ****************************************** */
@@ -1517,6 +1595,7 @@ void IConsoleStdLibRegister()
 	/* default variables and functions */
 	IConsoleCmdRegister("debug_level",  ConDebugLevel);
 	IConsoleCmdRegister("dump_vars",    ConListDumpVariables);
+	IConsoleCmdRegister("dump_vehicles",ConListDumpVehicles);
 	IConsoleCmdRegister("echo",         ConEcho);
 	IConsoleCmdRegister("echoc",        ConEchoC);
 	IConsoleCmdRegister("exec",         ConExec);
@@ -1540,6 +1619,12 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("scrollto",     ConScrollToTile);
 	IConsoleCmdRegister("alias",        ConAlias);
 	IConsoleCmdRegister("load",         ConLoad);
+	IConsoleCmdRegister("pause",        ConPauseGame);
+	IConsoleCmdRegister("unpause",      ConUnPauseGame);
+	IConsoleCmdRegister("fast_forward", ConFastForwardGame);
+	IConsoleCmdHookAdd("fast_forward",  ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
+	IConsoleCmdRegister("toggle_ai",    ConToggleAI);
+	IConsoleCmdHookAdd("toggle_ai",     ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
 	IConsoleCmdRegister("rm",           ConRemove);
 	IConsoleCmdRegister("save",         ConSave);
 	IConsoleCmdRegister("saveconfig",   ConSaveConfig);
@@ -1549,6 +1634,8 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("clear",        ConClearBuffer);
 	IConsoleCmdRegister("patch",        ConPatch);
 	IConsoleCmdRegister("list_patches", ConListPatches);
+	IConsoleCmdRegister("penance",      ConPenance);
+	IConsoleCmdHookAdd("penance",       ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
 
 	IConsoleAliasRegister("dir",      "ls");
 	IConsoleAliasRegister("del",      "rm %+");
@@ -1598,11 +1685,6 @@ void IConsoleStdLibRegister()
 	IConsoleCmdHookAdd("unban",            ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
 	IConsoleCmdRegister("banlist",         ConBanList);
 	IConsoleCmdHookAdd("banlist",          ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
-
-	IConsoleCmdRegister("pause",           ConPauseGame);
-	IConsoleCmdHookAdd("pause",            ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
-	IConsoleCmdRegister("unpause",         ConUnPauseGame);
-	IConsoleCmdHookAdd("unpause",          ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
 
 	/*** Networking variables ***/
 	IConsoleVarRegister("net_frame_freq",        &_network_frame_freq, ICONSOLE_VAR_BYTE, "The amount of frames before a command will be (visibly) executed. Default value: 1");
