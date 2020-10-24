@@ -7,6 +7,7 @@ ADD . /tmp/workdir
 
 RUN apk add \
       --no-cache \
+      xvfb \
       libstdc++ \
       freetype \
       icu \
@@ -41,4 +42,8 @@ WORKDIR /openttd
 RUN apk del .makedepends && \
     rm -rf /tmp/workdir
 
-CMD ["openttd"]
+ADD docker-entrypoint.sh /bin
+
+ENV SCREEN_DIMENSIONS=640x480x8
+
+CMD ["docker-entrypoint.sh"]
