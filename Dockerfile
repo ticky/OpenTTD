@@ -7,8 +7,12 @@ ADD . /tmp/workdir
 
 RUN apk add \
       --no-cache \
-      xvfb \
-      xdotool
+      libstdc++ \
+      freetype \
+      icu \
+      libpng \
+      sdl \
+      zlib
 
 RUN apk add \
       --no-cache \
