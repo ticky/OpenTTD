@@ -8,6 +8,8 @@ ADD . /tmp/workdir
 RUN apk add \
       --no-cache \
       xvfb \
+      x11vnc \
+      xdpyinfo \
       libstdc++ \
       freetype \
       icu \
@@ -44,6 +46,7 @@ RUN apk del .makedepends && \
 
 ADD docker-entrypoint.sh /bin
 
-ENV SCREEN_DIMENSIONS=640x480x8
+ENV X_SCREEN_DIMENSIONS="640x480x8"
+ENV X_SERVER_NUMBER=":0"
 
 CMD ["docker-entrypoint.sh"]
