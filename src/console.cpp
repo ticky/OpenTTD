@@ -114,6 +114,17 @@ static void IConsoleWndProc(Window *w, WindowEvent *e)
 			if (HandleCaret(&_iconsole_cmdline))
 				SetWindowDirty(w);
 			break;
+		case WE_MOUSEWHEEL:
+			if (iconsole_scroll + e->we.wheel.wheel < 0) {
+				iconsole_scroll = 0;
+			} else if (iconsole_scroll + e->we.wheel.wheel > ICON_BUFFER) {
+				iconsole_scroll = ICON_BUFFER;
+			} else {
+				iconsole_scroll += e->we.wheel.wheel;
+			}
+
+			SetWindowDirty(w);
+			break;
 		case WE_DESTROY:
 			_iconsole_mode = ICONSOLE_CLOSED;
 			break;
