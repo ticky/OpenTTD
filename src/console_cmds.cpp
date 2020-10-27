@@ -25,6 +25,7 @@
 #include "network/network.h"
 #include "strings_func.h"
 #include "viewport_func.h"
+#include "window_gui.h"
 #include "window_func.h"
 #include "functions.h"
 #include "map_func.h"
@@ -1564,6 +1565,64 @@ DEF_CONSOLE_CMD(ConListDumpVehicles)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConListDumpWindows)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump information about all the currently drawn windows. Usage: 'dump_windows'");
+		return true;
+	}
+
+	Window* const *wz;
+	FOR_ALL_WINDOWS(wz) {
+		Window *w = *wz;
+		IConsolePrintF(
+			_icolour_def,
+			"%s#%d at %d,%d with size %dx%d",
+			_window_class_names[w->window_class],
+			w->window_number,
+			w->left, w->top, w->width, w->height
+		);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConScreenshotWindow)
+{
+	if (argc == 0) {
+		IConsoleHelp("Create a screenshot of the frontmost window. Usage: 'screenshotwin'");
+		return true;
+	}
+
+	if (argc > 2) return false;
+
+	Window* target;
+
+	Window* const *wz;
+	for (wz = _last_z_window - 1; wz >= _z_windows; wz--) {
+		Window *w = *wz;
+
+		if (!(w->window_class == WC_MAIN_WINDOW || w->window_class == WC_MAIN_TOOLBAR || w->window_class == WC_STATUS_BAR || w->window_class == WC_SEND_NETWORK_MSG || w->window_class == WC_CONSOLE)) {
+			target = w;
+			break;
+		}
+	}
+
+	if (target == NULL) {
+		IConsolePrintF(_icolour_err, "Could not find a frontmost window to screenshot.");
+		return false;
+	}
+
+	IConsolePrintF(
+		_icolour_def,
+		"%s#%d window at %d,%d with size %dx%d",
+		_window_class_names[target->window_class],
+		target->window_number,
+		target->left, target->top, target->width, target->height
+	);
+
+	return MakeWindowScreenshot(target, NULL);
+}
 
 #ifdef _DEBUG
 /* ****************************************** */
@@ -1593,49 +1652,51 @@ void IConsoleStdLibRegister()
 	extern byte _stdlib_developer; // XXX extern in .cpp
 
 	/* default variables and functions */
-	IConsoleCmdRegister("debug_level",  ConDebugLevel);
-	IConsoleCmdRegister("dump_vars",    ConListDumpVariables);
-	IConsoleCmdRegister("dump_vehicles",ConListDumpVehicles);
-	IConsoleCmdRegister("echo",         ConEcho);
-	IConsoleCmdRegister("echoc",        ConEchoC);
-	IConsoleCmdRegister("exec",         ConExec);
-	IConsoleCmdRegister("exit",         ConExit);
-	IConsoleCmdRegister("part",         ConPart);
-	IConsoleCmdRegister("help",         ConHelp);
-	IConsoleCmdRegister("info_cmd",     ConInfoCmd);
-	IConsoleCmdRegister("info_var",     ConInfoVar);
-	IConsoleCmdRegister("list_cmds",    ConListCommands);
-	IConsoleCmdRegister("list_vars",    ConListVariables);
-	IConsoleCmdRegister("list_aliases", ConListAliases);
-	IConsoleCmdRegister("newgame",      ConNewGame);
-	IConsoleCmdRegister("restart",      ConRestart);
-	IConsoleCmdRegister("getseed",      ConGetSeed);
-	IConsoleCmdRegister("getdate",      ConGetDate);
-	IConsoleCmdRegister("quit",         ConExit);
-	IConsoleCmdRegister("resetengines", ConResetEngines);
-	IConsoleCmdRegister("return",       ConReturn);
-	IConsoleCmdRegister("screenshot",   ConScreenShot);
-	IConsoleCmdRegister("script",       ConScript);
-	IConsoleCmdRegister("scrollto",     ConScrollToTile);
-	IConsoleCmdRegister("alias",        ConAlias);
-	IConsoleCmdRegister("load",         ConLoad);
-	IConsoleCmdRegister("pause",        ConPauseGame);
-	IConsoleCmdRegister("unpause",      ConUnPauseGame);
-	IConsoleCmdRegister("fast_forward", ConFastForwardGame);
-	IConsoleCmdHookAdd("fast_forward",  ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
-	IConsoleCmdRegister("toggle_ai",    ConToggleAI);
-	IConsoleCmdHookAdd("toggle_ai",     ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
-	IConsoleCmdRegister("rm",           ConRemove);
-	IConsoleCmdRegister("save",         ConSave);
-	IConsoleCmdRegister("saveconfig",   ConSaveConfig);
-	IConsoleCmdRegister("ls",           ConListFiles);
-	IConsoleCmdRegister("cd",           ConChangeDirectory);
-	IConsoleCmdRegister("pwd",          ConPrintWorkingDirectory);
-	IConsoleCmdRegister("clear",        ConClearBuffer);
-	IConsoleCmdRegister("patch",        ConPatch);
-	IConsoleCmdRegister("list_patches", ConListPatches);
-	IConsoleCmdRegister("penance",      ConPenance);
-	IConsoleCmdHookAdd("penance",       ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
+	IConsoleCmdRegister("debug_level",   ConDebugLevel);
+	IConsoleCmdRegister("dump_vars",     ConListDumpVariables);
+	IConsoleCmdRegister("dump_vehicles", ConListDumpVehicles);
+	IConsoleCmdRegister("dump_windows",  ConListDumpWindows);
+	IConsoleCmdRegister("echo",          ConEcho);
+	IConsoleCmdRegister("echoc",         ConEchoC);
+	IConsoleCmdRegister("exec",          ConExec);
+	IConsoleCmdRegister("exit",          ConExit);
+	IConsoleCmdRegister("part",          ConPart);
+	IConsoleCmdRegister("help",          ConHelp);
+	IConsoleCmdRegister("info_cmd",      ConInfoCmd);
+	IConsoleCmdRegister("info_var",      ConInfoVar);
+	IConsoleCmdRegister("list_cmds",     ConListCommands);
+	IConsoleCmdRegister("list_vars",     ConListVariables);
+	IConsoleCmdRegister("list_aliases",  ConListAliases);
+	IConsoleCmdRegister("newgame",       ConNewGame);
+	IConsoleCmdRegister("restart",       ConRestart);
+	IConsoleCmdRegister("getseed",       ConGetSeed);
+	IConsoleCmdRegister("getdate",       ConGetDate);
+	IConsoleCmdRegister("quit",          ConExit);
+	IConsoleCmdRegister("resetengines",  ConResetEngines);
+	IConsoleCmdRegister("return",        ConReturn);
+	IConsoleCmdRegister("screenshot",    ConScreenShot);
+	IConsoleCmdRegister("screenshot_win",ConScreenshotWindow);
+	IConsoleCmdRegister("script",        ConScript);
+	IConsoleCmdRegister("scrollto",      ConScrollToTile);
+	IConsoleCmdRegister("alias",         ConAlias);
+	IConsoleCmdRegister("load",          ConLoad);
+	IConsoleCmdRegister("pause",         ConPauseGame);
+	IConsoleCmdRegister("unpause",       ConUnPauseGame);
+	IConsoleCmdRegister("fast_forward",  ConFastForwardGame);
+	IConsoleCmdHookAdd("fast_forward",   ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
+	IConsoleCmdRegister("toggle_ai",     ConToggleAI);
+	IConsoleCmdHookAdd("toggle_ai",      ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
+	IConsoleCmdRegister("rm",            ConRemove);
+	IConsoleCmdRegister("save",          ConSave);
+	IConsoleCmdRegister("saveconfig",    ConSaveConfig);
+	IConsoleCmdRegister("ls",            ConListFiles);
+	IConsoleCmdRegister("cd",            ConChangeDirectory);
+	IConsoleCmdRegister("pwd",           ConPrintWorkingDirectory);
+	IConsoleCmdRegister("clear",         ConClearBuffer);
+	IConsoleCmdRegister("patch",         ConPatch);
+	IConsoleCmdRegister("list_patches",  ConListPatches);
+	IConsoleCmdRegister("penance",       ConPenance);
+	IConsoleCmdHookAdd("penance",        ICONSOLE_HOOK_ACCESS, ConHookClientOnly);
 
 	IConsoleAliasRegister("dir",      "ls");
 	IConsoleAliasRegister("del",      "rm %+");
