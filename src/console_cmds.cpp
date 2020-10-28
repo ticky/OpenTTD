@@ -259,7 +259,8 @@ DEF_CONSOLE_CMD(ConLoad)
 
 				ttd_strlcpy(_file_to_saveload.name, FiosBrowseTo(item), sizeof(_file_to_saveload.name));
 				ttd_strlcpy(_file_to_saveload.title, item->title, sizeof(_file_to_saveload.title));
-			} break;
+				break;
+			}
 			default: IConsolePrintF(_icolour_err, "%s: Not a savegame.", file);
 		}
 	} else {

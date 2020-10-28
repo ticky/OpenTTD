@@ -90,7 +90,8 @@ static void BuildAirToolbWndProc(Window *w, WindowEvent *e)
 			case '2': BuildAirClick_Demolish(w); break;
 			default: return;
 		}
-	} break;
+		break;
+	}
 
 	case WE_PLACE_OBJ:
 		_place_proc(e->we.place.tile);
@@ -215,7 +216,8 @@ static void BuildAirportPickerWndProc(Window *w, WindowEvent *e)
 			SetWindowDirty(w);
 			break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP: {
 		if (WP(w, def_d).close) {
@@ -224,7 +226,8 @@ static void BuildAirportPickerWndProc(Window *w, WindowEvent *e)
 		}
 
 		CheckRedrawStationCoverage(w);
-	} break;
+		break;
+	}
 
 	case WE_DESTROY:
 		if (!WP(w, def_d).close) ResetObjectToPlace();

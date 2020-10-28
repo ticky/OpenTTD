@@ -365,7 +365,8 @@ static void VehicleRefitWndProc(Window *w, WindowEvent *e)
 					DrawString(2, w->widget[5].top + 1, STR_9840_NEW_CAPACITY_COST_OF_REFIT, TC_FROMSTRING);
 				}
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -375,7 +376,8 @@ static void VehicleRefitWndProc(Window *w, WindowEvent *e)
 						WP(w, refit_d).sel = (y / (int)w->resize.step_height) + w->vscroll.pos;
 						SetWindowDirty(w);
 					}
-				} break;
+					break;
+				}
 				case 6: // refit button
 					if (WP(w, refit_d).cargo != NULL) {
 						const Vehicle *v = GetVehicle(w->window_number);
@@ -1074,7 +1076,8 @@ void PlayerVehWndProc(Window *w, WindowEvent *e)
 					v = vl->sort_list[id_v];
 
 					ShowVehicleViewWindow(v);
-				} break;
+					break;
+				}
 
 				case VLW_WIDGET_AVAILABLE_VEHICLES:
 					ShowBuildVehicleWindow(0, vl->vehicle_type);
@@ -1106,7 +1109,8 @@ void PlayerVehWndProc(Window *w, WindowEvent *e)
 					DoCommandP(0, GB(w->window_number, 16, 16), (w->window_number & VLW_MASK) | (1 << 6) | (e->we.click.widget == VLW_WIDGET_START_ALL ? (1 << 5) : 0) | vl->vehicle_type, NULL, CMD_MASS_START_STOP);
 					break;
 			}
-		} break;
+			break;
+		}
 
 		case WE_DROPDOWN_SELECT: /* we have selected a dropdown item in the list */
 			switch (e->we.dropdown.button) {
@@ -1389,7 +1393,8 @@ void CreateVehicleDetailsWindow(Window *w)
 			}
 
 			ResizeWindow(w, 0, height_extension);
-		} break;
+			break;
+		}
 
 		case VEH_SHIP:
 			w->widget[VLD_WIDGET_RENAME_VEHICLE].tooltips = STR_982F_NAME_SHIP;
@@ -1581,7 +1586,8 @@ static void VehicleDetailsWndProc(Window *w, WindowEvent *e)
 					const Vehicle *v = GetVehicle(w->window_number);
 					SetDParam(0, v->index);
 					ShowQueryString(STR_VEHICLE_NAME, _name_vehicle_title[v->type], 31, 150, w, CS_ALPHANUMERAL);
-				} break;
+					break;
+				}
 
 				case VLD_WIDGET_INCREASE_SERVICING_INTERVAL:   // increase int
 				case VLD_WIDGET_DECREASE_SERVICING_INTERVAL: { // decrease int
@@ -1593,7 +1599,8 @@ static void VehicleDetailsWndProc(Window *w, WindowEvent *e)
 					if (mod == v->service_interval) return;
 
 					DoCommandP(v->tile, v->index, mod, NULL, CMD_CHANGE_SERVICE_INT | CMD_MSG(STR_018A_CAN_T_CHANGE_SERVICING));
-				} break;
+					break;
+				}
 
 				case VLD_WIDGET_DETAILS_CARGO_CARRIED:
 				case VLD_WIDGET_DETAILS_TRAIN_VEHICLES:
@@ -1611,7 +1618,8 @@ static void VehicleDetailsWndProc(Window *w, WindowEvent *e)
 					SetWindowDirty(w);
 					break;
 			}
-		} break;
+			break;
+		}
 
 		case WE_ON_EDIT_TEXT:
 			if (!StrEmpty(e->we.edittext.str)) {
@@ -1956,7 +1964,8 @@ static void DrawVehicleViewWindow(Window *w)
 				SetDParam(0, v->current_order.dest);
 				SetDParam(1, v->GetDisplaySpeed());
 				str = STR_HEADING_FOR_STATION + _patches.vehicle_speed;
-			} break;
+				break;
+			}
 
 			case OT_GOTO_DEPOT: {
 				if (v->type == VEH_AIRCRAFT) {
@@ -1973,7 +1982,8 @@ static void DrawVehicleViewWindow(Window *w)
 				} else {
 					str = _heading_for_depot_service_strings[v->type] + _patches.vehicle_speed;
 				}
-			} break;
+				break;
+			}
 
 			case OT_LOADING:
 				str = STR_882F_LOADING_UNLOADING;
@@ -2076,7 +2086,8 @@ static void VehicleViewWndProc(Window *w, WindowEvent *e)
 					} else {
 						ScrollMainWindowTo(v->x_pos, v->y_pos);
 					}
-				} break;
+					break;
+				}
 
 				case VVW_WIDGET_GOTO_DEPOT: /* goto hangar */
 					DoCommandP(v->tile, v->index, _ctrl_pressed ? DEPOT_SERVICE : 0, NULL,
@@ -2105,7 +2116,8 @@ static void VehicleViewWndProc(Window *w, WindowEvent *e)
 					DoCommandP(v->tile, v->index, 0, NULL, CMD_FORCE_TRAIN_PROCEED | CMD_MSG(STR_8862_CAN_T_MAKE_TRAIN_PASS_SIGNAL));
 					break;
 			}
-		} break;
+			break;
+		}
 
 		case WE_RESIZE:
 			w->viewport->width          += e->we.sizing.diff.x;
@@ -2140,7 +2152,8 @@ static void VehicleViewWndProc(Window *w, WindowEvent *e)
 				}
 				SetWindowDirty(w);
 			}
-		} break;
+			break;
+		}
 	}
 }
 

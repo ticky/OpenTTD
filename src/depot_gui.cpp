@@ -190,7 +190,8 @@ static void DrawVehicleInDepot(Window *w, const Vehicle *v, int x, int y)
 			DrawAircraftImage(v, x + 12,
 							  y + max(spr->height + spr->y_offs - 14, 0), // tall sprites needs an y offset
 							  WP(w, depot_d).sel);
-		} break;
+			break;
+		}
 		default: NOT_REACHED();
 	}
 
@@ -457,8 +458,8 @@ static void DepotClick(Window *w, int x, int y)
 						break;
 				}
 			}
-			}
 			break;
+		}
 
 		case MODE_SHOW_VEHICLE: // show info window
 			ShowVehicleViewWindow(v);
@@ -475,8 +476,8 @@ static void DepotClick(Window *w, int x, int y)
 				default: NOT_REACHED(); command = 0;
 			}
 			DoCommandP(v->tile, v->index, 0, NULL, command);
-			}
 			break;
+		}
 
 		default: NOT_REACHED();
 	}
@@ -873,7 +874,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 
 		case WE_PLACE_OBJ: {
 			ClonePlaceObj(w);
-		} break;
+			break;
+		}
 
 		case WE_ABORT_PLACE_OBJ: {
 			/* abort clone */
@@ -883,7 +885,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 			/* abort drag & drop */
 			WP(w, depot_d).sel = INVALID_VEHICLE;
 			w->InvalidateWidget(DEPOT_WIDGET_MATRIX);
-		} break;
+			break;
+		}
 
 			/* check if a vehicle in a depot was clicked.. */
 		case WE_MOUSELOOP: {
@@ -894,7 +897,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 				_place_clicked_vehicle = NULL;
 				HandleCloneVehClick(v, w);
 			}
-		} break;
+			break;
+		}
 
 		case WE_DESTROY:
 			DeleteWindowById(WC_BUILD_VEHICLE, w->window_number);
@@ -929,7 +933,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 						sel == v->index) {
 						ShowVehicleViewWindow(v);
 					}
-				} break;
+					break;
+				}
 
 				case DEPOT_WIDGET_SELL: case DEPOT_WIDGET_SELL_CHAIN:
 					if (!w->IsWidgetDisabled(DEPOT_WIDGET_SELL) &&

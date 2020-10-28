@@ -341,7 +341,8 @@ void IConsoleSwitch()
 			w->width = _screen.width;
 			_iconsole_mode = ICONSOLE_OPENED;
 			SetBit(_no_scroll, SCROLL_CON); // override cursor arrows; the gamefield will not scroll
-		} break;
+			break;
+		}
 		case ICONSOLE_OPENED: case ICONSOLE_FULL:
 			DeleteWindowById(WC_CONSOLE, 0);
 			_iconsole_mode = ICONSOLE_CLOSED;
@@ -762,37 +763,42 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 		case '%': // Some or all parameters
 			cmdptr++;
 			switch (*cmdptr) {
-			case '+': { // All parameters seperated: "[param 1]" "[param 2]"
-				for (i = 0; i != tokencount; i++) {
-					aliasstream[astream_i++] = '"';
-					astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
-					aliasstream[astream_i++] = '"';
-					aliasstream[astream_i++] = ' ';
+				case '+': { // All parameters seperated: "[param 1]" "[param 2]"
+					for (i = 0; i != tokencount; i++) {
+						aliasstream[astream_i++] = '"';
+						astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
+						aliasstream[astream_i++] = '"';
+						aliasstream[astream_i++] = ' ';
+					}
+					break;
 				}
-			} break;
-			case '!': { // Merge the parameters to one: "[param 1] [param 2] [param 3...]"
-				aliasstream[astream_i++] = '"';
-				for (i = 0; i != tokencount; i++) {
-					astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
-					aliasstream[astream_i++] = ' ';
-				}
-				aliasstream[astream_i++] = '"';
+				case '!': { // Merge the parameters to one: "[param 1] [param 2] [param 3...]"
+					aliasstream[astream_i++] = '"';
+					for (i = 0; i != tokencount; i++) {
+						astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
+						aliasstream[astream_i++] = ' ';
+					}
+					aliasstream[astream_i++] = '"';
 
-			} break;
+					break;
+				}
+
 				default: { // One specific parameter: %A = [param 1] %B = [param 2] ...
-				int param = *cmdptr - 'A';
+					int param = *cmdptr - 'A';
 
-				if (param < 0 || param >= tokencount) {
-					IConsoleError("too many or wrong amount of parameters passed to alias, aborting");
-					IConsolePrintF(_icolour_warn, "Usage of alias '%s': %s", alias->name, alias->cmdline);
-					return;
+					if (param < 0 || param >= tokencount) {
+						IConsoleError("too many or wrong amount of parameters passed to alias, aborting");
+						IConsolePrintF(_icolour_warn, "Usage of alias '%s': %s", alias->name, alias->cmdline);
+						return;
+					}
+
+					aliasstream[astream_i++] = '"';
+					astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[param], astream_i);
+					aliasstream[astream_i++] = '"';
+					break;
 				}
-
-				aliasstream[astream_i++] = '"';
-				astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[param], astream_i);
-				aliasstream[astream_i++] = '"';
-			} break;
-			} break;
+			}
+			break;
 
 		default:
 			aliasstream[astream_i++] = *cmdptr;

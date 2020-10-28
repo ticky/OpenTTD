@@ -176,7 +176,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 	case WE_CREATE: { // If chatbar is open at creation time, we need to go above it
 		const Window *w1 = FindWindowById(WC_SEND_NETWORK_MSG, 0);
 		w->message.msg = (w1 != NULL) ? w1->height : 0;
-	} break;
+		break;
+	}
 
 	case WE_PAINT: {
 		const NewsItem *ni = WP(w, news_d).ni;
@@ -234,7 +235,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 				break;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		switch (e->we.click.widget) {
@@ -243,7 +245,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 			DeleteWindow(w);
 			ni->duration = 0;
 			_forced_news = INVALID_NEWS;
-		} break;
+			break;
+		}
 		case 0: {
 			NewsItem *ni = WP(w, news_d).ni;
 			if (ni->flags & NF_VEHICLE) {
@@ -253,9 +256,11 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 				if (!ScrollMainWindowToTile(ni->data_a) && ni->data_b != 0)
 					ScrollMainWindowToTile(ni->data_b);
 			}
-		} break;
+			break;
 		}
-	} break;
+		}
+		break;
+	}
 
 	case WE_KEYPRESS:
 		if (e->we.keypress.keycode == WKC_SPACE) {
@@ -309,7 +314,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 		w->top = y;
 
 		SetDirtyBlocks(w->left, w->top - diff, w->left + w->width, w->top + w->height);
-	} break;
+		break;
+	}
 	}
 }
 
@@ -887,7 +893,8 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 			}
 			/* If all values are the same value, the ALL-button will take over this value */
 			WP(w, def_d).data_1 = all_val;
-		} break;
+			break;
+		}
 
 		case WE_PAINT: {
 			uint32 val = _news_display_opt;
@@ -904,7 +911,8 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 				 * which will give centered position */
 				DrawStringCentered(51, y + 1, message_opt[val & 0x3], TC_BLACK);
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -928,8 +936,10 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 						SetNewsDisplayValue(element, val);
 						SetWindowDirty(w);
 					}
-				} break;
-			} break;
+					break;
+				}
+			}
+			break;
 
 		case WE_DROPDOWN_SELECT: { // Select all settings for newsmessages
 			int i;
@@ -941,7 +951,8 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 				SetNewsDisplayValue(i, e->we.dropdown.index);
 			}
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 	}
 }
 

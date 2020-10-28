@@ -894,7 +894,8 @@ CommandCost CmdPlayerCtrl(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 			}
 		}
 #endif /* ENABLE_NETWORK */
-	} break;
+		break;
+	}
 
 	case 1: /* Make a new AI player */
 		if (!(flags & DC_EXEC)) return CommandCost();
@@ -924,7 +925,8 @@ CommandCost CmdPlayerCtrl(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 			ChangeOwnershipOfPlayerItems(p->index, PLAYER_SPECTATOR);
 			p->is_active = false;
 		}
-	} break;
+		break;
+	}
 
 	case 3: { /* Merge a company (#1) into another company (#2), elimination company #1 */
 		PlayerID pid_old = (PlayerID)GB(p2,  0, 16);
@@ -936,7 +938,8 @@ CommandCost CmdPlayerCtrl(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 
 		ChangeOwnershipOfPlayerItems(pid_old, pid_new);
 		DeletePlayerStuff(pid_old);
-	} break;
+		break;
+	}
 
 	default: return CMD_ERROR;
 	}

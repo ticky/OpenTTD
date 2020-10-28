@@ -101,7 +101,8 @@ static void SignListWndProc(Window *w, WindowEvent *e)
 				y += 10;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		switch (e->we.click.widget) {
@@ -119,9 +120,11 @@ static void SignListWndProc(Window *w, WindowEvent *e)
 
 			si = _sign_sort[id_v];
 			ScrollMainWindowToTile(TileVirtXY(si->x, si->y));
-		} break;
+			break;
 		}
-	} break;
+		}
+		break;
+	}
 
 	case WE_RESIZE:
 		w->vscroll.cap += e->we.sizing.diff.y / 10;

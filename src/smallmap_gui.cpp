@@ -830,7 +830,8 @@ static void SmallMapWindowProc(Window *w, WindowEvent *e)
 				return;
 
 			DrawSmallMap(&new_dpi, w, _smallmap_type, _smallmap_show_towns);
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -854,7 +855,8 @@ static void SmallMapWindowProc(Window *w, WindowEvent *e)
 					WP(w2, vp_d).dest_scrollpos_y = pt.y + ((_cursor.pos.y - w->top - 16) << 4) - (w2->viewport->virtual_height >> 1);
 
 					SetWindowDirty(w);
-				} break;
+					break;
+				}
 
 				case SM_WIDGET_CONTOUR:    // Show land contours
 				case SM_WIDGET_VEHICLES:   // Show vehicles
@@ -1012,7 +1014,8 @@ static void SmallMapWindowProc(Window *w, WindowEvent *e)
 			WP(w, smallmap_d).subscroll = sub;
 
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 	}
 }
 
@@ -1110,7 +1113,8 @@ static void ExtraViewPortWndProc(Window *w, WindowEvent *e)
 			/* set this view to same location. Based on the center, adjusting for zoom */
 			WP(w2, vp_d).dest_scrollpos_x =  x - (w2->viewport->virtual_width -  w->viewport->virtual_width) / 2;
 			WP(w2, vp_d).dest_scrollpos_y =  y - (w2->viewport->virtual_height - w->viewport->virtual_height) / 2;
-		} break;
+			break;
+		}
 
 		case 8: { /* inverse location button (move this view to same spot as main view) 'Copy Location' */
 			const Window *w2 = FindWindowById(WC_MAIN_WINDOW, 0);
@@ -1119,7 +1123,8 @@ static void ExtraViewPortWndProc(Window *w, WindowEvent *e)
 
 			WP(w, vp_d).dest_scrollpos_x =  x + (w2->viewport->virtual_width -  w->viewport->virtual_width) / 2;
 			WP(w, vp_d).dest_scrollpos_y =  y + (w2->viewport->virtual_height - w->viewport->virtual_height) / 2;
-		} break;
+			break;
+		}
 		}
 		break;
 
@@ -1142,7 +1147,8 @@ static void ExtraViewPortWndProc(Window *w, WindowEvent *e)
 			WP(w, vp_d).scrollpos_y += ScaleByZoom(e->we.scroll.delta.y, vp->zoom);
 			WP(w, vp_d).dest_scrollpos_x = WP(w, vp_d).scrollpos_x;
 			WP(w, vp_d).dest_scrollpos_y = WP(w, vp_d).scrollpos_y;
-		} break;
+			break;
+		}
 
 		case WE_MOUSEWHEEL:
 			ZoomInOrOutToCursorWindow(e->we.wheel.wheel < 0, w);

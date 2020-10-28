@@ -653,7 +653,8 @@ static void BuildRailToolbWndProc(Window *w, WindowEvent *e)
 
 		DoCommand(tile, 0, 0, DC_AUTO, CMD_BUILD_TUNNEL);
 		VpSetPresizeRange(tile, _build_tunnel_endtile == 0 ? tile : _build_tunnel_endtile);
-	} break;
+		break;
+	}
 
 	case WE_DESTROY:
 		if (_patches.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0);
@@ -946,7 +947,8 @@ static void StationBuildWndProc(Window *w, WindowEvent *e)
 				y += 14;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		switch (e->we.click.widget) {
@@ -1052,7 +1054,8 @@ static void StationBuildWndProc(Window *w, WindowEvent *e)
 			w->SetWidgetLoweredState(_railstation.platlength + BRSW_PLATFORM_LEN_BEGIN, !_railstation.dragdrop);
 			SndPlayFx(SND_15_BEEP);
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case BRSW_HIGHLIGHT_OFF:
 		case BRSW_HIGHLIGHT_ON:
@@ -1090,7 +1093,8 @@ static void StationBuildWndProc(Window *w, WindowEvent *e)
 			break;
 		}
 		}
-	} break;
+		break;
+	}
 
 	case WE_DROPDOWN_SELECT:
 		if (_railstation.station_class != e->we.dropdown.index) {

@@ -585,7 +585,8 @@ static void ScenEditLandGenWndProc(Window *w, WindowEvent *e)
 			if (w->IsWidgetLowered(5) || w->IsWidgetLowered(6)) // change area-size if raise/lower corner is selected
 				SetTileSelectSize(_terraform_size, _terraform_size);
 
-		} break;
+			break;
+		}
 
 		case WE_KEYPRESS:
 			for (uint i = 0; i != lengthof(_editor_terraform_keycodes); i++) {
@@ -612,7 +613,8 @@ static void ScenEditLandGenWndProc(Window *w, WindowEvent *e)
 
 					SndPlayFx(SND_15_BEEP);
 					SetWindowDirty(w);
-				} break;
+					break;
+				}
 				case 15: // gen random land
 					w->HandleButtonClick(15);
 					ShowCreateScenario();

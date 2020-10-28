@@ -410,7 +410,8 @@ int ttd_main(int argc, char *argv[])
 				CreateConsole();
 #endif
 				if (mgo.opt != NULL) SetDebugString(mgo.opt);
-			} break;
+				break;
+			}
 		case 'e': _switch_mode = SM_EDITOR; break;
 		case 'i': _use_palette = (mgo.opt == NULL || atoi(mgo.opt) == 0) ? PAL_DOS : PAL_WINDOWS; break;
 		case 'g':
@@ -1538,7 +1539,8 @@ bool AfterLoadGame()
 						return false;
 					}
 					SB(_m[t].m6, 3, 3, st);
-				} break;
+					break;
+				}
 			}
 		}
 	}

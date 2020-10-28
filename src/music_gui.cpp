@@ -263,7 +263,8 @@ static void MusicTrackSelectionWndProc(Window *w, WindowEvent *e)
 					break;
 				}
 			}
-		} break;
+			break;
+		}
 
 		case 4: { // remove from playlist
 			int y = (e->we.click.pt.y - 23) / 6;
@@ -280,7 +281,8 @@ static void MusicTrackSelectionWndProc(Window *w, WindowEvent *e)
 
 			SetWindowDirty(w);
 			SelectSongToPlay();
-		} break;
+			break;
+		}
 
 		case 11: // clear
 			_playlists[msf.playlist][0] = 0;
@@ -405,7 +407,8 @@ static void MusicWindowWndProc(Window *w, WindowEvent *e)
 		DrawFrameRect(
 			214 + msf.effect_vol / 2, 22, 217 + msf.effect_vol / 2, 28, 14, FR_NONE
 		);
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -446,7 +449,8 @@ static void MusicWindowWndProc(Window *w, WindowEvent *e)
 			}
 
 			_left_button_clicked = false;
-		} break;
+			break;
+		}
 		case 10: //toggle shuffle
 			msf.shuffle ^= 1;
 			StopMusic();

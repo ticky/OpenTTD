@@ -356,8 +356,8 @@ static void ReplaceVehicleWndProc(Window *w, WindowEvent *e)
 					}
 				}
 			}
-
-		} break;   // end of paint
+			break;
+		} // end of paint
 
 		case WE_CLICK: {
 			switch (e->we.click.widget) {
@@ -380,12 +380,14 @@ static void ReplaceVehicleWndProc(Window *w, WindowEvent *e)
 					EngineID veh_from = WP(w, replaceveh_d).sel_engine[0];
 					EngineID veh_to = WP(w, replaceveh_d).sel_engine[1];
 					DoCommandP(0, 3 + (WP(w, replaceveh_d).sel_group << 16) , veh_from + (veh_to << 16), NULL, CMD_SET_AUTOREPLACE);
-				} break;
+					break;
+				}
 
 				case RVW_WIDGET_STOP_REPLACE: { /* Stop replacing */
 					EngineID veh_from = WP(w, replaceveh_d).sel_engine[0];
 					DoCommandP(0, 3 + (WP(w, replaceveh_d).sel_group << 16), veh_from + (INVALID_ENGINE << 16), NULL, CMD_SET_AUTOREPLACE);
-				} break;
+					break;
+				}
 
 				case RVW_WIDGET_LEFT_MATRIX:
 				case RVW_WIDGET_RIGHT_MATRIX: {
@@ -407,7 +409,7 @@ static void ReplaceVehicleWndProc(Window *w, WindowEvent *e)
 						SetWindowDirty(w);
 						}
 					break;
-					}
+				}
 			}
 			break;
 		}
@@ -424,7 +426,8 @@ static void ReplaceVehicleWndProc(Window *w, WindowEvent *e)
 			WP(w, replaceveh_d).update_right = true;
 			WP(w, replaceveh_d).init_lists   = true;
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case WE_RESIZE:
 			w->vscroll.cap  += e->we.sizing.diff.y / (int)w->resize.step_height;
@@ -443,7 +446,7 @@ static void ReplaceVehicleWndProc(Window *w, WindowEvent *e)
 		case WE_DESTROY:
 			EngList_RemoveAll(&WP(w, replaceveh_d).list[0]);
 			EngList_RemoveAll(&WP(w, replaceveh_d).list[1]);
-		break;
+			break;
 	}
 }
 

@@ -626,7 +626,8 @@ static void AnimateTile_Industry(TileIndex tile)
 				SetIndustryAnimationState(tile, m);
 				MarkTileDirtyByTile(tile);
 			}
-		} break;
+			break;
+		}
 	}
 }
 

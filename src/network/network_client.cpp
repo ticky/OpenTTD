@@ -744,7 +744,8 @@ DEF_CLIENT_RECEIVE_COMMAND(PACKET_SERVER_CHAT)
 
 				GetString(name, str, lastof(name));
 				ci = NetworkFindClientInfoFromIndex(_network_own_client_index);
-			} break;
+				break;
+			}
 
 			default: NOT_REACHED(); break;
 		}

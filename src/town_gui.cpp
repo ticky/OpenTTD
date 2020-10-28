@@ -222,7 +222,8 @@ static void TownAuthorityWndProc(Window *w, WindowEvent *e)
 			}
 		}
 
-	} break;
+		break;
+	}
 
 	case WE_DOUBLE_CLICK:
 	case WE_CLICK:
@@ -325,7 +326,8 @@ static void TownViewWndProc(Window *w, WindowEvent *e)
 			case 10: /* delete town */
 				delete t;
 				break;
-		} break;
+		}
+		break;
 
 	case WE_ON_EDIT_TEXT:
 		if (e->we.edittext.str[0] != '\0') {
@@ -510,7 +512,8 @@ static void TownDirectoryWndProc(Window *w, WindowEvent *e)
 			SetDParam(0, GetWorldPopulation());
 			DrawString(3, w->height - 12 + 2, STR_TOWN_POPULATION, TC_FROMSTRING);
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -518,13 +521,15 @@ static void TownDirectoryWndProc(Window *w, WindowEvent *e)
 				_town_sort_order = (_town_sort_order == 0) ? 1 : 0;
 				_town_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case TDW_SORTPOPULATION: { /* Sort by Population ascending/descending */
 				_town_sort_order = (_town_sort_order == 2) ? 3 : 2;
 				_town_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case TDW_CENTERTOWN: { /* Click on Town Matrix */
 				const Town* t;
@@ -540,7 +545,8 @@ static void TownDirectoryWndProc(Window *w, WindowEvent *e)
 				t = _town_sort[id_v];
 				assert(t->xy);
 				ScrollMainWindowToTile(t->xy);
-			} break;
+				break;
+			}
 		}
 		break;
 

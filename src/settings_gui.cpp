@@ -197,7 +197,8 @@ static void GameOptionsWndProc(Window *w, WindowEvent *e)
 
 			DrawWindowWidgets(w);
 			DrawString(20, 175, STR_OPTIONS_FULLSCREEN, TC_FROMSTRING); // fullscreen
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -218,7 +219,8 @@ static void GameOptionsWndProc(Window *w, WindowEvent *e)
 						i = (-1) ^ (1 << _opt_ptr->road_side); // disable the other value
 
 					ShowDropDownMenu(w, _driveside_dropdown, _opt_ptr->road_side, GAMEOPT_ROADSIDE_BTN, i, 0);
-				} break;
+					break;
+				}
 
 				case GAMEOPT_TOWNNAME_BTN: /* Setup townname dropdown */
 					ShowTownnameDropdown(w, _opt_ptr->town_name);
@@ -570,7 +572,8 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 
 				y += GAMEDIFF_WND_ROWSIZE + 2; // space items apart a bit
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -617,7 +620,8 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 					SetDifficultyLevel(3, &_opt_mod_temp); // set difficulty level to custom
 					w->LowerWidget(GDW_LVL_CUSTOM);
 					SetWindowDirty(w);
-				} break;
+					break;
+				}
 
 				case GDW_LVL_EASY:
 				case GDW_LVL_MEDIUM:
@@ -654,7 +658,8 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 				case GDW_CANCEL: // Cancel button - close window, abandon changes
 					DeleteWindow(w);
 					break;
-			} break;
+			}
+			break;
 
 		case WE_MOUSELOOP: /* Handle the visual 'clicking' of the buttons */
 			if (diffic_d->timeout != 0) {
@@ -899,7 +904,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 			w->top = w->top - (patches_max * 11) / 2;
 
 			w->LowerWidget(4);
-		} break;
+			break;
+		}
 
 		case WE_PAINT: {
 			int x, y;
@@ -955,7 +961,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 				DrawString(30, y, (sdb->str) + disabled, TC_FROMSTRING);
 				y += 11;
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -1023,7 +1030,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 								w->flags4 |= 5 << WF_TIMEOUT_SHL;
 								_left_button_clicked = false;
 							}
-						} break;
+							break;
+						}
 						default: NOT_REACHED();
 						}
 
@@ -1042,7 +1050,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 							ShowQueryString(STR_CONFIG_PATCHES_INT32, STR_CONFIG_PATCHES_QUERY_CAPT, 10, 100, w, CS_NUMERAL);
 						}
 					}
-				} break;
+					break;
+				}
 
 				case PATCHSEL_INTERFACE: case PATCHSEL_CONSTRUCTION: case PATCHSEL_VEHICLES:
 				case PATCHSEL_STATIONS:  case PATCHSEL_ECONOMY:      case PATCHSEL_COMPETITORS:
@@ -1192,7 +1201,8 @@ static void CustCurrencyWndProc(Window *w, WindowEvent *e)
 			y += 12;
 			SetDParam(0, 10000);
 			DrawString(35, y + 1, STR_CURRENCY_PREVIEW, TC_FROMSTRING);
-		} break;
+			break;
+		}
 
 		case WE_CLICK: {
 			int line = (e->we.click.pt.y - 20) / 12;
@@ -1270,7 +1280,8 @@ static void CustCurrencyWndProc(Window *w, WindowEvent *e)
 
 			w->flags4 |= 5 << WF_TIMEOUT_SHL;
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case WE_ON_EDIT_TEXT: {
 			const char *b = e->we.edittext.str;
@@ -1301,7 +1312,8 @@ static void CustCurrencyWndProc(Window *w, WindowEvent *e)
 				}
 			}
 			MarkWholeScreenDirty();
-		} break;
+			break;
+		}
 
 		case WE_TIMEOUT:
 			WP(w, def_d).data_1 = 0;

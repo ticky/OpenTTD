@@ -399,7 +399,8 @@ void ChangeOwnershipOfPlayerItems(PlayerID old_player, PlayerID new_player)
 									delete u;
 									u = next;
 								} while (u != NULL);
-							} break;
+								break;
+							}
 
 							case VEH_ROAD:
 							case VEH_SHIP:

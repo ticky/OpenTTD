@@ -632,7 +632,8 @@ static char* FormatString(char* buff, const char* str, const int64* argv, uint c
 						}
 						break;
 				}
-			} break;
+				break;
+			}
 
 			case SCC_STRING1: { /* {STRING1} */
 				/* String that consumes ONE argument */

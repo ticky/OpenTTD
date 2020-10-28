@@ -105,7 +105,8 @@ void HandleOnEditText(const char *str)
 
 		/* Give 'id' the money, and substract it from ourself */
 		DoCommandP(0, money_c, id, CcGiveMoney, CMD_GIVE_MONEY | CMD_MSG(STR_INSUFFICIENT_FUNDS));
-	} break;
+		break;
+	}
 #endif /* ENABLE_NETWORK */
 		default: NOT_REACHED();
 	}
@@ -479,7 +480,8 @@ static void MenuWndProc(Window *w, WindowEvent *e)
 			chk >>= 1;
 			dis >>= 1;
 		}
-	} break;
+		break;
+	}
 
 	case WE_DESTROY: {
 			Window *v = FindWindowById(WC_MAIN_TOOLBAR, 0);
@@ -1286,7 +1288,8 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 	case WE_CLICK: {
 		if (_game_mode != GM_MENU && !w->IsWidgetDisabled(e->we.click.widget))
 			_toolbar_button_procs[e->we.click.widget](w);
-	} break;
+		break;
+	}
 
 	case WE_KEYPRESS: {
 		switch (e->we.keypress.keycode) {
@@ -1332,16 +1335,19 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 		default: return;
 		}
 		e->we.keypress.cont = false;
-	} break;
+		break;
+	}
 
 	case WE_PLACE_OBJ: {
 		_place_proc(e->we.place.tile);
-	} break;
+		break;
+	}
 
 	case WE_ABORT_PLACE_OBJ: {
 		w->RaiseWidget(25);
 		SetWindowDirty(w);
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP:
 		if (w->IsWidgetLowered(0) != !!_pause_game) {
@@ -1380,7 +1386,8 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 			x += (spacing != 0) ? button_width : (w->width - x) / (27 - i);
 			w->widget[i].right = x - 1;
 		}
-	} break;
+		break;
+	}
 
 	case WE_TIMEOUT: {
 		uint i;
@@ -1539,7 +1546,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 	case WE_CLICK: {
 		if (_game_mode == GM_MENU) return;
 		_scen_toolbar_button_procs[e->we.click.widget](w);
-	} break;
+		break;
+	}
 
 	case WE_KEYPRESS:
 		switch (e->we.keypress.keycode) {
@@ -1581,12 +1589,14 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 
 	case WE_PLACE_OBJ: {
 		_place_proc(e->we.place.tile);
-	} break;
+		break;
+	}
 
 	case WE_ABORT_PLACE_OBJ: {
 		w->RaiseWidget(25);
 		SetWindowDirty(w);
-	} break;
+		break;
+	}
 
 	case WE_RESIZE: {
 		/* There are 15 buttons plus some spacings if the space allows it.
@@ -1632,7 +1642,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 					x += 130;
 					w->widget[i].right = x - 1;
 					i += 2;
-				} break;
+					break;
+				}
 
 				default:
 					if (w->widget[i].bottom == 0) continue;
@@ -1652,7 +1663,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 				x += add;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP:
 		if (w->IsWidgetLowered(0) != !!_pause_game) {
@@ -1776,7 +1788,8 @@ static void StatusBarWndProc(Window *w, WindowEvent *e)
 		}
 
 		if (WP(w, def_d).data_2 > 0) DrawSprite(SPR_BLOT, PALETTE_TO_RED, w->widget[1].right - 11, 2);
-	} break;
+		break;
+	}
 
 	case WE_MESSAGE:
 		w->message.msg = e->we.message.msg;
@@ -2004,7 +2017,8 @@ static void MainWindowWndProc(Window *w, WindowEvent *e)
 			WP(w, vp_d).scrollpos_y += ScaleByZoom(e->we.scroll.delta.y, vp->zoom);
 			WP(w, vp_d).dest_scrollpos_x = WP(w, vp_d).scrollpos_x;
 			WP(w, vp_d).dest_scrollpos_y = WP(w, vp_d).scrollpos_y;
-		} break;
+			break;
+		}
 
 		case WE_MOUSEWHEEL:
 			ZoomInOrOutToCursorWindow(e->we.wheel.wheel < 0, w);

@@ -127,7 +127,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 				}
 				y += 10;
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK: {
 			if (e->we.click.widget != 0) break;
@@ -137,7 +138,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 				WP(w, dropdown_d).selected_index = item;
 				SetWindowDirty(w);
 			}
-		} break;
+			break;
+		}
 
 		case WE_TICK:
 			if (WP(w, dropdown_d).scrolling == -1) {
@@ -191,7 +193,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 				WP(w, dropdown_d).selected_index = item;
 				SetWindowDirty(w);
 			}
-		} break;
+			break;
+		}
 
 		case WE_DESTROY: {
 			Window *w2 = FindWindowById(WP(w, dropdown_d).parent_wnd_class, WP(w,dropdown_d).parent_wnd_num);
@@ -201,7 +204,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 			}
 
 			DeleteDropDownList(WP(w, dropdown_d).list);
-		} break;
+			break;
+		}
 	}
 }
 
