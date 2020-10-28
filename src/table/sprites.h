@@ -1462,12 +1462,7 @@ assert_compile( !(TRANSPARENT_BIT == RECOLOR_BIT) );
 assert_compile( (1 << TRANSPARENT_BIT & PALETTE_MASK) == 0);
 assert_compile( (1 << RECOLOR_BIT & PALETTE_MASK) == 0 );
 
-static const SpriteID PALETTE_CRASH = 0x324;
-static const SpriteID PAL_NONE = 0;
-
-//note: these numbers are already the modified once the renderer needs.
-//the actual sprite number is the upper 16 bits of the number
-
+static const PaletteID PAL_NONE                    = 0;
 /** Here a pulsating red tile is drawn if you try to build a wrong tunnel or raise/lower land where it is not possible */
 static const PaletteID PALETTE_TILE_RED_PULSATING  = 0x303;
 /** makes a square red. is used when removing rails or other stuff */
@@ -1512,6 +1507,7 @@ static const PaletteID PALETTE_TO_STRUCT_YELLOW    = 0x321; // Sets the bridge c
 static const PaletteID PALETTE_TO_TRANSPARENT      = 0x322; // This sets the sprite to transparent
 /* This is used for changing the tubular bridges to the silicon display, or some grayish colour */
 static const PaletteID PALETTE_TO_STRUCT_GREY      = 0x323;
+static const PaletteID PALETTE_CRASH               = 0x324;
 /* XXX another place where structures are coloured.
  * I'm not sure which colours these are */
 static const PaletteID PALETTE_59E                 = 0x59E;
