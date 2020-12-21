@@ -21,6 +21,7 @@
 #include "../../console.h"
 #include "../../variables.h"
 #include "../../core/geometry_type.hpp"
+#include "../../core/sort_func.hpp"
 #include "cocoa_v.h"
 #include "../../blitter/factory.hpp"
 #include "../../fileio.h"
@@ -220,101 +221,6 @@ static void setupApplication()
 	/* Create OTTDMain and make it the app delegate */
 	_ottd_main = [[OTTDMain alloc] init];
 	[NSApp setDelegate:_ottd_main];
-}
-
-
-uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
-{
-	CFArrayRef mode_list;
-	CFIndex num_modes;
-	CFIndex i;
-	uint count = 0;
-
-	mode_list  = CGDisplayAvailableModes(display_id);
-	num_modes = CFArrayGetCount(mode_list);
-
-	/* Build list of modes with the requested bpp */
-	for (i = 0; i < num_modes && count < max_modes; i++) {
-		CFDictionaryRef onemode;
-		CFNumberRef     number;
-		int bpp;
-		int intvalue;
-		bool hasMode;
-		uint16 width, height;
-
-		onemode = (const __CFDictionary*)CFArrayGetValueAtIndex(mode_list, i);
-		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayBitsPerPixel);
-		CFNumberGetValue (number, kCFNumberSInt32Type, &bpp);
-
-		if (bpp != device_depth) continue;
-
-		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayWidth);
-		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
-		width = (uint16)intvalue;
-
-		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayHeight);
-		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
-		height = (uint16)intvalue;
-
-		/* Check if mode is already in the list */
-		{
-			uint i;
-			hasMode = false;
-			for (i = 0; i < count; i++) {
-				if (modes[i].x == width &&  modes[i].y == height) {
-					hasMode = true;
-					break;
-				}
-			}
-		}
-
-		if (hasMode) continue;
-
-		/* Add mode to the list */
-		modes[count].x = width;
-		modes[count].y = height;
-		count++;
-	}
-
-	/* Sort list smallest to largest */
-	{
-		uint i, j;
-		for (i = 0; i < count; i++) {
-			for (j = 0; j < count-1; j++) {
-				if (modes[j].x > modes[j + 1].x || (
-					modes[j].x == modes[j + 1].x &&
-					modes[j].y >  modes[j + 1].y
-					)) {
-					uint tmpw = modes[j].x;
-					uint tmph = modes[j].y;
-
-					modes[j].x = modes[j + 1].x;
-					modes[j].y = modes[j + 1].y;
-
-					modes[j + 1].x = tmpw;
-					modes[j + 1].y = tmph;
-				}
-			}
-		}
-	}
-
-	return count;
-}
-
-/** Small function to test if the main display can display 8 bpp in fullscreen */
-bool QZ_CanDisplay8bpp()
-{
-	/* 8bpp modes are deprecated starting in 10.5. CoreGraphics will return them
-	 * as available in the display list, but many features (e.g. palette animation)
-	 * will be broken. */
-	if (MacOSVersionIsAtLeast(10, 5, 0)) return false;
-
-	OTTD_Point p;
-
-	/* We want to know if 8 bpp is possible in fullscreen and not anything about
-	 * resolutions. Because of this we want to fill a list of 1 resolution of 8 bpp
-	 * on display 0 (main) and return if we found one. */
-	return QZ_ListModes(&p, 1, 0, 8);
 }
 
 
