@@ -45,8 +45,6 @@ byte _icolour_dbg;
 byte _icolour_cmd;
 IConsoleModes _iconsole_mode;
 
-bool _send_console_to_stdout;
-
 /* ** main console ** */
 static char *_iconsole_buffer[ICON_BUFFER + 1];
 static uint16 _iconsole_cbuffer[ICON_BUFFER + 1];
@@ -423,14 +421,12 @@ void IConsolePrint(uint16 color_code, const char *string)
 	str_strip_colours(str);
 	str_validate(str);
 
-	if (_network_dedicated || _send_console_to_stdout) {
+	if (_network_dedicated) {
 		fprintf(stdout, "%s\n", str);
 		fflush(stdout);
-		if (!_send_console_to_stdout) {
-			IConsoleWriteToLogFile(str);
-			free(str); // free duplicated string since it's not used anymore
-			return;
-		}
+		IConsoleWriteToLogFile(str);
+		free(str); // free duplicated string since it's not used anymore
+		return;
 	}
 
 	/* move up all the strings in the buffer one place and do the same for colour

@@ -18,7 +18,6 @@
 
 #include "../../openttd.h"
 #include "../../debug.h"
-#include "../../console.h"
 #include "../../variables.h"
 #include "../../core/geometry_type.hpp"
 #include "../../core/sort_func.hpp"
@@ -58,7 +57,6 @@ extern "C" OSErr CPSSetFrontProcess(CPSProcessSerNum* psn);
 
 
 @interface OTTDMain : NSObject
-@property (assign) NSFileHandle* stdin;
 @end
 
 
@@ -76,41 +74,11 @@ CocoaSubdriver* _cocoa_subdriver = NULL;
 /* Called when the internal event loop has just started running */
 - (void) applicationDidFinishLaunching: (NSNotification*) note
 {
-	/* Grab a handle to stdin */
-	self.stdin = [NSFileHandle fileHandleWithStandardInput];
-
-	/* Ask for a notification center, to send us notifications */
-	[ [ NSNotificationCenter defaultCenter ] addObserver:self
-		selector:@selector(stdinReadCompleted:) name:NSFileHandleReadCompletionNotification object:self.stdin ];
-
-	/* Tell stdin to tell us when there's a line of input */
-	[ self.stdin readInBackgroundAndNotify ];
-
 	/* Hand off to main application code */
 	QZ_GameLoop();
 
 	/* We're done, thank you for playing */
 	[ NSApp stop:_ottd_main ];
-}
-
-/* Called when there's been a line of input on stdin */
-- (void) stdinReadCompleted: (NSNotification*) notification
-{
-	NSData* data = notification.userInfo[NSFileHandleNotificationDataItem];
-
-	if (data != nil) {
-		NSString* string = [ [ [ [ NSString stringWithUTF8String: (const char *)data.bytes ]
-															stringByTrimmingCharactersInSet: [ NSCharacterSet newlineCharacterSet ] ]
-														componentsSeparatedByCharactersInSet: [ NSCharacterSet newlineCharacterSet ] ]
-													firstObject ];
-
-		_send_console_to_stdout = true;
-		IConsoleCmdExec([ string UTF8String ]);
-		_send_console_to_stdout = false;
-	}
-
-	/* Tell stdin to tell us when there's another line of input */
-	[ self.stdin readInBackgroundAndNotify ];
 }
 
 /* Display the in game quit confirmation dialog */

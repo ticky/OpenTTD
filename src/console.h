@@ -115,8 +115,6 @@ extern byte _icolour_dbg;
 extern byte _icolour_cmd;
 extern IConsoleModes _iconsole_mode;
 
-extern bool _send_console_to_stdout;
-
 /* console functions */
 void IConsoleInit();
 void IConsoleFree();
