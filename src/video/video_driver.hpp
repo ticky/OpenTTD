@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file video_driver.hpp Base of all video drivers. */
+
 #ifndef VIDEO_VIDEO_DRIVER_HPP
 #define VIDEO_VIDEO_DRIVER_HPP
 
@@ -31,7 +33,7 @@ public:
 };
 
 extern VideoDriver *_video_driver;
-extern char _ini_videodriver[32];
+extern char *_ini_videodriver;
 extern int _num_resolutions;
 extern uint16 _resolutions[32][2];
 extern uint16 _cur_resolution[2];

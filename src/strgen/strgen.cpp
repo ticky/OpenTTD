@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file strgen.cpp Tool to create computer readable (stand-alone) translation files. */
+
 #include "../stdafx.h"
 #include "../core/alloc_func.hpp"
 #include "../core/endian_func.hpp"
@@ -779,7 +781,7 @@ static bool CheckCommandsMatch(char *a, char *b, const char *name)
 
 static void HandleString(char *str, bool master)
 {
-	char *s,*t;
+	char *s, *t;
 	LangString *ent;
 	char *casep;
 

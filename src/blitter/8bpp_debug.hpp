@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file 8bpp_debug.hpp */
+/** @file 8bpp_debug.hpp A 8 bpp blitter that uses random colours to show the drawn sprites. */
 
 #ifndef BLITTER_8BPP_DEBUG_HPP
 #define BLITTER_8BPP_DEBUG_HPP
@@ -8,14 +8,16 @@
 #include "8bpp_base.hpp"
 #include "factory.hpp"
 
+/** 8bpp debug blitter; colours each sprite differently. */
 class Blitter_8bppDebug : public Blitter_8bppBase {
 public:
 	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
-	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, Blitter::AllocatorProc *allocator);
+	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
 
 	/* virtual */ const char *GetName() { return "8bpp-debug"; }
 };
 
+/** Factory for the 8bpp debug blitter. */
 class FBlitter_8bppDebug: public BlitterFactory<FBlitter_8bppDebug> {
 public:
 	/* virtual */ const char *GetName() { return "8bpp-debug"; }

@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file 32bpp_simple.cpp Implementation of the simple 32 bpp blitter. */
+
 #include "../stdafx.h"
 #include "../gfx_func.h"
 #include "../zoom_func.h"
@@ -10,6 +12,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the simple 32bpp blitter factory. */
 static FBlitter_32bppSimple iFBlitter_32bppSimple;
 
 void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)
@@ -58,7 +61,7 @@ void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoo
 	}
 }
 
-void Blitter_32bppSimple::DrawColorMappingRect(void *dst, int width, int height, int pal)
+void Blitter_32bppSimple::DrawColourMappingRect(void *dst, int width, int height, PaletteID pal)
 {
 	uint32 *udst = (uint32 *)dst;
 
@@ -72,7 +75,7 @@ void Blitter_32bppSimple::DrawColorMappingRect(void *dst, int width, int height,
 		} while (--height);
 		return;
 	}
-	if (pal == PALETTE_TO_STRUCT_GREY) {
+	if (pal == PALETTE_NEWSPAPER) {
 		do {
 			for (int i = 0; i != width; i++) {
 				*udst = MakeGrey(*udst);
@@ -86,7 +89,7 @@ void Blitter_32bppSimple::DrawColorMappingRect(void *dst, int width, int height,
 	DEBUG(misc, 0, "32bpp blitter doesn't know how to draw this color table ('%d')", pal);
 }
 
-Sprite *Blitter_32bppSimple::Encode(SpriteLoader::Sprite *sprite, Blitter::AllocatorProc *allocator)
+Sprite *Blitter_32bppSimple::Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
 {
 	Sprite *dest_sprite;
 	SpriteLoader::CommonPixel *dst;

@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file sound_driver.hpp Base for all sound drivers. */
+
 #ifndef SOUND_SOUND_DRIVER_HPP
 #define SOUND_SOUND_DRIVER_HPP
 
@@ -23,6 +25,6 @@ public:
 };
 
 extern SoundDriver *_sound_driver;
-extern char _ini_sounddriver[32];
+extern char *_ini_sounddriver;
 
 #endif /* SOUND_SOUND_DRIVER_HPP */

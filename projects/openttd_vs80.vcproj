@@ -920,6 +920,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\core\endian_type.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\engine.h"
 				>
 			</File>
@@ -1013,6 +1017,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\md5.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\mem_func.hpp"
 				>
 			</File>
 			<File
@@ -1301,6 +1309,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\slope_type.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\sort_func.hpp"
 				>
 			</File>
 			<File

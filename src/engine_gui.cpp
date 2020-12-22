@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file engine_gui.cpp */
+/** @file engine_gui.cpp GUI to show engine related information. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -214,6 +214,6 @@ void DrawNewsNewVehicleAvail(Window *w)
 	DrawStringMultiCenter(w->width >> 1, 57, STR_NEW_VEHICLE_TYPE, w->width - 2);
 
 	dei->engine_proc(w->width >> 1, 88, engine, 0);
-	GfxFillRect(25, 56, w->width - 56, 112, PALETTE_TO_STRUCT_GREY | (1 << USE_COLORTABLE));
+	GfxFillRect(25, 56, w->width - 56, 112, PALETTE_NEWSPAPER, FILLRECT_RECOLOR);
 	dei->info_proc(engine, w->width >> 1, 129, w->width - 52);
 }

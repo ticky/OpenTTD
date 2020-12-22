@@ -1,12 +1,13 @@
 /* $Id$ */
 
-/** @file 8bpp_debug.cpp */
+/** @file 8bpp_debug.cpp Implementation of 8 bpp debug blitter. */
 
 #include "../stdafx.h"
 #include "../zoom_func.h"
 #include "../core/random_func.hpp"
 #include "8bpp_debug.hpp"
 
+/** Instantiation of the 8bpp debug blitter factory. */
 static FBlitter_8bppDebug iFBlitter_8bppDebug;
 
 void Blitter_8bppDebug::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)
@@ -34,7 +35,7 @@ void Blitter_8bppDebug::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 	}
 }
 
-Sprite *Blitter_8bppDebug::Encode(SpriteLoader::Sprite *sprite, Blitter::AllocatorProc *allocator)
+Sprite *Blitter_8bppDebug::Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
 {
 	Sprite *dest_sprite;
 	dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + sprite->height * sprite->width);

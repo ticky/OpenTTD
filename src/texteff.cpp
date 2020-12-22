@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file texteff.cpp */
+/** @file texteff.cpp Handling of text effects. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -48,7 +48,7 @@ struct TextEffect {
 
 struct ChatMessage {
 	char message[MAX_TEXTMESSAGE_LENGTH];
-	uint16 color;
+	TextColour colour;
 	Date end_date;
 };
 
@@ -78,10 +78,10 @@ static inline uint GetChatMessageCount()
 }
 
 /* Add a text message to the 'chat window' to be shown
- * @param color The colour this message is to be shown in
+ * @param colour The colour this message is to be shown in
  * @param duration The duration of the chat message in game-days
  * @param message message itself in printf() style */
-void CDECL AddChatMessage(uint16 color, uint8 duration, const char *message, ...)
+void CDECL AddChatMessage(TextColour colour, uint8 duration, const char *message, ...)
 {
 	char buf[MAX_TEXTMESSAGE_LENGTH];
 	const char *bufp;
@@ -114,7 +114,7 @@ void CDECL AddChatMessage(uint16 color, uint8 duration, const char *message, ...
 
 		/* The default colour for a message is player colour. Replace this with
 		 * white for any additional lines */
-		cmsg->color = (bufp == buf && color & IS_PALETTE_COLOR) ? color : (0x1D - 15) | IS_PALETTE_COLOR;
+		cmsg->colour = (bufp == buf && colour & TC_IS_PALETTE_COLOUR) ? colour : (TextColour)(0x1D - 15) | TC_IS_PALETTE_COLOUR;
 		cmsg->end_date = _date + duration;
 
 		bufp += strlen(bufp) + 1; // jump to 'next line' in the formatted string
@@ -245,12 +245,12 @@ void DrawChatMessage()
 			_screen.height - _chatmsg_box.y - count * 13 - 2,
 			_chatmsg_box.x + _chatmsg_box.width - 1,
 			_screen.height - _chatmsg_box.y - 2,
-			PALETTE_TO_TRANSPARENT | (1 << USE_COLORTABLE) // black, but with some alpha for background
+			PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOR // black, but with some alpha for background
 		);
 
 	/* Paint the chat messages starting with the lowest at the bottom */
 	for (uint y = 13; count-- != 0; y += 13) {
-		DoDrawString(_chatmsg_list[count].message, _chatmsg_box.x + 3, _screen.height - _chatmsg_box.y - y + 1, _chatmsg_list[count].color);
+		DoDrawString(_chatmsg_list[count].message, _chatmsg_box.x + 3, _screen.height - _chatmsg_box.y - y + 1, _chatmsg_list[count].colour);
 	}
 
 	/* Make sure the data is updated next flush */

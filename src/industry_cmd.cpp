@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file industry_cmd.cpp */
+/** @file industry_cmd.cpp Handling of industry tiles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -626,7 +626,8 @@ static void AnimateTile_Industry(TileIndex tile)
 				SetIndustryAnimationState(tile, m);
 				MarkTileDirtyByTile(tile);
 			}
-		} break;
+			break;
+		}
 	}
 }
 

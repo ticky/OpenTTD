@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file order_cmd.cpp */
+/** @file order_cmd.cpp Handling of orders. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -804,7 +804,8 @@ CommandCost CmdCloneOrder(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 
 				RebuildVehicleLists();
 			}
-		} break;
+			break;
+		}
 
 		case CO_COPY: {
 			Vehicle *src;
@@ -863,7 +864,8 @@ CommandCost CmdCloneOrder(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 
 				RebuildVehicleLists();
 			}
-		} break;
+			break;
+		}
 
 		case CO_UNSHARE: return DecloneOrder(dst, flags);
 		default: return CMD_ERROR;

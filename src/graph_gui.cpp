@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file graph_gui.cpp */
+/** @file graph_gui.cpp GUI that shows performance graphs. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -168,7 +168,7 @@ static void DrawGraph(const GraphDrawer *gw)
 	for (int i = 0; i < GRAPH_NUM_LINES_Y; i++) {
 		SetDParam(0, gw->format_str_y_axis);
 		SetDParam(1, y_label);
-		DrawStringRightAligned(x, y, STR_0170, GRAPH_AXIS_LABEL_COLOUR);
+		DrawStringRightAligned(x, y, STR_0170, (TextColour)GRAPH_AXIS_LABEL_COLOUR);
 
 		y_label -= y_label_separation;
 		y += (gw->height / (GRAPH_NUM_LINES_Y - 1));
@@ -184,7 +184,7 @@ static void DrawGraph(const GraphDrawer *gw)
 			SetDParam(0, month + STR_0162_JAN);
 			SetDParam(1, month + STR_0162_JAN + 2);
 			SetDParam(2, year);
-			DrawString(x, y, month == 0 ? STR_016F : STR_016E, GRAPH_AXIS_LABEL_COLOUR);
+			DrawString(x, y, month == 0 ? STR_016F : STR_016E, (TextColour)GRAPH_AXIS_LABEL_COLOUR);
 
 			month += 3;
 			if (month >= 12) {
@@ -201,7 +201,7 @@ static void DrawGraph(const GraphDrawer *gw)
 
 		for (int i = 0; i < gw->num_on_x_axis; i++) {
 			SetDParam(0, label);
-			DrawStringCentered(x, y, STR_01CB, GRAPH_AXIS_LABEL_COLOUR);
+			DrawStringCentered(x, y, STR_01CB, (TextColour)GRAPH_AXIS_LABEL_COLOUR);
 
 			label += gw->x_values_increment;
 			x += GRAPH_X_POSITION_SEPARATION;

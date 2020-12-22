@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file screenshot.cpp The creation of screenshots! */
+
 #include "stdafx.h"
 #include "openttd.h"
 #include "debug.h"
@@ -257,12 +259,12 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 		sig_bit.gray  = 8;
 		png_set_sBIT(png_ptr, info_ptr, &sig_bit);
 
-#ifdef TTD_LITTLE_ENDIAN
+#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 		png_set_bgr(png_ptr);
 		png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
 #else
 		png_set_filler(png_ptr, 0, PNG_FILLER_BEFORE);
-#endif
+#endif /* TTD_ENDIAN == TTD_LITTLE_ENDIAN */
 	}
 
 	/* use by default 64k temp memory */
@@ -438,20 +440,15 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 		return false;
 	}
 
-	if (sizeof(*palette) == 3) {
-		success = fwrite(palette, 256 * sizeof(*palette), 1, f) == 1;
-	} else {
-		/* If the palette is word-aligned, copy it to a temporary byte array */
-		byte tmp[256 * 3];
-		uint i;
+	/* Palette is word-aligned, copy it to a temporary byte array */
+	byte tmp[256 * 3];
 
-		for (i = 0; i < 256; i++) {
-			tmp[i * 3 + 0] = palette[i].r;
-			tmp[i * 3 + 1] = palette[i].g;
-			tmp[i * 3 + 2] = palette[i].b;
-		}
-		success = fwrite(tmp, sizeof(tmp), 1, f) == 1;
+	for (uint i = 0; i < 256; i++) {
+		tmp[i * 3 + 0] = palette[i].r;
+		tmp[i * 3 + 1] = palette[i].g;
+		tmp[i * 3 + 2] = palette[i].b;
 	}
+	success = fwrite(tmp, sizeof(tmp), 1, f) == 1;
 
 	fclose(f);
 

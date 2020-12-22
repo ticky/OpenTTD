@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file build_vehicle_gui.cpp */
+/** @file build_vehicle_gui.cpp GUI for building vehicles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -764,7 +764,8 @@ int DrawVehiclePurchaseInfo(int x, int y, uint w, EngineID engine_number)
 			const ShipVehicleInfo *svi = ShipVehInfo(engine_number);
 			y = DrawShipPurchaseInfo(x, y, engine_number, svi);
 			refitable = svi->refittable;
-		} break;
+			break;
+		}
 		case VEH_AIRCRAFT:
 			y = DrawAircraftPurchaseInfo(x, y, engine_number, AircraftVehInfo(engine_number));
 			refitable = true;
@@ -1108,7 +1109,8 @@ static void NewVehicleWndProc(Window *w, WindowEvent *e)
 
 			w->resize.width  = w->width;
 			w->resize.height = w->height;
-		} break;
+			break;
+		}
 
 		case WE_INVALIDATE_DATA:
 			bv->regenerate_list = true;

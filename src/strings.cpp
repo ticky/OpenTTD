@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file strings.cpp */
+/** @file strings.cpp Handling of translated strings. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -632,7 +632,8 @@ static char* FormatString(char* buff, const char* str, const int64* argv, uint c
 						}
 						break;
 				}
-			} break;
+				break;
+			}
 
 			case SCC_STRING1: { /* {STRING1} */
 				/* String that consumes ONE argument */
@@ -1183,7 +1184,7 @@ static char *GetSpecialPlayerNameString(char *buff, int ind, const int64 *argv, 
 	}
 
 	/* town name? */
-	if (IsInsideMM(ind - 6, 0, SPECSTR_TOWNNAME_LAST-SPECSTR_TOWNNAME_START + 1)) {
+	if (IsInsideMM(ind - 6, 0, SPECSTR_TOWNNAME_LAST - SPECSTR_TOWNNAME_START + 1)) {
 		buff = GetSpecialTownNameString(buff, ind - 6, GetInt32(&argv), last);
 		return strecpy(buff, " Transport", last);
 	}
@@ -1198,8 +1199,8 @@ static char *GetSpecialPlayerNameString(char *buff, int ind, const int64 *argv, 
 	/* resolution size? */
 	if (IsInsideMM(ind, (SPECSTR_RESOLUTION_START - 0x70E4), (SPECSTR_RESOLUTION_END - 0x70E4) + 1)) {
 		int i = ind - (SPECSTR_RESOLUTION_START - 0x70E4);
-		buff += snprintf(
-			buff, last - buff + 1, "%dx%d", _resolutions[i][0], _resolutions[i][1]
+		buff += seprintf(
+			buff, last, "%dx%d", _resolutions[i][0], _resolutions[i][1]
 		);
 		return buff;
 	}
@@ -1262,11 +1263,11 @@ bool ReadLanguagePack(int lang_index)
 		return false;
 	}
 
-#if defined(TTD_BIG_ENDIAN)
+#if TTD_ENDIAN == TTD_BIG_ENDIAN
 	for (i = 0; i != 32; i++) {
 		lang_pack->offsets[i] = ReadLE16Aligned(&lang_pack->offsets[i]);
 	}
-#endif
+#endif /* TTD_ENDIAN == TTD_BIG_ENDIAN */
 
 	tot_count = 0;
 	for (i = 0; i != 32; i++) {

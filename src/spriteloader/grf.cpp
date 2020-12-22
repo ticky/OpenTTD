@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file grf.cpp */
+/** @file grf.cpp Reading graphics data from (New)GRF files. */
 
 #include "../stdafx.h"
 #include "../gfx_func.h"
@@ -11,7 +11,7 @@
 
 #include "../safeguards.h"
 
-bool SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, uint32 file_pos)
+bool SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, uint32 file_pos, SpriteType sprite_type)
 {
 	/* Open the right file and go to the correct position */
 	FioSeekToFile(file_slot, file_pos);

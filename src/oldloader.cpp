@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file oldloader.cpp */
+/** @file oldloader.cpp Loading of old TTD(patch) savegames. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -1465,7 +1465,8 @@ static bool LoadTTDPatchExtraChunks(LoadgameState *ls, int num)
 
 				/* Append static NewGRF configuration */
 				AppendStaticGRFConfigs(&_grfconfig);
-			} break;
+				break;
+			}
 
 			/* TTDPatch version and configuration */
 			case 0x3: {
@@ -1473,7 +1474,8 @@ static bool LoadTTDPatchExtraChunks(LoadgameState *ls, int num)
 				DEBUG(oldloader, 3, "Game saved with TTDPatch version %d.%d.%d r%d", GB(ttdpv, 24, 8), GB(ttdpv, 20, 4), GB(ttdpv, 16, 4), GB(ttdpv, 0, 16));
 				len -= 4;
 				while (len-- != 0) ReadByte(ls); // skip the configuration
-			} break;
+				break;
+			}
 
 			default:
 				DEBUG(oldloader, 4, "Skipping unknown extra chunk %X", id);

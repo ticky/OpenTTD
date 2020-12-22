@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file png.cpp */
+/** @file png.cpp Reading sprites from png files. */
 
 #ifdef WITH_PNG
 
@@ -170,7 +170,7 @@ static bool LoadPNG(SpriteLoader::Sprite *sprite, const char *filename, uint32 i
 	return true;
 }
 
-bool SpriteLoaderPNG::LoadSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, uint32 file_pos)
+bool SpriteLoaderPNG::LoadSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, uint32 file_pos, SpriteType sprite_type)
 {
 	const char *filename = FioGetFilename(file_slot);
 	if (!LoadPNG(sprite, filename, file_pos, false)) return false;

@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file network_client.cpp Client part of the network protocol. */
+
 #ifdef ENABLE_NETWORK
 
 #include "../stdafx.h"
@@ -564,7 +566,7 @@ DEF_CLIENT_RECEIVE_COMMAND(PACKET_SERVER_MAP)
 
 	// First packet, init some stuff
 	if (maptype == MAP_PACKET_START) {
-		file_pointer = FioFOpenFile("network_client.tmp", "wb", AUTOSAVE_DIR);;
+		file_pointer = FioFOpenFile("network_client.tmp", "wb", AUTOSAVE_DIR);
 		if (file_pointer == NULL) {
 			_switch_mode_errorstr = STR_NETWORK_ERR_SAVEGAMEERROR;
 			return NETWORK_RECV_STATUS_SAVEGAME;
@@ -742,7 +744,8 @@ DEF_CLIENT_RECEIVE_COMMAND(PACKET_SERVER_CHAT)
 
 				GetString(name, str, lastof(name));
 				ci = NetworkFindClientInfoFromIndex(_network_own_client_index);
-			} break;
+				break;
+			}
 
 			default: NOT_REACHED(); break;
 		}

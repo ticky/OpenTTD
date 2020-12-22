@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file console.cpp */
+/** @file console.cpp Handling of the in-game console. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -44,8 +44,6 @@ byte _icolour_warn;
 byte _icolour_dbg;
 byte _icolour_cmd;
 IConsoleModes _iconsole_mode;
-
-bool _send_console_to_stdout;
 
 /* ** main console ** */
 static char *_iconsole_buffer[ICON_BUFFER + 1];
@@ -94,17 +92,17 @@ static void IConsoleWndProc(Window *w, WindowEvent *e)
 			GfxFillRect(w->left, w->top, w->width, w->height - 1, 0);
 			while ((i > 0) && (i > iconsole_scroll - max) && (_iconsole_buffer[i] != NULL)) {
 				DoDrawString(_iconsole_buffer[i], 5,
-					w->height - (iconsole_scroll + 2 - i) * ICON_LINE_HEIGHT, _iconsole_cbuffer[i]);
+					w->height - (iconsole_scroll + 2 - i) * ICON_LINE_HEIGHT, (TextColour)_iconsole_cbuffer[i]);
 				i--;
 			}
 			/* If the text is longer than the window, don't show the starting ']' */
 			delta = w->width - 10 - _iconsole_cmdline.width - ICON_RIGHT_BORDERWIDTH;
 			if (delta > 0) {
-				DoDrawString("]", 5, w->height - ICON_LINE_HEIGHT, _icolour_cmd);
+				DoDrawString("]", 5, w->height - ICON_LINE_HEIGHT, (TextColour)_icolour_cmd);
 				delta = 0;
 			}
 
-			DoDrawString(_iconsole_cmdline.buf, 10 + delta, w->height - ICON_LINE_HEIGHT, _icolour_cmd);
+			DoDrawString(_iconsole_cmdline.buf, 10 + delta, w->height - ICON_LINE_HEIGHT, (TextColour)_icolour_cmd);
 
 			if (_iconsole_cmdline.caret)
 				DoDrawString("_", 10 + delta + _iconsole_cmdline.caretxoffs, w->height - ICON_LINE_HEIGHT, TC_WHITE);
@@ -341,7 +339,8 @@ void IConsoleSwitch()
 			w->width = _screen.width;
 			_iconsole_mode = ICONSOLE_OPENED;
 			SetBit(_no_scroll, SCROLL_CON); // override cursor arrows; the gamefield will not scroll
-		} break;
+			break;
+		}
 		case ICONSOLE_OPENED: case ICONSOLE_FULL:
 			DeleteWindowById(WC_CONSOLE, 0);
 			_iconsole_mode = ICONSOLE_CLOSED;
@@ -422,14 +421,12 @@ void IConsolePrint(uint16 color_code, const char *string)
 	str_strip_colours(str);
 	str_validate(str);
 
-	if (_network_dedicated || _send_console_to_stdout) {
+	if (_network_dedicated) {
 		fprintf(stdout, "%s\n", str);
 		fflush(stdout);
-		if (!_send_console_to_stdout) {
-			IConsoleWriteToLogFile(str);
-			free(str); // free duplicated string since it's not used anymore
-			return;
-		}
+		IConsoleWriteToLogFile(str);
+		free(str); // free duplicated string since it's not used anymore
+		return;
 	}
 
 	/* move up all the strings in the buffer one place and do the same for colour
@@ -762,37 +759,42 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 		case '%': // Some or all parameters
 			cmdptr++;
 			switch (*cmdptr) {
-			case '+': { // All parameters seperated: "[param 1]" "[param 2]"
-				for (i = 0; i != tokencount; i++) {
-					aliasstream[astream_i++] = '"';
-					astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
-					aliasstream[astream_i++] = '"';
-					aliasstream[astream_i++] = ' ';
+				case '+': { // All parameters seperated: "[param 1]" "[param 2]"
+					for (i = 0; i != tokencount; i++) {
+						aliasstream[astream_i++] = '"';
+						astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
+						aliasstream[astream_i++] = '"';
+						aliasstream[astream_i++] = ' ';
+					}
+					break;
 				}
-			} break;
-			case '!': { // Merge the parameters to one: "[param 1] [param 2] [param 3...]"
-				aliasstream[astream_i++] = '"';
-				for (i = 0; i != tokencount; i++) {
-					astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
-					aliasstream[astream_i++] = ' ';
-				}
-				aliasstream[astream_i++] = '"';
+				case '!': { // Merge the parameters to one: "[param 1] [param 2] [param 3...]"
+					aliasstream[astream_i++] = '"';
+					for (i = 0; i != tokencount; i++) {
+						astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[i], astream_i);
+						aliasstream[astream_i++] = ' ';
+					}
+					aliasstream[astream_i++] = '"';
 
-			} break;
+					break;
+				}
+
 				default: { // One specific parameter: %A = [param 1] %B = [param 2] ...
-				int param = *cmdptr - 'A';
+					int param = *cmdptr - 'A';
 
-				if (param < 0 || param >= tokencount) {
-					IConsoleError("too many or wrong amount of parameters passed to alias, aborting");
-					IConsolePrintF(_icolour_warn, "Usage of alias '%s': %s", alias->name, alias->cmdline);
-					return;
+					if (param < 0 || param >= tokencount) {
+						IConsoleError("too many or wrong amount of parameters passed to alias, aborting");
+						IConsolePrintF(_icolour_warn, "Usage of alias '%s': %s", alias->name, alias->cmdline);
+						return;
+					}
+
+					aliasstream[astream_i++] = '"';
+					astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[param], astream_i);
+					aliasstream[astream_i++] = '"';
+					break;
 				}
-
-				aliasstream[astream_i++] = '"';
-				astream_i += IConsoleCopyInParams(&aliasstream[astream_i], tokens[param], astream_i);
-				aliasstream[astream_i++] = '"';
-			} break;
-			} break;
+			}
+			break;
 
 		default:
 			aliasstream[astream_i++] = *cmdptr;

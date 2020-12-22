@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file pathfinder.cpp Pathfinder support for the trolly AI. */
+
 #include "../../stdafx.h"
 #include "../../openttd.h"
 #include "../../bridge_map.h"
@@ -343,7 +345,7 @@ static void AyStar_AiPathFinder_GetNeighbours(AyStar *aystar, OpenListNode *curr
 		//  For now, we check both sides for this tile.. terraforming gives fuzzy result
 		if (tileh == InclinedSlope(dir)) {
 			// Now simply check if a tunnel can be build
-			ret = AI_DoCommand(tile, (PathFinderInfo->rail_or_road?0:0x200), 0, DC_AUTO, CMD_BUILD_TUNNEL);
+			ret = AI_DoCommand(tile, (PathFinderInfo->rail_or_road ? 0 : 0x200), 0, DC_AUTO, CMD_BUILD_TUNNEL);
 			tileh = GetTileSlope(_build_tunnel_endtile, NULL);
 			if (CmdSucceeded(ret) && IsInclinedSlope(tileh)) {
 				aystar->neighbours[aystar->num_neighbours].tile = _build_tunnel_endtile;

@@ -5,6 +5,7 @@
 #ifndef GFX_TYPE_H
 #define GFX_TYPE_H
 
+#include "core/endian_type.hpp"
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "zoom_type.h"
@@ -102,6 +103,7 @@ struct AnimCursor {
 	byte display_time; ///< Amount of ticks this sprite will be shown
 };
 
+/** Collection of variables for cursor-display and -animation */
 struct CursorVars {
 	Point pos, size, offs, delta; ///< position, size, offset from top-left, and movement
 	Point draw_pos, draw_size;    ///< position and size bounding-box for drawing
@@ -134,11 +136,16 @@ struct DrawPixelInfo {
 };
 
 struct Colour {
-	byte r;
-	byte g;
-	byte b;
+#if TTD_ENDIAN == TTD_BIG_ENDIAN
+	uint8 a, r, g, b; ///< colour channels in BE order
+#else
+	uint8 b, g, r, a; ///< colour channels in LE order
+#endif /* TTD_ENDIAN == TTD_BIG_ENDIAN */
+
+	operator uint32 () const { return *(uint32 *)this; }
 };
 
+/** Available font sizes */
 enum FontSize {
 	FS_NORMAL,
 	FS_SMALL,
@@ -172,7 +179,9 @@ enum {
 	COLOUR_ORANGE,
 	COLOUR_BROWN,
 	COLOUR_GREY,
-	COLOUR_WHITE
+	COLOUR_WHITE,
+	COLOUR_END,
+	INVALID_COLOUR = 0xFF,
 };
 
 /** Colour of the strings, see _string_colormap in table/palettes.h or docs/ottd-colourtext-palette.png */
@@ -195,10 +204,41 @@ enum TextColour {
 	TC_GREY        = 0x0E,
 	TC_DARK_BLUE   = 0x0F,
 	TC_BLACK       = 0x10,
+	TC_INVALID     = 0xFF,
+
+	TC_IS_PALETTE_COLOUR = 0x100, ///< Colour value is already a real palette colour index, not an index of a StringColour.
+	TC_NO_SHADE          = 0x200, ///< Do not add shading to this text colour.
+};
+DECLARE_ENUM_AS_BIT_SET(TextColour);
+
+/** Defines a few values that are related to animations using palette changes */
+enum PaletteAnimationSizes {
+	PALETTE_ANIM_SIZE_WIN   = 28,   ///< number of animated colours in Windows palette
+	PALETTE_ANIM_SIZE_DOS   = 38,   ///< number of animated colours in DOS palette
+	PALETTE_ANIM_SIZE_START = 217,  ///< Index in  the _palettes array from which all animations are taking places (table/palettes.h)
 };
 
-enum StringColorFlags {
-	IS_PALETTE_COLOR = 0x100, ///< color value is already a real palette color index, not an index of a StringColor
+/** Define the operation GfxFillRect performs */
+enum FillRectMode {
+	FILLRECT_OPAQUE,  ///< Fill rectangle with a single color
+	FILLRECT_CHECKER, ///< Draw only every second pixel, used for greying-out
+	FILLRECT_RECOLOR, ///< Apply a recolor sprite to the screen content
+};
+
+/** Palettes OpenTTD supports. */
+enum Palette {
+	PAL_DOS,        ///< Use the DOS palette.
+	PAL_WINDOWS,    ///< Use the Windows palette.
+	PAL_AUTODETECT, ///< Automatically detect the palette based on the graphics pack.
+	MAX_PAL = 2,    ///< The number of palettes.
+};
+
+/** Types of sprites that might be loaded */
+enum SpriteType {
+	ST_NORMAL   = 0,      ///< The most basic (normal) sprite
+	ST_MAPGEN   = 1,      ///< Special sprite for the map generator
+	ST_FONT     = 2,      ///< A sprite used for fonts
+	ST_RECOLOUR = 3,      ///< Recolour sprite
 };
 
 #endif /* GFX_TYPE_H */

@@ -84,7 +84,7 @@ static void pool_free(SettingsMemoryPool **pool);
 static bool IsSignedVarMemType(VarType vt);
 
 struct SettingsMemoryPool {
-	uint pos,size;
+	uint pos, size;
 	SettingsMemoryPool *next;
 	byte mem[1];
 };
@@ -243,7 +243,7 @@ static IniFile *ini_load(const char *filename)
 
 		/* trim whitespace from right side. */
 		e = s + strlen(s);
-		while (e > s && ((c=e[-1]) == '\n' || c == '\r' || c == ' ' || c == '\t')) e--;
+		while (e > s && ((c = e[-1]) == '\n' || c == '\r' || c == ' ' || c == '\t')) e--;
 		*e = '\0';
 
 		/* skip comments and empty lines */
@@ -254,7 +254,7 @@ static IniFile *ini_load(const char *filename)
 			/* add to comment */
 			if (ns > a) {
 				a = max(a, 128U);
-				do a*=2; while (a < ns);
+				do a *= 2; while (a < ns);
 				comment = ReallocT(comment, comment_alloc = a);
 			}
 			pos = comment_size;
@@ -522,10 +522,11 @@ static bool load_intlist(const char *str, void *array, int nelems, VarType type)
 /** Convert an integer-array (intlist) to a string representation. Each value
  * is seperated by a comma or a space character
  * @param buf output buffer where the string-representation will be stored
+ * @param last last item to write to in the output buffer
  * @param array pointer to the integer-arrays that is read from
  * @param nelems the number of elements the array holds.
  * @param type the type of elements the array holds (eg INT8, UINT16, etc.) */
-static void make_intlist(char *buf, const void *array, int nelems, VarType type)
+static void make_intlist(char *buf, const char *last, const void *array, int nelems, VarType type)
 {
 	int i, v = 0;
 	const byte *p = (const byte*)array;
@@ -541,15 +542,16 @@ static void make_intlist(char *buf, const void *array, int nelems, VarType type)
 		case SLE_VAR_U32: v = *(uint32*)p; p += 4; break;
 		default: NOT_REACHED();
 		}
-		buf += sprintf(buf, (i == 0) ? "%d" : ",%d", v);
+		buf += seprintf(buf, last, (i == 0) ? "%d" : ",%d", v);
 	}
 }
 
 /** Convert a ONEofMANY structure to a string representation.
  * @param buf output buffer where the string-representation will be stored
+ * @param last last item to write to in the output buffer
  * @param many the full-domain string of possible values
  * @param id the value of the variable and whose string-representation must be found */
-static void make_oneofmany(char *buf, const char *many, int id)
+static void make_oneofmany(char *buf, const char *last, const char *many, int id)
 {
 	int orig_id = id;
 
@@ -557,7 +559,7 @@ static void make_oneofmany(char *buf, const char *many, int id)
 	while (--id >= 0) {
 		for (; *many != '|'; many++) {
 			if (*many == '\0') { // not found
-				sprintf(buf, "%d", orig_id);
+				seprintf(buf, last, "%d", orig_id);
 				return;
 			}
 		}
@@ -565,16 +567,17 @@ static void make_oneofmany(char *buf, const char *many, int id)
 	}
 
 	/* copy string until next item (|) or the end of the list if this is the last one */
-	while (*many != '\0' && *many != '|') *buf++ = *many++;
+	while (*many != '\0' && *many != '|' && buf < last) *buf++ = *many++;
 	*buf = '\0';
 }
 
 /** Convert a MANYofMANY structure to a string representation.
  * @param buf output buffer where the string-representation will be stored
+ * @param last last item to write to in the output buffer
  * @param many the full-domain string of possible values
  * @param x the value of the variable and whose string-representation must
  *        be found in the bitmasked many string */
-static void make_manyofmany(char *buf, const char *many, uint32 x)
+static void make_manyofmany(char *buf, const char *last, const char *many, uint32 x)
 {
 	const char *start;
 	int i = 0;
@@ -585,10 +588,10 @@ static void make_manyofmany(char *buf, const char *many, uint32 x)
 		while (*many != 0 && *many != '|') many++; // advance to the next element
 
 		if (HasBit(x, 0)) { // item found, copy it
-			if (!init) *buf++ = '|';
+			if (!init) buf += seprintf(buf, last, "|");
 			init = false;
 			if (start == many) {
-				buf += sprintf(buf, "%d", i);
+				buf += seprintf(buf, last, "%d", i);
 			} else {
 				memcpy(buf, start, many - start);
 				buf += many - start;
@@ -680,7 +683,8 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 				/* Override the minimum value. No value below sdb->min, except special value 0 */
 				int32 min = ((sdb->flags & SGF_0ISDISABLED) && val <= sdb->min) ? 0 : sdb->min;
 				val = Clamp(val, min, sdb->max);
-			} break;
+				break;
+			}
 			case SLE_VAR_U32: {
 				/* Override the minimum value. No value below sdb->min, except special value 0 */
 				uint min = ((sdb->flags & SGF_0ISDISABLED) && (uint)val <= (uint)sdb->min) ? 0 : sdb->min;
@@ -852,26 +856,27 @@ static void ini_save_settings(IniFile *ini, const SettingDesc *sd, const char *g
 
 			switch (sdb->cmd) {
 			case SDT_BOOLX:      strcpy(buf, (i != 0) ? "true" : "false"); break;
-			case SDT_NUMX:       sprintf(buf, IsSignedVarMemType(sld->conv) ? "%d" : "%u", i); break;
-			case SDT_ONEOFMANY:  make_oneofmany(buf, sdb->many, i); break;
-			case SDT_MANYOFMANY: make_manyofmany(buf, sdb->many, i); break;
+			case SDT_NUMX:       seprintf(buf, lastof(buf), IsSignedVarMemType(sld->conv) ? "%d" : "%u", i); break;
+			case SDT_ONEOFMANY:  make_oneofmany(buf, lastof(buf), sdb->many, i); break;
+			case SDT_MANYOFMANY: make_manyofmany(buf, lastof(buf), sdb->many, i); break;
 			default: NOT_REACHED();
 			}
-		} break;
+			break;
+		}
 
 		case SDT_STRING:
 			switch (GetVarMemType(sld->conv)) {
 			case SLE_VAR_STRB: strcpy(buf, (char*)ptr); break;
-			case SLE_VAR_STRBQ:sprintf(buf, "\"%s\"", (char*)ptr); break;
+			case SLE_VAR_STRBQ:seprintf(buf, lastof(buf), "\"%s\"", (char*)ptr); break;
 			case SLE_VAR_STR:  strcpy(buf, *(char**)ptr); break;
-			case SLE_VAR_STRQ: sprintf(buf, "\"%s\"", *(char**)ptr); break;
-			case SLE_VAR_CHAR: sprintf(buf, "\"%c\"", *(char*)ptr); break;
+			case SLE_VAR_STRQ: seprintf(buf, "\"%s\"", lastof(buf), *(char**)ptr); break;
+			case SLE_VAR_CHAR: seprintf(buf, "\"%c\"", lastof(buf), *(char*)ptr); break;
 			default: NOT_REACHED();
 			}
 			break;
 
 		case SDT_INTLIST:
-			make_intlist(buf, ptr, sld->length, GetVarMemType(sld->conv));
+			make_intlist(buf, lastof(buf), ptr, sld->length, GetVarMemType(sld->conv));
 			break;
 		default: NOT_REACHED();
 		}

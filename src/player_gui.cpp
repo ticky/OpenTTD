@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file player_gui.cpp */
+/** @file player_gui.cpp Player related GUIs. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -181,7 +181,8 @@ static void PlayerFinancesWndProc(Window *w, WindowEvent *e)
 		DrawWindowWidgets(w);
 
 		DrawPlayerEconomyStats(p, (byte)WP(w, def_d).data_1);
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -191,7 +192,8 @@ static void PlayerFinancesWndProc(Window *w, WindowEvent *e)
 			PlayerID player = (PlayerID)w->window_number;
 			DeleteWindow(w);
 			DoShowPlayerFinances(player, !HasBit(mode, 0), stickied);
-		} break;
+			break;
+		}
 
 		case PFW_WIDGET_INCREASE_LOAN: /* increase loan */
 			DoCommandP(0, 0, _ctrl_pressed, NULL, CMD_INCREASE_LOAN | CMD_MSG(STR_702C_CAN_T_BORROW_ANY_MORE_MONEY));
@@ -1203,7 +1205,11 @@ static void PlayerCompanyWndProc(Window *w, WindowEvent *e)
 						w->LowerWidget(PCW_WIDGET_BUILD_VIEW_HQ);
 						w->InvalidateWidget(PCW_WIDGET_BUILD_VIEW_HQ);
 					} else {
-						ScrollMainWindowToTile(tile);
+						if (_ctrl_pressed) {
+							ShowExtraViewPortWindow(tile);
+						} else {
+							ScrollMainWindowToTile(tile);
+						}
 					}
 					break;
 				}
@@ -1391,7 +1397,8 @@ static void EndGameWndProc(Window *w, WindowEvent *e)
 			SetDParam(1, EndGameGetPerformanceTitleFromValue(p->old_economy[0].performance_history));
 			DrawStringMultiCenter(x + (640 / 2), y + 157, STR_021B_ACHIEVES_STATUS, 640);
 		}
-	} break;
+		break;
+	}
 	case WE_CLICK: /* Close the window (and show the highscore window) */
 		DeleteWindow(w);
 		break;
@@ -1430,7 +1437,8 @@ static void HighScoreWndProc(Window *w, WindowEvent *e)
 				DrawString(x + 71, y + 160 + (i * 55), STR_HIGHSCORE_STATS, colour);
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK: /* Onclick to close window, and in destroy event handle the rest */
 		DeleteWindow(w);

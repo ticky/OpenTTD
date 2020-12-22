@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file industry_gui.cpp */
+/** @file industry_gui.cpp GUIs related to industries. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -139,7 +139,8 @@ static void BuildDynamicIndustryWndProc(Window *w, WindowEvent *e)
 			SetupFundArrays(w);
 
 			WP(w, fnd_d).callback_timer = DAY_TICKS;
-		} break;
+			break;
+		}
 
 		case WE_PAINT: {
 			const IndustrySpec *indsp = (WP(w, fnd_d).select == INVALID_INDUSTRYTYPE) ? NULL : GetIndustrySpec(WP(w, fnd_d).select);
@@ -235,7 +236,8 @@ static void BuildDynamicIndustryWndProc(Window *w, WindowEvent *e)
 				SetDParam(0, str);
 				DrawStringMultiLine(x_str, y_str, STR_JUST_STRING, max_width, wi->bottom - wi->top - 40);
 			}
-		} break;
+			break;
+		}
 
 		case WE_DOUBLE_CLICK:
 			if (e->we.click.widget != DPIW_MATRIX_WIDGET) break;
@@ -262,7 +264,8 @@ static void BuildDynamicIndustryWndProc(Window *w, WindowEvent *e)
 							ResetObjectToPlace();
 						}
 					}
-				} break;
+					break;
+				}
 
 				case DPIW_FUND_WIDGET: {
 					if (WP(w, fnd_d).select == INVALID_INDUSTRYTYPE) {
@@ -282,7 +285,8 @@ static void BuildDynamicIndustryWndProc(Window *w, WindowEvent *e)
 					} else {
 						HandlePlacePushButton(w, DPIW_FUND_WIDGET, SPR_CURSOR_INDUSTRY, VHM_RECT, NULL);
 					}
-				} break;
+					break;
+				}
 			}
 			break;
 
@@ -290,7 +294,8 @@ static void BuildDynamicIndustryWndProc(Window *w, WindowEvent *e)
 			/* Adjust the number of items in the matrix depending of the rezise */
 			w->vscroll.cap  += e->we.sizing.diff.y / (int)w->resize.step_height;
 			w->widget[DPIW_MATRIX_WIDGET].data = (w->vscroll.cap << 8) + 1;
-		} break;
+			break;
+		}
 
 		case WE_PLACE_OBJ: {
 			bool success = true;
@@ -323,7 +328,8 @@ static void BuildDynamicIndustryWndProc(Window *w, WindowEvent *e)
 
 			/* If an industry has been built, just reset the cursor and the system */
 			if (success) ResetObjectToPlace();
-		} break;
+			break;
+		}
 
 		case WE_TICK:
 			if (_pause_game != 0) break;
@@ -488,7 +494,8 @@ static void IndustryViewWndProc(Window *w, WindowEvent *e)
 		}
 		w->height += lines;
 		w->resize.height += lines;
-	} break;
+		break;
+	}
 
 	case WE_PAINT: {
 		Industry *i = GetIndustry(w->window_number);
@@ -571,7 +578,8 @@ static void IndustryViewWndProc(Window *w, WindowEvent *e)
 		}
 
 		DrawWindowViewport(w);
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		Industry *i;
@@ -611,14 +619,22 @@ static void IndustryViewWndProc(Window *w, WindowEvent *e)
 					ShowQueryString(STR_CONFIG_PATCHES_INT32, STR_CONFIG_GAME_PRODUCTION, 10, 100, w, CS_ALPHANUMERAL);
 				}
 			}
-		} break;
-		case IVW_GOTO:
+			break;
+		}
+		case IVW_GOTO: {
 			i = GetIndustry(w->window_number);
-			ScrollMainWindowToTile(i->xy + TileDiffXY(1, 1));
-		} break;
+			if (_ctrl_pressed) {
+				ShowExtraViewPortWindow(i->xy + TileDiffXY(1, 1));
+			} else {
+				ScrollMainWindowToTile(i->xy + TileDiffXY(1, 1));
+			}
+			break;
+		}
 
 		}
 		break;
+	}
+
 	case WE_TIMEOUT:
 		WP(w, indview_d).clicked_line = 0;
 		WP(w, indview_d).clicked_button = 0;
@@ -865,7 +881,8 @@ static void IndustryDirectoryWndProc(Window *w, WindowEvent *e)
 			p++;
 			if (++n == w->vscroll.cap) break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -873,25 +890,29 @@ static void IndustryDirectoryWndProc(Window *w, WindowEvent *e)
 				_industry_sort_order = _industry_sort_order == 0 ? 1 : 0;
 				_industry_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case IDW_SORTBYTYPE: {
 				_industry_sort_order = _industry_sort_order == 2 ? 3 : 2;
 				_industry_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case IDW_SORTBYPROD: {
 				_industry_sort_order = _industry_sort_order == 4 ? 5 : 4;
 				_industry_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case IDW_SORTBYTRANSPORT: {
 				_industry_sort_order = _industry_sort_order == 6 ? 7 : 6;
 				_industry_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case IDW_INDUSRTY_LIST: {
 				int y = (e->we.click.pt.y - 28) / 10;
@@ -900,9 +921,14 @@ static void IndustryDirectoryWndProc(Window *w, WindowEvent *e)
 				if (!IsInsideMM(y, 0, w->vscroll.cap)) return;
 				p = y + w->vscroll.pos;
 				if (p < _num_industry_sort) {
-					ScrollMainWindowToTile(_industry_sort[p]->xy);
+					if (_ctrl_pressed) {
+						ShowExtraViewPortWindow(_industry_sort[p]->xy);
+					} else {
+						ScrollMainWindowToTile(_industry_sort[p]->xy);
+					}
 				}
-			} break;
+				break;
+			}
 		}
 		break;
 

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file misc_gui.cpp */
+/** @file misc_gui.cpp GUIs for a number of misc windows. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -314,7 +314,8 @@ static void AboutWindowProc(Window *w, WindowEvent *e)
 
 		DoDrawStringCentered(210, w->height - 25, "Website: http://www.openttd.org", TC_BLACK);
 		DrawStringCentered(210, w->height - 15, STR_00BA_COPYRIGHT_OPENTTD, TC_FROMSTRING);
-	} break;
+		break;
+	}
 	case WE_TICK: // Timer to scroll the text and adjust the new top
 		if (--WP(w, scroller_d).counter == 0) {
 			WP(w, scroller_d).counter = 5;
@@ -385,7 +386,8 @@ static void BuildTreesWndProc(Window *w, WindowEvent *e)
 				y += 47;
 			}
 		} while (--count);
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		int wid = e->we.click.widget;
@@ -417,7 +419,8 @@ static void BuildTreesWndProc(Window *w, WindowEvent *e)
 			MarkWholeScreenDirty();
 			break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_PLACE_OBJ:
 		VpStartPlaceSizing(e->we.place.tile, VPM_X_AND_Y_LIMITED, DDSP_PLANT_TREES);
@@ -1727,7 +1730,8 @@ static void SaveLoadDlgWndProc(Window *w, WindowEvent *e)
 		}
 
 		w->vscroll.cap += e->we.sizing.diff.y / 10;
-		} break;
+		break;
+	}
 	}
 }
 
@@ -1959,7 +1963,8 @@ static void CheatsWndProc(Window *w, WindowEvent *e)
 
 						DrawFrameRect(x + 20, y + 1, x + 30 + 9, y + 9, on ? 6 : 4, on ? FR_LOWERED : FR_NONE);
 						SetDParam(0, on ? STR_CONFIG_PATCHES_ON : STR_CONFIG_PATCHES_OFF);
-					} break;
+						break;
+					}
 
 					default: {
 						int32 val = (int32)ReadValue(ce->variable, ce->type);
@@ -1985,7 +1990,8 @@ static void CheatsWndProc(Window *w, WindowEvent *e)
 							/* Fallthrough */
 							default: SetDParam(0, val);
 						}
-					} break;
+						break;
+					}
 				}
 
 				DrawString(50, y + 1, ce->str, TC_FROMSTRING);
@@ -2027,7 +2033,8 @@ static void CheatsWndProc(Window *w, WindowEvent *e)
 			w->flags4 |= 5 << WF_TIMEOUT_SHL;
 
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case WE_TIMEOUT:
 			WP(w, def_d).data_1 = 0;

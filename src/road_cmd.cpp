@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file road_cmd.cpp */
+/** @file road_cmd.cpp Commands related to road tiles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -468,7 +468,8 @@ CommandCost CmdBuildRoad(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 						}
 						return_cmd_error(STR_1007_ALREADY_BUILT);
 					}
-				} break;
+					break;
+				}
 
 				case ROAD_TILE_CROSSING:
 					all_bits = GetCrossingRoadBits(tile);
@@ -531,7 +532,8 @@ CommandCost CmdBuildRoad(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 			pieces = curbits; // we need to pay for both roadbits
 
 			if (HasTileRoadType(tile, rt)) return_cmd_error(STR_1007_ALREADY_BUILT);
-		} break;
+			break;
+		}
 
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) return CMD_ERROR;
@@ -598,7 +600,8 @@ do_clear:;
 					if (_current_player == OWNER_TOWN && rt == ROADTYPE_ROAD) SetTownIndex(tile, p2);
 				}
 				if (rtt != ROAD_TILE_CROSSING) SetRoadBits(tile, existing | pieces, rt);
-			} break;
+				break;
+			}
 
 			case MP_TUNNELBRIDGE: {
 				TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
@@ -614,7 +617,8 @@ do_clear:;
 
 					for (TileIndex t = tile + delta; t != other_end; t += delta) MarkTileDirtyByTile(t);
 				}
-			} break;
+				break;
+			}
 
 			case MP_STATION:
 				assert(IsDriveThroughStopTile(tile));

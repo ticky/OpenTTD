@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file group_gui.cpp */
+/** @file group_gui.cpp GUI for the group window. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -541,7 +541,7 @@ static void GroupWndProc(Window *w, WindowEvent *e)
 
 					if (id_g >= gl->l.list_length) return;
 
-					gv->group_sel = gl->sort_list[id_g]->index;;
+					gv->group_sel = gl->sort_list[id_g]->index;
 
 					gv->l.flags |= VL_REBUILD;
 					SetWindowDirty(w);

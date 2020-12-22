@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file order_gui.cpp */
+/** @file order_gui.cpp GUI related to orders. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -390,7 +390,7 @@ static void OrdersPlaceObj(const Vehicle *v, TileIndex tile, Window *w)
 	if (!cmd.IsValid()) return;
 
 	if (DoCommandP(v->tile, v->index + (OrderGetSel(w) << 16), PackOrder(&cmd), NULL, CMD_INSERT_ORDER | CMD_MSG(STR_8833_CAN_T_INSERT_NEW_ORDER))) {
-		if (WP(w, order_d).sel != -1) WP(w,order_d).sel++;
+		if (WP(w, order_d).sel != -1) WP(w, order_d).sel++;
 		ResetObjectToPlace();
 	}
 }
@@ -604,7 +604,8 @@ static void OrdersWndProc(Window *w, WindowEvent *e)
 			}
 
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case ORDER_WIDGET_SKIP:
 			OrderClick_Skip(w, v);
@@ -645,7 +646,8 @@ static void OrdersWndProc(Window *w, WindowEvent *e)
 			ShowVehicleListWindow(v);
 			break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_DRAGDROP: {
 		const Vehicle *v = GetVehicle(w->window_number);
@@ -699,16 +701,19 @@ static void OrdersWndProc(Window *w, WindowEvent *e)
 		} else {
 			GuiShowTooltips(STR_SERVICE_HINT);
 		}
-	} break;
+		break;
+	}
 
 	case WE_PLACE_OBJ: {
 		OrdersPlaceObj(GetVehicle(w->window_number), e->we.place.tile, w);
-	} break;
+		break;
+	}
 
 	case WE_ABORT_PLACE_OBJ: {
 		w->RaiseWidget(ORDER_WIDGET_GOTO);
 		w->InvalidateWidget(ORDER_WIDGET_GOTO);
-	} break;
+		break;
+	}
 
 	// check if a vehicle in a depot was clicked..
 	case WE_MOUSELOOP: {
@@ -725,7 +730,8 @@ static void OrdersWndProc(Window *w, WindowEvent *e)
 			_place_clicked_vehicle = NULL;
 			HandleOrderVehClick(GetVehicle(w->window_number), v, w);
 		}
-	} break;
+		break;
+	}
 
 	case WE_RESIZE:
 		/* Update the scroll + matrix */
@@ -741,7 +747,8 @@ static void OrdersWndProc(Window *w, WindowEvent *e)
 				w->InvalidateWidget(i);
 			}
 		}
-	} break;
+		break;
+	}
 	}
 }
 
@@ -776,7 +783,7 @@ static const Widget _orders_train_widgets[] = {
 
 static const WindowDesc _orders_train_desc = {
 	WDP_AUTO, WDP_AUTO, 399, 88, 399, 88,
-	WC_VEHICLE_ORDERS,WC_VEHICLE_VIEW,
+	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET | WDF_RESIZABLE,
 	_orders_train_widgets,
 	OrdersWndProc
@@ -813,7 +820,7 @@ static const Widget _orders_widgets[] = {
 
 static const WindowDesc _orders_desc = {
 	WDP_AUTO, WDP_AUTO, 410, 88, 410, 88,
-	WC_VEHICLE_ORDERS,WC_VEHICLE_VIEW,
+	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET | WDF_RESIZABLE,
 	_orders_widgets,
 	OrdersWndProc
@@ -850,7 +857,7 @@ static const Widget _other_orders_widgets[] = {
 
 static const WindowDesc _other_orders_desc = {
 	WDP_AUTO, WDP_AUTO, 332, 88, 332, 88,
-	WC_VEHICLE_ORDERS,WC_VEHICLE_VIEW,
+	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET | WDF_UNCLICK_BUTTONS | WDF_RESIZABLE,
 	_other_orders_widgets,
 	OrdersWndProc

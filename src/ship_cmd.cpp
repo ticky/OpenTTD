@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file ship_cmd.cpp */
+/** @file ship_cmd.cpp Handling of ships. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -92,7 +92,7 @@ void GetShipSpriteSize(EngineID engine, uint &width, uint &height)
 		spritenum = custom_sprite;
 	}
 
-	const Sprite *spr = GetSprite(spritenum);
+	const Sprite *spr = GetSprite(spritenum, ST_NORMAL);
 
 	width  = spr->width;
 	height = spr->height;
@@ -480,7 +480,8 @@ static Track ChooseShipTrack(Vehicle *v, TileIndex tile, DiagDirection enterdir,
 		case VPF_YAPF: { /* YAPF */
 			Trackdir trackdir = YapfChooseShipTrack(v, tile, enterdir, tracks);
 			if (trackdir != INVALID_TRACKDIR) return TrackdirToTrack(trackdir);
-		} break;
+			break;
+		}
 
 		case VPF_NPF: { /* NPF */
 			NPFFindStationOrTileData fstd;
@@ -496,7 +497,8 @@ static Track ChooseShipTrack(Vehicle *v, TileIndex tile, DiagDirection enterdir,
 			 * we did not find our target, but ftd.best_trackdir contains the direction leading
 			 * to the tile closest to our target. */
 			if (ftd.best_trackdir != 0xff) return TrackdirToTrack(ftd.best_trackdir); /* TODO: Wrapper function? */
-		} break;
+			break;
+		}
 
 		default:
 		case VPF_OPF: { /* OPF */
@@ -516,7 +518,8 @@ static Track ChooseShipTrack(Vehicle *v, TileIndex tile, DiagDirection enterdir,
 			uint dist = FindShipTrack(v, tile, enterdir, tracks, 0, &track);
 
 			if (dist <= distr) return track;
-		} break;
+			break;
+		}
 	}
 
 	return INVALID_TRACK; /* We could better reverse */

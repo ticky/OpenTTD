@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file articulated_vehicles.cpp */
+/** @file articulated_vehicles.cpp Implementation of articulated vehicles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -129,7 +129,8 @@ void AddArticulatedParts(Vehicle **vl, VehicleType type)
 				u->cargo_cap = rvi_artic->capacity;
 
 				SetArticulatedPart(u);
-			} break;
+				break;
+			}
 
 			case VEH_ROAD: {
 				const RoadVehicleInfo *rvi_artic = RoadVehInfo(engine_type);
@@ -148,7 +149,8 @@ void AddArticulatedParts(Vehicle **vl, VehicleType type)
 				u->cargo_cap = rvi_artic->capacity;
 
 				SetRoadVehArticPart(u);
-			} break;
+				break;
+			}
 		}
 
 		if (flip_image) u->spritenum++;

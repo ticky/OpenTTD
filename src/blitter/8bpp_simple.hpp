@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file 8bpp_simple.hpp */
+/** @file 8bpp_simple.hpp Simple (and slow) 8 bpp blitter. */
 
 #ifndef BLITTER_8BPP_SIMPLE_HPP
 #define BLITTER_8BPP_SIMPLE_HPP
@@ -8,14 +8,16 @@
 #include "8bpp_base.hpp"
 #include "factory.hpp"
 
+/** Most trivial 8bpp blitter. */
 class Blitter_8bppSimple : public Blitter_8bppBase {
 public:
 	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
-	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, Blitter::AllocatorProc *allocator);
+	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
 
 	/* virtual */ const char *GetName() { return "8bpp-simple"; }
 };
 
+/** Factory for the most trivial 8bpp blitter. */
 class FBlitter_8bppSimple: public BlitterFactory<FBlitter_8bppSimple> {
 public:
 	/* virtual */ const char *GetName() { return "8bpp-simple"; }

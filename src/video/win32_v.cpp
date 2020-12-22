@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file win32_v.cpp Implementation of the Windows (GDI) video driver. */
+
 #include "../stdafx.h"
 #include "../openttd.h"
 #include "../gfx_func.h"
@@ -152,6 +154,9 @@ static void ClientSizeChanged(int w, int h)
 		// mark all palette colors dirty
 		_pal_first_dirty = 0;
 		_pal_count_dirty = 256;
+
+		BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+
 		GameSizeChanged();
 
 		// redraw screen
@@ -294,6 +299,9 @@ static bool MakeWindow(bool full_screen)
 			ShowWindow(_wnd.main_wnd, showstyle);
 		}
 	}
+
+	BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+
 	GameSizeChanged(); // invalidate all windows, force redraw
 	return true; // the request succedded
 }
@@ -310,7 +318,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
-			HDC dc,dc2;
+			HDC dc, dc2;
 			HBITMAP old_bmp;
 			HPALETTE old_palette;
 
@@ -641,7 +649,8 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 					ChangeDisplaySettings(NULL, 0);
 				}
 			}
-		} break;
+			break;
+		}
 #endif
 	}
 

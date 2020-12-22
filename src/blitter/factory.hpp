@@ -1,12 +1,13 @@
 /* $Id$ */
 
+/** @file factory.hpp Factory to 'query' all available blitters. */
+
 #ifndef BLITTER_FACTORY_HPP
 #define BLITTER_FACTORY_HPP
 
 #include "base.hpp"
 #include "../debug.h"
 #include "../string_func.h"
-#include <string>
 #include <map>
 
 #if defined(WITH_COCOA)
@@ -18,15 +19,31 @@ bool QZ_CanDisplay8bpp();
  */
 class BlitterFactoryBase {
 private:
-	char *name;
-	typedef std::map<std::string, BlitterFactoryBase *> Blitters;
+	const char *name; ///< The name of the blitter factory.
 
+	struct StringCompare {
+		bool operator () (const char *a, const char *b) const
+		{
+			return strcmp(a, b) < 0;
+		}
+	};
+
+	typedef std::map<const char *, BlitterFactoryBase *, StringCompare> Blitters; ///< Map of blitter factories.
+
+	/**
+	 * Get the map with currently known blitters.
+	 * @return The known blitters.
+	 */
 	static Blitters &GetBlitters()
 	{
 		static Blitters &s_blitters = *new Blitters();
 		return s_blitters;
 	}
 
+	/**
+	 * Get the currently active blitter.
+	 * @return The currently active blitter.
+	 */
 	static Blitter **GetActiveBlitter()
 	{
 		static Blitter *s_blitter = NULL;
@@ -58,7 +75,13 @@ public:
 		name(NULL)
 	{}
 
-	virtual ~BlitterFactoryBase() { if (this->name != NULL) GetBlitters().erase(this->name); free(this->name); }
+	virtual ~BlitterFactoryBase()
+	{
+		if (this->name == NULL) return;
+		GetBlitters().erase(this->name);
+		if (GetBlitters().empty()) delete &GetBlitters();
+		free((void *)this->name);
+	}
 
 	/**
 	 * Find the requested blitter and return his class.
@@ -67,6 +90,9 @@ public:
 	 */
 	static Blitter *SelectBlitter(const char *name)
 	{
+#if defined(DEDICATED)
+		const char *default_blitter = "null";
+#else
 		const char *default_blitter = "8bpp-optimized";
 
 #if defined(WITH_COCOA)
@@ -78,6 +104,7 @@ public:
 			default_blitter = "32bpp-anim";
 		}
 #endif /* defined(WITH_COCOA) */
+#endif /* defined(DEDICATED) */
 		if (GetBlitters().size() == 0) return NULL;
 		const char *bname = (StrEmpty(name)) ? default_blitter : name;
 
@@ -104,16 +131,21 @@ public:
 		return *GetActiveBlitter();
 	}
 
-
+	/**
+	 * Fill a buffer with information about the blitters.
+	 * @param p The buffer to fill.
+	 * @param last The last element of the buffer.
+	 * @return p The location till where we filled the buffer.
+	 */
 	static char *GetBlittersInfo(char *p, const char *last)
 	{
-		p += snprintf(p, last - p, "List of blitters:\n");
+		p += seprintf(p, last, "List of blitters:\n");
 		Blitters::iterator it = GetBlitters().begin();
 		for (; it != GetBlitters().end(); it++) {
 			BlitterFactoryBase *b = (*it).second;
-			p += snprintf(p, last - p, "%18s: %s\n", b->name, b->GetDescription());
+			p += seprintf(p, last, "%18s: %s\n", b->name, b->GetDescription());
 		}
-		p += snprintf(p, last - p, "\n");
+		p += seprintf(p, last, "\n");
 
 		return p;
 	}
@@ -143,6 +175,6 @@ public:
 	const char *GetName();
 };
 
-extern char _ini_blitter[32];
+extern char *_ini_blitter;
 
 #endif /* BLITTER_FACTORY_HPP */

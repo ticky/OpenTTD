@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file water_cmd.cpp */
+/** @file water_cmd.cpp Handling of water tiles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -671,12 +671,14 @@ static void DrawTile_Water(TileInfo *ti)
 		case WATER_TILE_COAST: {
 			DrawShoreTile(ti->tileh);
 			DrawBridgeMiddle(ti);
-		} break;
+			break;
+		}
 
 		case WATER_TILE_LOCK: {
 			const WaterDrawTileStruct *t = _shiplift_display_seq[GetSection(ti->tile)];
 			DrawWaterStuff(ti, t, 0, ti->z > t[3].delta_y ? 24 : 0, true);
-		} break;
+			break;
+		}
 
 		case WATER_TILE_DEPOT:
 			DrawWaterClassGround(ti);

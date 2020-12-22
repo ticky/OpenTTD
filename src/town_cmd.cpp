@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file town_cmd.cpp */
+/** @file town_cmd.cpp Handling of town tiles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -2342,7 +2342,7 @@ static void UpdateTownGrowRate(Town *t)
 		if (TilePixelHeight(t->xy) >= GetSnowLine() && t->act_food == 0 && t->population > 90)
 			return;
 	} else if (_opt.landscape == LT_TROPIC) {
-		if (GetTropicZone(t->xy) == TROPICZONE_DESERT && (t->act_food==0 || t->act_water==0) && t->population > 60)
+		if (GetTropicZone(t->xy) == TROPICZONE_DESERT && (t->act_food == 0 || t->act_water == 0) && t->population > 60)
 			return;
 	}
 

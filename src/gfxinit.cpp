@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file gfxinit.cpp */
+/** @file gfxinit.cpp Initializing of the (GRF) graphics. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -17,11 +17,14 @@
 #include "core/alloc_func.hpp"
 #include "core/bitmath_func.hpp"
 #include <string.h>
+#include "string_func.h"
 #include "settings_type.h"
 
 #include "table/sprites.h"
 
 #include "safeguards.h"
+
+Palette _use_palette = PAL_AUTODETECT;
 
 struct MD5File {
 	const char * filename;     ///< filename
@@ -136,7 +139,7 @@ static bool FileMD5(const MD5File file)
  */
 static void DeterminePalette()
 {
-	if (_use_dos_palette) return;
+	if (_use_palette < MAX_PAL) return;
 
 	/* Count of files from the different versions. */
 	uint dos = 0;
@@ -149,11 +152,11 @@ static void DeterminePalette()
 	for (uint i = 0; i < lengthof(files_win.landscape); i++) if (FioCheckFileExists(files_win.landscape[i].filename)) win++;
 
 	if (win == 5) {
-		_use_dos_palette = false;
+		_use_palette = PAL_WINDOWS;
 	} else if (dos == 5 || (win == 0 && dos > 0)) {
-		_use_dos_palette = true;
+		_use_palette = PAL_DOS;
 	} else {
-		_use_dos_palette = false;
+		_use_palette = PAL_WINDOWS;
 	}
 }
 
@@ -167,29 +170,30 @@ void CheckExternalFiles()
 	DeterminePalette();
 
 	static const size_t ERROR_MESSAGE_LENGTH = 128;
-	const FileList *files = _use_dos_palette ? &files_dos : &files_win;
+	const FileList *files = (_use_palette == PAL_DOS) ? &files_dos : &files_win;
 	char error_msg[ERROR_MESSAGE_LENGTH * (lengthof(files->basic) + lengthof(files->landscape) + 3)];
 	error_msg[0] = '\0';
 	char *add_pos = error_msg;
+	const char *last = lastof(error_msg);
 
 	for (uint i = 0; i < lengthof(files->basic); i++) {
 		if (!FileMD5(files->basic[i])) {
-			add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->basic[i].filename, files->basic[i].filename);
+			add_pos += seprintf(add_pos, last, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->basic[i].filename, files->basic[i].filename);
 		}
 	}
 
 	for (uint i = 0; i < lengthof(files->landscape); i++) {
 		if (!FileMD5(files->landscape[i])) {
-			add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->landscape[i].filename, files->landscape[i].filename);
+			add_pos += seprintf(add_pos, last, "Your '%s' file is corrupted or missing! You can find '%s' on your Transport Tycoon Deluxe CD-ROM.\n", files->landscape[i].filename, files->landscape[i].filename);
 		}
 	}
 
 	if (!FileMD5(files_win.sound) && !FileMD5(files_dos.sound)) {
-		add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your 'sample.cat' file is corrupted or missing! You can find 'sample.cat' on your Transport Tycoon Deluxe CD-ROM.\n");
+		add_pos += seprintf(add_pos, last, "Your 'sample.cat' file is corrupted or missing! You can find 'sample.cat' on your Transport Tycoon Deluxe CD-ROM.\n");
 	}
 
 	if (!FileMD5(files->openttd)) {
-		add_pos += snprintf(add_pos, ERROR_MESSAGE_LENGTH, "Your '%s' file is corrupted or missing! The file was part of your installation.\n", files->openttd.filename);
+		add_pos += seprintf(add_pos, last, "Your '%s' file is corrupted or missing! The file was part of your installation.\n", files->openttd.filename);
 	}
 
 	if (add_pos != error_msg) ShowInfoF(error_msg);
@@ -198,7 +202,7 @@ void CheckExternalFiles()
 
 static void LoadSpriteTables()
 {
-	const FileList *files = _use_dos_palette ? &files_dos : &files_win;
+	const FileList *files = (_use_palette == PAL_DOS) ? &files_dos : &files_win;
 	uint i = FIRST_GRF_SLOT;
 
 	LoadGrfFile(files->basic[0].filename, 0, i++);

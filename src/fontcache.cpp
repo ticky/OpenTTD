@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file fontcache.cpp */
+/** @file fontcache.cpp Cache for characters from fonts. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -404,7 +404,7 @@ const Sprite *GetGlyph(FontSize size, WChar key)
 	if (face == NULL || (key >= SCC_SPRITE_START && key <= SCC_SPRITE_END)) {
 		SpriteID sprite = GetUnicodeGlyph(size, key);
 		if (sprite == 0) sprite = GetUnicodeGlyph(size, '?');
-		return GetSprite(sprite);
+		return GetSprite(sprite, ST_FONT);
 	}
 
 	/* Check for the glyph in our cache */
@@ -473,7 +473,7 @@ uint GetGlyphWidth(FontSize size, WChar key)
 	if (face == NULL || (key >= SCC_SPRITE_START && key <= SCC_SPRITE_END)) {
 		SpriteID sprite = GetUnicodeGlyph(size, key);
 		if (sprite == 0) sprite = GetUnicodeGlyph(size, '?');
-		return SpriteExists(sprite) ? GetSprite(sprite)->width + (size != FS_NORMAL) : 0;
+		return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + (size != FS_NORMAL) : 0;
 	}
 
 	glyph = GetGlyphPtr(size, key);

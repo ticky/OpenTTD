@@ -62,7 +62,7 @@ extern int _pal_count_dirty;
 extern int _num_resolutions;
 extern uint16 _resolutions[32][2];
 extern uint16 _cur_resolution[2];
-extern Colour _cur_palette[256];
+extern Colour _cur_palette[256]; ///< Current palette. Entry 0 has to be always fully transparent!
 
 void HandleKeypress(uint32 key);
 void HandleCtrlChanged();
@@ -79,25 +79,27 @@ void GfxScroll(int left, int top, int width, int height, int xo, int yo);
 
 void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = NULL);
 
-int DrawStringCentered(int x, int y, StringID str, uint16 color);
-int DrawStringCenteredTruncated(int xl, int xr, int y, StringID str, uint16 color);
-int DoDrawStringCentered(int x, int y, const char *str, uint16 color);
+int DrawStringCentered(int x, int y, StringID str, TextColour colour);
+int DrawStringCenteredTruncated(int xl, int xr, int y, StringID str, TextColour colour);
+int DoDrawStringCentered(int x, int y, const char *str, TextColour colour);
 
-int DrawString(int x, int y, StringID str, uint16 color);
-int DrawStringTruncated(int x, int y, StringID str, uint16 color, uint maxw);
+int DrawString(int x, int y, StringID str, TextColour colour);
+int DrawStringTruncated(int x, int y, StringID str, TextColour colour, uint maxw);
 
-int DoDrawString(const char *string, int x, int y, uint16 color);
-int DoDrawStringTruncated(const char *str, int x, int y, uint16 color, uint maxw);
+int DoDrawString(const char *string, int x, int y, TextColour colour, bool parse_string_also_when_clipped = false);
+int DoDrawStringTruncated(const char *str, int x, int y, TextColour colour, uint maxw);
 
-void DrawStringCenterUnderline(int x, int y, StringID str, uint16 color);
-void DrawStringCenterUnderlineTruncated(int xl, int xr, int y, StringID str, uint16 color);
+void DrawStringCenterUnderline(int x, int y, StringID str, TextColour colour);
+void DrawStringCenterUnderlineTruncated(int xl, int xr, int y, StringID str, TextColour colour);
 
-int DrawStringRightAligned(int x, int y, StringID str, uint16 color);
-void DrawStringRightAlignedTruncated(int x, int y, StringID str, uint16 color, uint maxw);
-void DrawStringRightAlignedUnderline(int x, int y, StringID str, uint16 color);
+int DrawStringRightAligned(int x, int y, StringID str, TextColour colour);
+void DrawStringRightAlignedTruncated(int x, int y, StringID str, TextColour colour, uint maxw);
+void DrawStringRightAlignedUnderline(int x, int y, StringID str, TextColour colour);
 
-void GfxFillRect(int left, int top, int right, int bottom, int color);
-void GfxDrawLine(int left, int top, int right, int bottom, int color);
+void DrawCharCentered(uint32 c, int x, int y, TextColour colour);
+
+void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
+void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1);
 void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 
 Dimension GetStringBoundingBox(const char *str);
@@ -150,6 +152,11 @@ void DrawMouseCursor();
 void ScreenSizeChanged();
 void UndrawMouseCursor();
 
+/**
+ * Get height of a character for a given font size.
+ * @param size Font size to get height of
+ * @return     Height of characters in the given font (pixels)
+ */
 static inline byte GetCharacterHeight(FontSize size)
 {
 	switch (size) {
@@ -168,7 +175,7 @@ extern DrawPixelInfo *_cur_dpi;
  */
 extern byte _colour_gradient[16][8];
 
-extern bool _use_dos_palette;
+extern Palette _use_palette;
 
 /**
  * Return the colour for a particular greyscale level.

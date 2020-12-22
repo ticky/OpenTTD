@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file splash.cpp Splash screen support for OSX. */
+
 #include "../../stdafx.h"
 #include "../../openttd.h"
 #include "../../variables.h"
@@ -124,11 +126,13 @@ void DisplaySplashImage()
 				}
 
 				for (i = 0; i < num_palette; i++) {
+					_cur_palette[i].a = i == 0 ? 0 : 0xff;
 					_cur_palette[i].r = palette[i].red;
 					_cur_palette[i].g = palette[i].green;
 					_cur_palette[i].b = palette[i].blue;
 				}
 
+				_cur_palette[0xff].a = 0xff;
 				_cur_palette[0xff].r = 0;
 				_cur_palette[0xff].g = 0;
 				_cur_palette[0xff].b = 0;

@@ -1,5 +1,6 @@
 /* $Id$ */
 
+/** @file news_gui.cpp GUI functions related to news messages. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -175,7 +176,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 	case WE_CREATE: { // If chatbar is open at creation time, we need to go above it
 		const Window *w1 = FindWindowById(WC_SEND_NETWORK_MSG, 0);
 		w->message.msg = (w1 != NULL) ? w1->height : 0;
-	} break;
+		break;
+	}
 
 	case WE_PAINT: {
 		const NewsItem *ni = WP(w, news_d).ni;
@@ -206,7 +208,7 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 					vp = w->viewport;
 					GfxFillRect(vp->left - w->left, vp->top - w->top,
 						vp->left - w->left + vp->width - 1, vp->top - w->top + vp->height - 1,
-						(ni->flags & NF_INCOLOR ? PALETTE_TO_TRANSPARENT : PALETTE_TO_STRUCT_GREY) | (1 << USE_COLORTABLE)
+						(ni->flags & NF_INCOLOR ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER), FILLRECT_RECOLOR
 					);
 
 					CopyInDParam(0, ni->params, lengthof(ni->params));
@@ -233,7 +235,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 				break;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		switch (e->we.click.widget) {
@@ -242,19 +245,30 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 			DeleteWindow(w);
 			ni->duration = 0;
 			_forced_news = INVALID_NEWS;
-		} break;
+			break;
+		}
 		case 0: {
 			NewsItem *ni = WP(w, news_d).ni;
 			if (ni->flags & NF_VEHICLE) {
 				Vehicle *v = GetVehicle(ni->data_a);
 				ScrollMainWindowTo(v->x_pos, v->y_pos);
 			} else if (ni->flags & NF_TILE) {
-				if (!ScrollMainWindowToTile(ni->data_a) && ni->data_b != 0)
-					ScrollMainWindowToTile(ni->data_b);
+				if (_ctrl_pressed) {
+					ShowExtraViewPortWindow(ni->data_a);
+					if (ni->data_b != 0) {
+						ShowExtraViewPortWindow(ni->data_b);
+					}
+				} else {
+					if (!ScrollMainWindowToTile(ni->data_a) && ni->data_b != 0) {
+						ScrollMainWindowToTile(ni->data_b);
+					}
+				}
 			}
-		} break;
+			break;
 		}
-	} break;
+		}
+		break;
+	}
 
 	case WE_KEYPRESS:
 		if (e->we.keypress.keycode == WKC_SPACE) {
@@ -308,7 +322,8 @@ static void NewsWindowProc(Window *w, WindowEvent *e)
 		w->top = y;
 
 		SetDirtyBlocks(w->left, w->top - diff, w->left + w->width, w->top + w->height);
-	} break;
+		break;
+	}
 	}
 }
 
@@ -724,11 +739,11 @@ static NewsID getNews(NewsID i)
  * Draw an unformatted news message truncated to a maximum length. If
  * length exceeds maximum length it will be postfixed by '...'
  * @param x,y position of the string
- * @param color the color the string will be shown in
+ * @param colour the colour the string will be shown in
  * @param *ni NewsItem being printed
  * @param maxw maximum width of string in pixels
  */
-static void DrawNewsString(int x, int y, uint16 color, const NewsItem *ni, uint maxw)
+static void DrawNewsString(int x, int y, TextColour colour, const NewsItem *ni, uint maxw)
 {
 	char buffer[512];
 	StringID str;
@@ -743,7 +758,7 @@ static void DrawNewsString(int x, int y, uint16 color, const NewsItem *ni, uint 
 	GetUnformattedString(buffer, str);
 
 	/* Truncate and show string; postfixed by '...' if neccessary */
-	DoDrawStringTruncated(buffer, x, y, color, maxw);
+	DoDrawStringTruncated(buffer, x, y, colour, maxw);
 }
 
 
@@ -886,7 +901,8 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 			}
 			/* If all values are the same value, the ALL-button will take over this value */
 			WP(w, def_d).data_1 = all_val;
-		} break;
+			break;
+		}
 
 		case WE_PAINT: {
 			uint32 val = _news_display_opt;
@@ -903,7 +919,8 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 				 * which will give centered position */
 				DrawStringCentered(51, y + 1, message_opt[val & 0x3], TC_BLACK);
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -927,8 +944,10 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 						SetNewsDisplayValue(element, val);
 						SetWindowDirty(w);
 					}
-				} break;
-			} break;
+					break;
+				}
+			}
+			break;
 
 		case WE_DROPDOWN_SELECT: { // Select all settings for newsmessages
 			int i;
@@ -940,7 +959,8 @@ static void MessageOptionsWndProc(Window *w, WindowEvent *e)
 				SetNewsDisplayValue(i, e->we.dropdown.index);
 			}
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 	}
 }
 

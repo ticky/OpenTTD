@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file widget.cpp */
+/** @file widget.cpp Handling of the default/simple widgets. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -19,13 +19,21 @@
 static const char *UPARROW   = "\xEE\x8A\xA0";
 static const char *DOWNARROW = "\xEE\x8A\xAA";
 
+/**
+ * Compute the vertical position of the draggable part of scrollbar
+ * @param sb     Scrollbar list data
+ * @param top    Top position of the scrollbar (top position of the up-button)
+ * @param bottom Bottom position of the scrollbar (bottom position of the down-button)
+ * @return A Point, with x containing the top coordinate of the draggable part, and
+ *                       y containing the bottom coordinate of the draggable part
+ */
 static Point HandleScrollbarHittest(const Scrollbar *sb, int top, int bottom)
 {
 	Point pt;
 	int height, count, pos, cap;
 
-	top += 10;
-	bottom -= 9;
+	top += 10;   // top    points to just below the up-button
+	bottom -= 9; // bottom points to top of the down-button
 
 	height = (bottom - top);
 
@@ -88,7 +96,7 @@ void ScrollbarClickHandler(Window *w, const Widget *wi, int x, int y)
 		}
 		default: return; //this should never happen
 	}
-	if (pos <= mi+9) {
+	if (pos <= mi + 9) {
 		/* Pressing the upper button? */
 		w->flags4 |= WF_SCROLL_UP;
 		if (_scroller_click_timeout == 0) {
@@ -155,7 +163,15 @@ int GetWidgetFromPos(const Window *w, int x, int y)
 	return found_index;
 }
 
-
+/**
+ * Draw frame rectangle.
+ * @param left   Left edge of the frame
+ * @param top    Top edge of the frame
+ * @param right  Right edge of the frame
+ * @param bottom Bottom edge of the frame
+ * @param ctab   Colour table to use. @see _colour_gradient
+ * @param flags  Flags controlling how to draw the frame. @see FrameFlags
+ */
 void DrawFrameRect(int left, int top, int right, int bottom, int ctab, FrameFlags flags)
 {
 	uint dark         = _colour_gradient[ctab][3];
@@ -164,7 +180,7 @@ void DrawFrameRect(int left, int top, int right, int bottom, int ctab, FrameFlag
 	uint light        = _colour_gradient[ctab][7];
 
 	if (flags & FR_TRANSPARENT) {
-		GfxFillRect(left, top, right, bottom, PALETTE_TO_TRANSPARENT | (1 << USE_COLORTABLE));
+		GfxFillRect(left, top, right, bottom, PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOR);
 	} else {
 		uint interior;
 
@@ -242,7 +258,7 @@ void DrawWindowWidgets(const Window *w)
 		case WWT_TEXT: {
 			const StringID str = wi->data;
 
-			if (str != STR_NULL) DrawStringTruncated(r.left, r.top, str, wi->color, r.right - r.left);
+			if (str != STR_NULL) DrawStringTruncated(r.left, r.top, str, (TextColour)wi->color, r.right - r.left);
 			break;
 		}
 
@@ -320,7 +336,7 @@ void DrawWindowWidgets(const Window *w)
 
 			/* draw "shaded" background */
 			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c2);
-			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1 | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1, FILLRECT_CHECKER);
 
 			/* draw shaded lines */
 			GfxFillRect(r.left + 2, r.top + 10, r.left + 2, r.bottom - 10, c1);
@@ -353,7 +369,7 @@ void DrawWindowWidgets(const Window *w)
 
 			/* draw "shaded" background */
 			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c2);
-			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1 | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left, r.top + 10, r.right, r.bottom - 10, c1, FILLRECT_CHECKER);
 
 			/* draw shaded lines */
 			GfxFillRect(r.left + 2, r.top + 10, r.left + 2, r.bottom - 10, c1);
@@ -387,7 +403,7 @@ void DrawWindowWidgets(const Window *w)
 
 			/* draw "shaded" background */
 			GfxFillRect(r.left + 10, r.top, r.right - 10, r.bottom, c2);
-			GfxFillRect(r.left + 10, r.top, r.right - 10, r.bottom, c1 | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left + 10, r.top, r.right - 10, r.bottom, c1, FILLRECT_CHECKER);
 
 			/* draw shaded lines */
 			GfxFillRect(r.left + 10, r.top + 2, r.right - 10, r.top + 2, c1);
@@ -474,7 +490,7 @@ void DrawWindowWidgets(const Window *w)
 				GfxFillRect(r.left + 2, r.top + 2, r.right - 2, r.bottom - 2, _colour_gradient[_player_colors[w->caption_color]][4]);
 			}
 
-			DrawStringCenteredTruncated(r.left + 2, r.right - 2, r.top + 2, wi->data, 0x84);
+			DrawStringCenteredTruncated(r.left + 2, r.right - 2, r.top + 2, wi->data, (TextColour)0x84);
 			break;
 		}
 
@@ -502,7 +518,7 @@ void DrawWindowWidgets(const Window *w)
 		}
 
 		if (w->IsWidgetDisabled(i)) {
-			GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, _colour_gradient[wi->color & 0xF][2] | (1 << PALETTE_MODIFIER_GREYOUT));
+			GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, _colour_gradient[wi->color & 0xF][2], FILLRECT_CHECKER);
 		}
 	}
 

@@ -1,7 +1,6 @@
 /* $Id$ */
 
-/** @file town_land.h */
-
+/** @file town_land.h Sprites to use and how to display them for town tiles. */
 
 /** Writes the data into the Town Tile Drawing Struct
  * @param s1 The first sprite of the building, mostly the ground sprite
@@ -71,18 +70,18 @@ static const DrawBuildingsTileStruct _town_draw_tile_data[] = {
 	M( 0xf54, PAL_NONE,  0x59b, PAL_NONE,  0,  0, 14, 16,  22, 0),
 	M( 0xf54, PAL_NONE,  0x59c, PAL_NONE,  0,  0, 14, 16,  35, 0),
 	M( 0x59d, PAL_NONE,  0x59c, PAL_NONE,  0,  0, 14, 16,  35, 0),
-	M( 0xf54, PAL_NONE,  0x59a, PALETTE_59E,  0,  0, 14, 16,  16, 0),
-	M( 0xf54, PAL_NONE,  0x59b, PALETTE_59E,  0,  0, 14, 16,  22, 0),
-	M( 0xf54, PAL_NONE,  0x59c, PALETTE_59E,  0,  0, 14, 16,  35, 0),
-	M( 0x59d, PAL_NONE,  0x59c, PALETTE_59E,  0,  0, 14, 16,  35, 0),
-	M( 0xf54, PAL_NONE,  0x59a, PALETTE_59F,  0,  0, 14, 16,  16, 0),
-	M( 0xf54, PAL_NONE,  0x59b, PALETTE_59F,  0,  0, 14, 16,  22, 0),
-	M( 0xf54, PAL_NONE,  0x59c, PALETTE_59F,  0,  0, 14, 16,  35, 0),
-	M( 0x59d, PAL_NONE,  0x59c, PALETTE_59F,  0,  0, 14, 16,  35, 0),
-	M( 0xf54, PAL_NONE,  0x59a, PALETTE_59F,  0,  0, 14, 16,  16, 0),
-	M( 0xf54, PAL_NONE,  0x59b, PALETTE_59F,  0,  0, 14, 16,  22, 0),
-	M( 0xf54, PAL_NONE,  0x59c, PALETTE_59F,  0,  0, 14, 16,  35, 0),
-	M( 0x59d, PAL_NONE,  0x59c, PALETTE_59F,  0,  0, 14, 16,  35, 0),
+	M( 0xf54, PAL_NONE,  0x59a, PALETTE_CHURCH_RED,  0,  0, 14, 16,  16, 0),
+	M( 0xf54, PAL_NONE,  0x59b, PALETTE_CHURCH_RED,  0,  0, 14, 16,  22, 0),
+	M( 0xf54, PAL_NONE,  0x59c, PALETTE_CHURCH_RED,  0,  0, 14, 16,  35, 0),
+	M( 0x59d, PAL_NONE,  0x59c, PALETTE_CHURCH_RED,  0,  0, 14, 16,  35, 0),
+	M( 0xf54, PAL_NONE,  0x59a, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  16, 0),
+	M( 0xf54, PAL_NONE,  0x59b, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  22, 0),
+	M( 0xf54, PAL_NONE,  0x59c, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  35, 0),
+	M( 0x59d, PAL_NONE,  0x59c, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  35, 0),
+	M( 0xf54, PAL_NONE,  0x59a, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  16, 0),
+	M( 0xf54, PAL_NONE,  0x59b, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  22, 0),
+	M( 0xf54, PAL_NONE,  0x59c, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  35, 0),
+	M( 0x59d, PAL_NONE,  0x59c, PALETTE_CHURCH_CREAM,  0,  0, 14, 16,  35, 0),
 	M( 0xf54, PAL_NONE,  0x5a0, PAL_NONE,  0,  0, 15, 15,   5, 0),
 	M( 0xf54, PAL_NONE,  0x5a1, PAL_NONE,  0,  0, 15, 15,  53, 0),
 	M( 0xf54, PAL_NONE,  0x5a2, PAL_NONE,  0,  0, 15, 15,  53, 0),

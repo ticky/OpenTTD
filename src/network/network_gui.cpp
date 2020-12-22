@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file network_gui.cpp Implementation of the Network related GUIs. */
+
 #ifdef ENABLE_NETWORK
 #include "../stdafx.h"
 #include "../openttd.h"
@@ -422,7 +424,8 @@ static void NetworkGameWindowWndProc(Window *w, WindowEvent *e)
 
 			y += 10;
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		nd->field = e->we.click.widget;
@@ -456,7 +459,8 @@ static void NetworkGameWindowWndProc(Window *w, WindowEvent *e)
 
 			nd->server = cur_item;
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 		case NGWW_FIND: // Find server automatically
 			switch (_network_lan_internet) {
 				case 0: NetworkUDPSearchGame(); break;
@@ -470,7 +474,8 @@ static void NetworkGameWindowWndProc(Window *w, WindowEvent *e)
 				31 | 0x1000,  // maximum number of characters OR
 				250, // characters up to this width pixels, whichever is satisfied first
 				w, CS_ALPHANUMERAL);
-		} break;
+			break;
+		}
 		case NGWW_START: // Start server
 			ShowNetworkStartServerWindow();
 			break;
@@ -488,8 +493,8 @@ static void NetworkGameWindowWndProc(Window *w, WindowEvent *e)
 		case NGWW_NEWGRF: // NewGRF Settings
 			if (nd->server != NULL) ShowNewGRFSettings(false, false, false, &nd->server->info.grfconfig);
 			break;
-
-	} break;
+		}
+		break;
 
 	case WE_DROPDOWN_SELECT: // we have selected a dropdown item in the list
 		switch (e->we.dropdown.button) {
@@ -558,7 +563,8 @@ static void NetworkGameWindowWndProc(Window *w, WindowEvent *e)
 			w->widget[NGWW_FIND + i].right = offset;
 			offset += space;
 		}
-	} break;
+		break;
+	}
 
 	case WE_DESTROY: // Nicely clean up the sort-list
 		free(WP(w, network_ql_d).sort_list);
@@ -725,7 +731,8 @@ static void NetworkStartServerWindowWndProc(Window *w, WindowEvent *e)
 
 			if (y >= w->vscroll.cap * NSSWND_ROWSIZE + NSSWND_START) break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		if (e->we.click.widget != NSSW_CONNTYPE_BTN && e->we.click.widget != NSSW_LANGUAGE_BTN) HideDropDownMenu(w);
@@ -749,7 +756,8 @@ static void NetworkStartServerWindowWndProc(Window *w, WindowEvent *e)
 
 			nd->map = (y == 0) ? NULL : _fios_items.Get(y - 1);
 			SetWindowDirty(w);
-			} break;
+			break;
+			}
 		case NSSW_CONNTYPE_BTN: // Connection type
 			ShowDropDownMenu(w, _connection_types_dropdown, _network_advertise, NSSW_CONNTYPE_BTN, 0, 0); // do it for widget NSSW_CONNTYPE_BTN
 			break;
@@ -1087,7 +1095,8 @@ static void NetworkLobbyWindowWndProc(Window *w, WindowEvent *e)
 			SetDParamStr(0, _network_player_info[nd->company].players);
 			DrawStringTruncated(x, y, STR_NETWORK_PLAYERS, TC_GOLD, trunc_width); // players
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -1103,7 +1112,8 @@ static void NetworkLobbyWindowWndProc(Window *w, WindowEvent *e)
 			id_v += w->vscroll.pos;
 			nd->company = (id_v >= nd->server->info.companies_on) ? INVALID_PLAYER : NetworkLobbyFindCompanyIndex(id_v);
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 		case NLWW_JOIN:     // Join company
 			/* Button can be clicked only when it is enabled */
 			_network_playas = nd->company;
@@ -1121,7 +1131,8 @@ static void NetworkLobbyWindowWndProc(Window *w, WindowEvent *e)
 			NetworkTCPQueryServer(_network_last_host, _network_last_port); // company info
 			NetworkUDPQueryServer(_network_last_host, _network_last_port); // general data
 			break;
-		} break;
+		}
+		break;
 
 	case WE_MESSAGE:
 		SetWindowDirty(w);
@@ -1442,7 +1453,8 @@ static void ClientListPopupWndProc(Window *w, WindowEvent *e)
 
 			DoDrawString(_clientlist_action[i], 4, y, colour);
 		}
-	} break;
+		break;
+	}
 
 	case WE_POPUPMENU_SELECT: {
 		// We selected an action
@@ -1452,7 +1464,8 @@ static void ClientListPopupWndProc(Window *w, WindowEvent *e)
 			HandleClientListPopupClick(index, WP(w, menu_d).main_button);
 
 		DeleteWindowById(WC_TOOLBAR_MENU, 0);
-	} break;
+		break;
+	}
 
 	case WE_POPUPMENU_OVER: {
 		// Our mouse hoovers over an action? Select it!
@@ -1462,7 +1475,8 @@ static void ClientListPopupWndProc(Window *w, WindowEvent *e)
 
 		WP(w, menu_d).sel_index = index;
 		SetWindowDirty(w);
-	} break;
+		break;
+	}
 
 	}
 }
@@ -1504,7 +1518,8 @@ static void ClientListWndProc(Window *w, WindowEvent *e)
 
 			y += CLNWND_ROWSIZE;
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		// Show the popup with option
@@ -1597,7 +1612,8 @@ static void NetworkJoinStatusWindowWndProc(Window *w, WindowEvent *e)
 
 		/* Draw nice progress bar :) */
 		DrawFrameRect(20, 18, (int)((w->width - 20) * progress / 100), 28, 10, FR_NONE);
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -1815,7 +1831,8 @@ static void ChatWindowWndProc(Window *w, WindowEvent *e)
 		msg = chat_captions[WP(w, chatquerystr_d).caption];
 		DrawStringRightAligned(w->widget[2].left - 2, w->widget[2].top + 1, msg, TC_BLACK);
 		DrawEditBox(w, &WP(w, chatquerystr_d), 2);
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {

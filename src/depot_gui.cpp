@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file depot_gui.cpp */
+/** @file depot_gui.cpp The GUI for depots. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -186,11 +186,12 @@ static void DrawVehicleInDepot(Window *w, const Vehicle *v, int x, int y)
 		case VEH_ROAD:     DrawRoadVehImage( v, x + 24, sprite_y, WP(w, depot_d).sel, 1); break;
 		case VEH_SHIP:     DrawShipImage(    v, x + 19, sprite_y - 1, WP(w, depot_d).sel); break;
 		case VEH_AIRCRAFT: {
-			const Sprite *spr = GetSprite(v->GetImage(DIR_W));
+			const Sprite *spr = GetSprite(v->GetImage(DIR_W), ST_NORMAL);
 			DrawAircraftImage(v, x + 12,
 							  y + max(spr->height + spr->y_offs - 14, 0), // tall sprites needs an y offset
 							  WP(w, depot_d).sel);
-		} break;
+			break;
+		}
 		default: NOT_REACHED();
 	}
 
@@ -205,7 +206,7 @@ static void DrawVehicleInDepot(Window *w, const Vehicle *v, int x, int y)
 	DrawSprite((v->vehstatus & VS_STOPPED) ? SPR_FLAG_VEH_STOPPED : SPR_FLAG_VEH_RUNNING, PAL_NONE, x + diff_x, y + diff_y);
 
 	SetDParam(0, v->unitnumber);
-	DrawString(x, y + 2, (uint16)(v->max_age-366) >= v->age ? STR_00E2 : STR_00E3, TC_FROMSTRING);
+	DrawString(x, y + 2, (uint16)(v->max_age - 366) >= v->age ? STR_00E2 : STR_00E3, TC_FROMSTRING);
 }
 
 static void DrawDepotWindow(Window *w)
@@ -457,8 +458,8 @@ static void DepotClick(Window *w, int x, int y)
 						break;
 				}
 			}
-			}
 			break;
+		}
 
 		case MODE_SHOW_VEHICLE: // show info window
 			ShowVehicleViewWindow(v);
@@ -475,8 +476,8 @@ static void DepotClick(Window *w, int x, int y)
 				default: NOT_REACHED(); command = 0;
 			}
 			DoCommandP(v->tile, v->index, 0, NULL, command);
-			}
 			break;
+		}
 
 		default: NOT_REACHED();
 	}
@@ -831,7 +832,13 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 					}
 						break;
 
-				case DEPOT_WIDGET_LOCATION: ScrollMainWindowToTile(w->window_number); break;
+				case DEPOT_WIDGET_LOCATION:
+					if (_ctrl_pressed) {
+						ShowExtraViewPortWindow(w->window_number);
+					} else {
+						ScrollMainWindowToTile(w->window_number);
+					}
+					break;
 
 				case DEPOT_WIDGET_STOP_ALL:
 				case DEPOT_WIDGET_START_ALL:
@@ -873,7 +880,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 
 		case WE_PLACE_OBJ: {
 			ClonePlaceObj(w);
-		} break;
+			break;
+		}
 
 		case WE_ABORT_PLACE_OBJ: {
 			/* abort clone */
@@ -883,7 +891,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 			/* abort drag & drop */
 			WP(w, depot_d).sel = INVALID_VEHICLE;
 			w->InvalidateWidget(DEPOT_WIDGET_MATRIX);
-		} break;
+			break;
+		}
 
 			/* check if a vehicle in a depot was clicked.. */
 		case WE_MOUSELOOP: {
@@ -894,7 +903,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 				_place_clicked_vehicle = NULL;
 				HandleCloneVehClick(v, w);
 			}
-		} break;
+			break;
+		}
 
 		case WE_DESTROY:
 			DeleteWindowById(WC_BUILD_VEHICLE, w->window_number);
@@ -929,7 +939,8 @@ static void DepotWndProc(Window *w, WindowEvent *e)
 						sel == v->index) {
 						ShowVehicleViewWindow(v);
 					}
-				} break;
+					break;
+				}
 
 				case DEPOT_WIDGET_SELL: case DEPOT_WIDGET_SELL_CHAIN:
 					if (!w->IsWidgetDisabled(DEPOT_WIDGET_SELL) &&

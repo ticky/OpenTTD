@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file timetable_gui.cpp */
+/** @file timetable_gui.cpp GUI for time tabling. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -137,7 +137,8 @@ static void DrawTimetableWindow(Window *w)
 					if (order->flags & OFB_FULL_LOAD) string++; // Service at orders
 
 					SetDParam(0, string);
-				} break;
+					break;
+				}
 
 				case OT_GOTO_WAYPOINT:
 					SetDParam(0, (order->flags & OFB_NON_STOP) ? STR_GO_NON_STOP_TO_WAYPOINT : STR_GO_TO_WAYPOINT);
@@ -234,7 +235,8 @@ static void TimetableWndProc(Window *w, WindowEvent *we)
 						/* Select clicked order */
 						WP(w, order_d).sel = selected;
 					}
-				} break;
+					break;
+				}
 
 				case 6: { /* "Wait For" button. */
 					int selected = WP(w, order_d).sel;
@@ -256,12 +258,14 @@ static void TimetableWndProc(Window *w, WindowEvent *we)
 					}
 
 					ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, 150, w, CS_NUMERAL);
-				} break;
+					break;
+				}
 
 				case 7: { /* Clear waiting time button. */
 					uint32 p1 = PackTimetableArgs(v, WP(w, order_d).sel);
 					DoCommandP(0, p1, 0, NULL, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_CAN_T_TIMETABLE_VEHICLE));
-				} break;
+					break;
+				}
 
 				case 8: /* Reset the vehicle's late counter. */
 					DoCommandP(0, v->index, 0, NULL, CMD_SET_VEHICLE_ON_TIME | CMD_MSG(STR_CAN_T_TIMETABLE_VEHICLE));
@@ -273,7 +277,8 @@ static void TimetableWndProc(Window *w, WindowEvent *we)
 			}
 
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case WE_ON_EDIT_TEXT: {
 			const Vehicle *v = GetVehicle(w->window_number);
@@ -286,7 +291,8 @@ static void TimetableWndProc(Window *w, WindowEvent *we)
 			uint32 p2 = minu(time, MAX_UVALUE(uint16));
 
 			DoCommandP(0, p1, p2, NULL, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_CAN_T_TIMETABLE_VEHICLE));
-		} break;
+			break;
+		}
 
 		case WE_RESIZE:
 			/* Update the scroll + matrix */

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file train_cmd.cpp */
+/** @file train_cmd.cpp Handling of trains. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -1403,7 +1403,7 @@ CommandCost CmdStartStopTrain(TileIndex tile, uint32 flags, uint32 p1, uint32 p2
  * @param p2 the selling mode
  * - p2 = 0: only sell the single dragged wagon/engine (and any belonging rear-engines)
  * - p2 = 1: sell the vehicle and all vehicles following it in the chain
-             if the wagon is dragged, don't delete the possibly belonging rear-engine to some front
+ *           if the wagon is dragged, don't delete the possibly belonging rear-engine to some front
  * - p2 = 2: when selling attached locos, rearrange all vehicles after it to separate lines;
  *           all wagons of the same type will go on the same line. Used by the AI currently
  */
@@ -1534,7 +1534,8 @@ CommandCost CmdSellRailWagon(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 					}
 				}
 			}
-		} break;
+			break;
+		}
 		case 1: { /* Delete wagon and all wagons after it given certain criteria */
 			/* Start deleting every vehicle after the selected one
 			 * If we encounter a matching rear-engine to a front-engine
@@ -1586,7 +1587,8 @@ CommandCost CmdSellRailWagon(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 				UpdateTrainGroupID(first);
 				InvalidateWindow(WC_VEHICLE_REFIT, first->index);
 			}
-		} break;
+			break;
+		}
 	}
 	return cost;
 }
@@ -2146,7 +2148,8 @@ static TrainFindDepotData FindClosestTrainDepot(Vehicle *v, int max_distance)
 		case VPF_YAPF: { /* YAPF */
 			bool found = YapfFindNearestRailDepotTwoWay(v, max_distance, NPF_INFINITE_PENALTY, &tfdd.tile, &tfdd.reverse);
 			tfdd.best_length = found ? max_distance / 2 : UINT_MAX; // some fake distance or NOT_FOUND
-		} break;
+			break;
+		}
 
 		case VPF_NPF: { /* NPF */
 			Vehicle* last = GetLastVehicleInChain(v);
@@ -2165,7 +2168,8 @@ static TrainFindDepotData FindClosestTrainDepot(Vehicle *v, int max_distance)
 				tfdd.best_length = ftd.best_path_dist / NPF_TILE_LENGTH;
 				if (NPFGetFlag(&ftd.node, NPF_FLAG_REVERSE)) tfdd.reverse = true;
 			}
-		} break;
+			break;
+		}
 
 		default:
 		case VPF_NTP: { /* NTP */
@@ -2178,7 +2182,8 @@ static TrainFindDepotData FindClosestTrainDepot(Vehicle *v, int max_distance)
 				i = TrainExitDir(ReverseDir(v->direction), v->u.rail.track);
 				NewTrainPathfind(tile, 0, v->u.rail.compatible_railtypes, i, (NTPEnumProc*)NtpCallbFindDepot, &tfdd);
 			}
-		} break;
+			break;
+		}
 	}
 
 	return tfdd;
@@ -2517,7 +2522,8 @@ static Track ChooseTrainTrack(Vehicle* v, TileIndex tile, DiagDirection enterdir
 			} else {
 				best_track = FindFirstTrack(tracks);
 			}
-		} break;
+			break;
+		}
 
 		case VPF_NPF: { /* NPF */
 			void *perf = NpfBeginInterval();
@@ -2547,7 +2553,8 @@ static Track ChooseTrainTrack(Vehicle* v, TileIndex tile, DiagDirection enterdir
 
 			int time = NpfEndInterval(perf);
 			DEBUG(yapf, 4, "[NPFT] %d us - %d rounds - %d open - %d closed -- ", time, 0, _aystar_stats_open_size, _aystar_stats_closed_size);
-		} break;
+			break;
+		}
 
 		default:
 		case VPF_NTP: { /* NTP */
@@ -2576,7 +2583,8 @@ static Track ChooseTrainTrack(Vehicle* v, TileIndex tile, DiagDirection enterdir
 
 			int time = NpfEndInterval(perf);
 			DEBUG(yapf, 4, "[NTPT] %d us - %d rounds - %d open - %d closed -- ", time, 0, 0, 0);
-		} break;
+			break;
+		}
 	}
 
 	/* handle "path not found" state */
@@ -2631,7 +2639,8 @@ static bool CheckReverseTrain(Vehicle *v)
 	switch (_patches.pathfinder_for_trains) {
 		case VPF_YAPF: { /* YAPF */
 			reverse_best = YapfCheckReverseTrain(v);
-		} break;
+			break;
+		}
 
 		case VPF_NPF: { /* NPF */
 			NPFFindStationOrTileData fstd;
@@ -2656,7 +2665,8 @@ static bool CheckReverseTrain(Vehicle *v)
 					reverse_best = false;
 				}
 			}
-		} break;
+			break;
+		}
 
 		default:
 		case VPF_NTP: { /* NTP */
@@ -2708,7 +2718,8 @@ bad:;
 				if (reverse != 0) break;
 				reverse = 2;
 			}
-		} break;
+			break;
+		}
 	}
 
 	return reverse_best != 0;
@@ -3363,7 +3374,7 @@ static void HandleCrashedTrain(Vehicle *v)
 
 	if (state <= 240 && !(v->tick_counter & 3)) ChangeTrainDirRandomly(v);
 
-	if (state >= 4440 && !(v->tick_counter&0x1F)) {
+	if (state >= 4440 && !(v->tick_counter & 0x1F)) {
 		DeleteLastWagon(v);
 		InvalidateWindow(WC_REPLACE_VEHICLE, (v->group_id << 16) | VEH_TRAIN);
 	}

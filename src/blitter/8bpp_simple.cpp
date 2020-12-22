@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file 8bpp_simple.cpp */
+/** @file 8bpp_simple.cpp Implementation of the simple 8 bpp blitter. */
 
 #include "../stdafx.h"
 #include "../zoom_func.h"
@@ -8,6 +8,7 @@
 
 #include "../safeguards.h"
 
+/** Instantiation of the simple 8bpp blitter factory. */
 static FBlitter_8bppSimple iFBlitter_8bppSimple;
 
 void Blitter_8bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom)
@@ -49,10 +50,10 @@ void Blitter_8bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoom
 	}
 }
 
-Sprite *Blitter_8bppSimple::Encode(SpriteLoader::Sprite *sprite, Blitter::AllocatorProc *allocator)
+Sprite *Blitter_8bppSimple::Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
 {
 	Sprite *dest_sprite;
-	dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + sprite->height * sprite->width);;
+	dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + sprite->height * sprite->width);
 
 	dest_sprite->height = sprite->height;
 	dest_sprite->width  = sprite->width;

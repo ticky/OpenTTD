@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file 32bpp_base.cpp Implementation of base for 32 bpp blitters. */
+
 #include "../stdafx.h"
 #include "../gfx_func.h"
 #include "32bpp_base.hpp"
@@ -16,12 +18,6 @@ void Blitter_32bppBase::SetPixel(void *video, int x, int y, uint8 color)
 	*((uint32 *)video + x + y * _screen.pitch) = LookupColourInPalette(color);
 }
 
-void Blitter_32bppBase::SetPixelIfEmpty(void *video, int x, int y, uint8 color)
-{
-	uint32 *dst = (uint32 *)video + x + y * _screen.pitch;
-	if (*dst == 0) *dst = LookupColourInPalette(color);
-}
-
 void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 color)
 {
 	uint32 color32 = LookupColourInPalette(color);
@@ -34,56 +30,6 @@ void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 color
 		}
 		video = (uint32 *)video + _screen.pitch;
 	} while (--height);
-}
-
-void Blitter_32bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 color)
-{
-	int dy;
-	int dx;
-	int stepx;
-	int stepy;
-	int frac;
-
-	dy = (y2 - y) * 2;
-	if (dy < 0) {
-		dy = -dy;
-		stepy = -1;
-	} else {
-		stepy = 1;
-	}
-
-	dx = (x2 - x) * 2;
-	if (dx < 0) {
-		dx = -dx;
-		stepx = -1;
-	} else {
-		stepx = 1;
-	}
-
-	if (x >= 0 && y >= 0 && x < screen_width && y < screen_height) this->SetPixel(video, x, y, color);
-	if (dx > dy) {
-		frac = dy - (dx / 2);
-		while (x != x2) {
-			if (frac >= 0) {
-				y += stepy;
-				frac -= dx;
-			}
-			x += stepx;
-			frac += dy;
-			if (x >= 0 && y >= 0 && x < screen_width && y < screen_height) this->SetPixel(video, x, y, color);
-		}
-	} else {
-		frac = dx - (dy / 2);
-		while (y != y2) {
-			if (frac >= 0) {
-				x += stepx;
-				frac -= dy;
-			}
-			y += stepy;
-			frac += dx;
-			if (x >= 0 && y >= 0 && x < screen_width && y < screen_height) this->SetPixel(video, x, y, color);
-		}
-	}
 }
 
 void Blitter_32bppBase::CopyFromBuffer(void *video, const void *src, int width, int height)

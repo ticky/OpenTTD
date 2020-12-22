@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file newgrf_cargo.cpp Implementation of NewGRF cargoes. */
+
 #include "stdafx.h"
 #include "openttd.h"
 #include "debug.h"
@@ -133,5 +135,5 @@ uint8 GetReverseCargoTranslation(CargoID cargo, const GRFFile *grffile)
 	}
 
 	/* No matching label was found, so we return the 'climate independent' 'bitnum' */
-	return cs->bitnum;;
+	return cs->bitnum;
 }

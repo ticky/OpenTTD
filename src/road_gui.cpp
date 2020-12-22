@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file road_gui.cpp */
+/** @file road_gui.cpp GUI for building roads. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -874,7 +874,8 @@ static void RoadStationPickerWndProc(Window *w, WindowEvent *e)
 			SetWindowDirty(w);
 		}
 
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		switch (e->we.click.widget) {
@@ -900,7 +901,8 @@ static void RoadStationPickerWndProc(Window *w, WindowEvent *e)
 				SetWindowDirty(w);
 				break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP: {
 		if (WP(w, def_d).close) {
@@ -909,7 +911,8 @@ static void RoadStationPickerWndProc(Window *w, WindowEvent *e)
 		}
 
 		CheckRedrawStationCoverage(w);
-	} break;
+		break;
+	}
 
 	case WE_DESTROY:
 		if (!WP(w, def_d).close) ResetObjectToPlace();

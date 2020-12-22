@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file economy.cpp */
+/** @file economy.cpp Handling of the economy. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -399,7 +399,8 @@ void ChangeOwnershipOfPlayerItems(PlayerID old_player, PlayerID new_player)
 									delete u;
 									u = next;
 								} while (u != NULL);
-							} break;
+								break;
+							}
 
 							case VEH_ROAD:
 							case VEH_SHIP:
@@ -597,7 +598,7 @@ void DrawNewsBankrupcy(Window *w)
 	const NewsItem *ni = WP(w, news_d).ni;
 	Player *p = GetPlayer((PlayerID)GB(ni->string_id, 0, 4));
 	DrawPlayerFace(p->face, p->player_color, 2, 23);
-	GfxFillRect(3, 23, 3 + 91, 23 + 118, PALETTE_TO_STRUCT_GREY | (1 << USE_COLORTABLE));
+	GfxFillRect(3, 23, 3 + 91, 23 + 118, PALETTE_NEWSPAPER, FILLRECT_RECOLOR);
 
 	SetDParam(0, p->index);
 

@@ -1,11 +1,14 @@
 /* $Id$ */
 
+/** @file control_codes.h Control codes that are embedded in the translation strings. */
+
 #ifndef CONTROL_CODES_H
 #define CONTROL_CODES_H
 
-/* List of string control codes used for string formatting, displaying, and
- * by strgen to generate the language files. */
-
+/**
+ * List of string control codes used for string formatting, displaying, and
+ * by strgen to generate the language files.
+ */
 enum StringControlCode {
 	SCC_CONTROL_START = 0xE000,
 	SCC_CONTROL_END   = 0xE1FF,
@@ -16,8 +19,8 @@ enum StringControlCode {
 	/* Display control codes */
 	SCC_SETX = SCC_CONTROL_START,
 	SCC_SETXY,
-	SCC_TINYFONT,
-	SCC_BIGFONT,
+	SCC_TINYFONT,  ///< Switch to small font
+	SCC_BIGFONT,   ///< Switch to large font
 
 	/* Formatting control codes */
 	SCC_REVISION,

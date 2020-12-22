@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file roadveh_cmd.cpp */
+/** @file roadveh_cmd.cpp Handling of road vehicles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -416,7 +416,8 @@ static RoadFindDepotData FindClosestRoadDepot(const Vehicle *v, int max_distance
 		case VPF_YAPF: { // YAPF
 			bool found = YapfFindNearestRoadDepot(v, max_distance, &rfdd.tile);
 			rfdd.best_length = found ? max_distance / 2 : UINT_MAX; // some fake distance or NOT_FOUND
-		} break;
+			break;
+		}
 
 		case VPF_NPF: { /* NPF */
 			/* See where we are now */
@@ -428,7 +429,8 @@ static RoadFindDepotData FindClosestRoadDepot(const Vehicle *v, int max_distance
 				rfdd.tile = ftd.node.tile;
 				rfdd.best_length = ftd.best_path_dist / NPF_TILE_LENGTH;
 			}
-		} break;
+			break;
+		}
 
 		default:
 		case VPF_OPF: // OPF
@@ -1193,7 +1195,8 @@ static Trackdir RoadFindPathToDest(Vehicle* v, TileIndex tile, DiagDirection ent
 			Trackdir trackdir = YapfChooseRoadTrack(v, tile, enterdir);
 			if (trackdir != INVALID_TRACKDIR) return_track(trackdir);
 			return_track(PickRandomBit(trackdirs));
-		} break;
+			break;
+		}
 
 		case VPF_NPF: { /* NPF */
 			NPFFindStationOrTileData fstd;
@@ -1215,7 +1218,8 @@ static Trackdir RoadFindPathToDest(Vehicle* v, TileIndex tile, DiagDirection ent
 				 * to the tile closest to our target. */
 				return_track(ftd.best_trackdir);
 			}
-		} break;
+			break;
+		}
 
 		default:
 		case VPF_OPF: { /* OPF */
@@ -1263,7 +1267,8 @@ do_it:;
 					best_track = (Trackdir)i;
 				}
 			}
-		} break;
+			break;
+		}
 	}
 
 found_best_track:;
@@ -1361,7 +1366,7 @@ static bool RoadVehLeaveDepot(Vehicle *v, bool first)
 
 	v->cur_image = v->GetImage(v->direction);
 	v->UpdateDeltaXY(v->direction);
-	SetRoadVehPosition(v,x,y);
+	SetRoadVehPosition(v, x, y);
 
 	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 
@@ -1458,7 +1463,7 @@ static bool IndividualRoadVehicleController(Vehicle *v, const Vehicle *prev)
 	Direction new_dir;
 	Direction old_dir;
 	RoadDriveEntry rd;
-	int x,y;
+	int x, y;
 	uint32 r;
 
 	if (v->u.road.overtaking != 0)  {
@@ -1499,7 +1504,7 @@ static bool IndividualRoadVehicleController(Vehicle *v, const Vehicle *prev)
 			/* Vehicle has just entered a bridge or tunnel */
 			v->cur_image = v->GetImage(v->direction);
 			v->UpdateDeltaXY(v->direction);
-			SetRoadVehPosition(v,gp.x,gp.y);
+			SetRoadVehPosition(v, gp.x, gp.y);
 			return true;
 		}
 

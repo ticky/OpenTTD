@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file console.h */
+/** @file console.h In-game console. */
 
 #ifndef CONSOLE_H
 #define CONSOLE_H
@@ -114,8 +114,6 @@ extern byte _icolour_warn;
 extern byte _icolour_dbg;
 extern byte _icolour_cmd;
 extern IConsoleModes _iconsole_mode;
-
-extern bool _send_console_to_stdout;
 
 /* console functions */
 void IConsoleInit();

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file settings_gui.cpp */
+/** @file settings_gui.cpp GUI for settings. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -65,7 +65,7 @@ static StringID *BuildDynamicDropdown(StringID base, int num)
 {
 	static StringID buf[32 + 1];
 	StringID *p = buf;
-	while (--num>=0) *p++ = base++;
+	while (--num >= 0) *p++ = base++;
 	*p = INVALID_STRING_ID;
 	return buf;
 }
@@ -197,7 +197,8 @@ static void GameOptionsWndProc(Window *w, WindowEvent *e)
 
 			DrawWindowWidgets(w);
 			DrawString(20, 175, STR_OPTIONS_FULLSCREEN, TC_FROMSTRING); // fullscreen
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -218,7 +219,8 @@ static void GameOptionsWndProc(Window *w, WindowEvent *e)
 						i = (-1) ^ (1 << _opt_ptr->road_side); // disable the other value
 
 					ShowDropDownMenu(w, _driveside_dropdown, _opt_ptr->road_side, GAMEOPT_ROADSIDE_BTN, i, 0);
-				} break;
+					break;
+				}
 
 				case GAMEOPT_TOWNNAME_BTN: /* Setup townname dropdown */
 					ShowTownnameDropdown(w, _opt_ptr->town_name);
@@ -309,7 +311,7 @@ static void GameOptionsWndProc(Window *w, WindowEvent *e)
 					break;
 
 				case GAMEOPT_RESOLUTION_BTN: /* Change resolution */
-					if (e->we.dropdown.index < _num_resolutions && ChangeResInGame(_resolutions[e->we.dropdown.index][0],_resolutions[e->we.dropdown.index][1]))
+					if (e->we.dropdown.index < _num_resolutions && ChangeResInGame(_resolutions[e->we.dropdown.index][0], _resolutions[e->we.dropdown.index][1]))
 						SetWindowDirty(w);
 					break;
 
@@ -341,7 +343,7 @@ CommandCost CmdSetRoadDriveSide(TileIndex tile, uint32 flags, uint32 p1, uint32 
 
 	if (flags & DC_EXEC) {
 		_opt_ptr->road_side = p1;
-		InvalidateWindow(WC_GAME_OPTIONS,0);
+		InvalidateWindow(WC_GAME_OPTIONS, 0);
 	}
 	return CommandCost();
 }
@@ -570,7 +572,8 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 
 				y += GAMEDIFF_WND_ROWSIZE + 2; // space items apart a bit
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -617,7 +620,8 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 					SetDifficultyLevel(3, &_opt_mod_temp); // set difficulty level to custom
 					w->LowerWidget(GDW_LVL_CUSTOM);
 					SetWindowDirty(w);
-				} break;
+					break;
+				}
 
 				case GDW_LVL_EASY:
 				case GDW_LVL_MEDIUM:
@@ -654,7 +658,8 @@ static void GameDifficultyWndProc(Window *w, WindowEvent *e)
 				case GDW_CANCEL: // Cancel button - close window, abandon changes
 					DeleteWindow(w);
 					break;
-			} break;
+			}
+			break;
 
 		case WE_MOUSELOOP: /* Handle the visual 'clicking' of the buttons */
 			if (diffic_d->timeout != 0) {
@@ -899,7 +904,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 			w->top = w->top - (patches_max * 11) / 2;
 
 			w->LowerWidget(4);
-		} break;
+			break;
+		}
 
 		case WE_PAINT: {
 			int x, y;
@@ -955,7 +961,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 				DrawString(30, y, (sdb->str) + disabled, TC_FROMSTRING);
 				y += 11;
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK:
 			switch (e->we.click.widget) {
@@ -1023,7 +1030,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 								w->flags4 |= 5 << WF_TIMEOUT_SHL;
 								_left_button_clicked = false;
 							}
-						} break;
+							break;
+						}
 						default: NOT_REACHED();
 						}
 
@@ -1042,7 +1050,8 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 							ShowQueryString(STR_CONFIG_PATCHES_INT32, STR_CONFIG_PATCHES_QUERY_CAPT, 10, 100, w, CS_NUMERAL);
 						}
 					}
-				} break;
+					break;
+				}
 
 				case PATCHSEL_INTERFACE: case PATCHSEL_CONSTRUCTION: case PATCHSEL_VEHICLES:
 				case PATCHSEL_STATIONS:  case PATCHSEL_ECONOMY:      case PATCHSEL_COMPETITORS:
@@ -1062,7 +1071,7 @@ static void PatchesSelectionWndProc(Window *w, WindowEvent *e)
 
 		case WE_ON_EDIT_TEXT:
 			if (e->we.edittext.str != NULL) {
-				const PatchEntry *pe = &_patches_page[WP(w, def_d).data_1].entries[WP(w,def_d).data_3];
+				const PatchEntry *pe = &_patches_page[WP(w, def_d).data_1].entries[WP(w, def_d).data_3];
 				const SettingDesc *sd = pe->setting;
 				int32 value = atoi(e->we.edittext.str);
 
@@ -1121,7 +1130,7 @@ void ShowPatchesSelection()
  */
 void DrawArrowButtons(int x, int y, int ctab, byte state, bool clickable_left, bool clickable_right)
 {
-	int color = (1 << PALETTE_MODIFIER_GREYOUT) | _colour_gradient[COLOUR_YELLOW][2];
+	int color = _colour_gradient[COLOUR_YELLOW][2];
 
 	DrawFrameRect(x,      y + 1, x +  9, y + 9, ctab, (state == 1) ? FR_LOWERED : FR_NONE);
 	DrawFrameRect(x + 10, y + 1, x + 19, y + 9, ctab, (state == 2) ? FR_LOWERED : FR_NONE);
@@ -1130,9 +1139,9 @@ void DrawArrowButtons(int x, int y, int ctab, byte state, bool clickable_left, b
 
 	/* Grey out the buttons that aren't clickable */
 	if (!clickable_left)
-		GfxFillRect(x +  1, y + 1, x +  1 + 8, y + 8, color);
+		GfxFillRect(x +  1, y + 1, x +  1 + 8, y + 8, color, FILLRECT_CHECKER);
 	if (!clickable_right)
-		GfxFillRect(x + 11, y + 1, x + 11 + 8, y + 8, color);
+		GfxFillRect(x + 11, y + 1, x + 11 + 8, y + 8, color, FILLRECT_CHECKER);
 }
 
 /** These are not, strickly speaking, widget enums,
@@ -1192,7 +1201,8 @@ static void CustCurrencyWndProc(Window *w, WindowEvent *e)
 			y += 12;
 			SetDParam(0, 10000);
 			DrawString(35, y + 1, STR_CURRENCY_PREVIEW, TC_FROMSTRING);
-		} break;
+			break;
+		}
 
 		case WE_CLICK: {
 			int line = (e->we.click.pt.y - 20) / 12;
@@ -1270,7 +1280,8 @@ static void CustCurrencyWndProc(Window *w, WindowEvent *e)
 
 			w->flags4 |= 5 << WF_TIMEOUT_SHL;
 			SetWindowDirty(w);
-		} break;
+			break;
+		}
 
 		case WE_ON_EDIT_TEXT: {
 			const char *b = e->we.edittext.str;
@@ -1301,7 +1312,8 @@ static void CustCurrencyWndProc(Window *w, WindowEvent *e)
 				}
 			}
 			MarkWholeScreenDirty();
-		} break;
+			break;
+		}
 
 		case WE_TIMEOUT:
 			WP(w, def_d).data_1 = 0;

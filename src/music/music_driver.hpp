@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file music_driver.hpp Base for all music playback. */
+
 #ifndef MUSIC_MUSIC_DRIVER_HPP
 #define MUSIC_MUSIC_DRIVER_HPP
 
@@ -31,6 +33,6 @@ public:
 };
 
 extern MusicDriver *_music_driver;
-extern char _ini_musicdriver[32];
+extern char *_ini_musicdriver;
 
 #endif /* MUSIC_MUSIC_DRIVER_HPP */

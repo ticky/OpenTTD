@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file dock_gui.cpp */
+/** @file dock_gui.cpp GUI to create amazing water objects. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -198,7 +198,8 @@ static void BuildDocksToolbWndProc(Window *w, WindowEvent *e)
 		tile_to = (dir != INVALID_DIAGDIR ? TileAddByDiagDir(tile_from, ReverseDiagDir(dir)) : tile_from);
 
 		VpSetPresizeRange(tile_from, tile_to);
-	} break;
+		break;
+	}
 
 	case WE_DESTROY:
 		if (_patches.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0);
@@ -352,7 +353,8 @@ static void BuildDocksDepotWndProc(Window *w, WindowEvent *e)
 			SetWindowDirty(w);
 			break;
 		}
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP:
 		if (WP(w, def_d).close) DeleteWindow(w);

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file town_gui.cpp */
+/** @file town_gui.cpp GUI for towns. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -147,7 +147,7 @@ static void TownAuthorityWndProc(Window *w, WindowEvent *e)
 
 		SetVScrollCount(w, numact + 1);
 
-		if (WP(w, def_d).data_1 != -1 && !HasBit(buttons, WP(w,def_d).data_1))
+		if (WP(w, def_d).data_1 != -1 && !HasBit(buttons, WP(w, def_d).data_1))
 			WP(w, def_d).data_1 = -1;
 
 		w->SetWidgetDisabledState(6, WP(w, def_d).data_1 == -1);
@@ -222,7 +222,8 @@ static void TownAuthorityWndProc(Window *w, WindowEvent *e)
 			}
 		}
 
-	} break;
+		break;
+	}
 
 	case WE_DOUBLE_CLICK:
 	case WE_CLICK:
@@ -306,7 +307,11 @@ static void TownViewWndProc(Window *w, WindowEvent *e)
 	case WE_CLICK:
 		switch (e->we.click.widget) {
 			case 6: /* scroll to location */
-				ScrollMainWindowToTile(t->xy);
+				if (_ctrl_pressed) {
+					ShowExtraViewPortWindow(t->xy);
+				} else {
+					ScrollMainWindowToTile(t->xy);
+				}
 				break;
 
 			case 7: /* town authority */
@@ -325,7 +330,8 @@ static void TownViewWndProc(Window *w, WindowEvent *e)
 			case 10: /* delete town */
 				delete t;
 				break;
-		} break;
+		}
+		break;
 
 	case WE_ON_EDIT_TEXT:
 		if (e->we.edittext.str[0] != '\0') {
@@ -510,7 +516,8 @@ static void TownDirectoryWndProc(Window *w, WindowEvent *e)
 			SetDParam(0, GetWorldPopulation());
 			DrawString(3, w->height - 12 + 2, STR_TOWN_POPULATION, TC_FROMSTRING);
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK:
 		switch (e->we.click.widget) {
@@ -518,13 +525,15 @@ static void TownDirectoryWndProc(Window *w, WindowEvent *e)
 				_town_sort_order = (_town_sort_order == 0) ? 1 : 0;
 				_town_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case TDW_SORTPOPULATION: { /* Sort by Population ascending/descending */
 				_town_sort_order = (_town_sort_order == 2) ? 3 : 2;
 				_town_sort_dirty = true;
 				SetWindowDirty(w);
-			} break;
+				break;
+			}
 
 			case TDW_CENTERTOWN: { /* Click on Town Matrix */
 				const Town* t;
@@ -539,8 +548,13 @@ static void TownDirectoryWndProc(Window *w, WindowEvent *e)
 
 				t = _town_sort[id_v];
 				assert(t->xy);
-				ScrollMainWindowToTile(t->xy);
-			} break;
+				if (_ctrl_pressed) {
+					ShowExtraViewPortWindow(t->xy);
+				} else {
+					ScrollMainWindowToTile(t->xy);
+				}
+				break;
+			}
 		}
 		break;
 

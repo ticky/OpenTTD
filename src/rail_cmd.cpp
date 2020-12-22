@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file rail_cmd.cpp */
+/** @file rail_cmd.cpp Handling of rail tiles. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -1309,7 +1309,8 @@ CommandCost CmdConvertRail(TileIndex tile, uint32 flags, uint32 p1, uint32 p2)
 					}
 
 					cost.AddCost((GetTunnelBridgeLength(tile, endtile) + 2) * RailConvertCost(type, totype));
-				} break;
+					break;
+				}
 
 				default: // MP_STATION, MP_ROAD
 					if (flags & DC_EXEC) {

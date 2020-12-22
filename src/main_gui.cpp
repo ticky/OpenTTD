@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file main_gui.cpp */
+/** @file main_gui.cpp Handling of the main viewport. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -105,7 +105,8 @@ void HandleOnEditText(const char *str)
 
 		/* Give 'id' the money, and substract it from ourself */
 		DoCommandP(0, money_c, id, CcGiveMoney, CMD_GIVE_MONEY | CMD_MSG(STR_INSUFFICIENT_FUNDS));
-	} break;
+		break;
+	}
 #endif /* ENABLE_NETWORK */
 		default: NOT_REACHED();
 	}
@@ -479,7 +480,8 @@ static void MenuWndProc(Window *w, WindowEvent *e)
 			chk >>= 1;
 			dis >>= 1;
 		}
-	} break;
+		break;
+	}
 
 	case WE_DESTROY: {
 			Window *v = FindWindowById(WC_MAIN_TOOLBAR, 0);
@@ -494,7 +496,7 @@ static void MenuWndProc(Window *w, WindowEvent *e)
 
 
 		if (index < 0) {
-			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR,0);
+			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR, 0);
 			if (GetWidgetFromPos(w2, e->we.popupmenu.pt.x - w2->left, e->we.popupmenu.pt.y - w2->top) == WP(w, menu_d).main_button)
 				index = WP(w, menu_d).sel_index;
 		}
@@ -636,7 +638,7 @@ static void PlayerMenuWndProc(Window *w, WindowEvent *e)
 		}
 
 		if (index < 0) {
-			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR,0);
+			Window *w2 = FindWindowById(WC_MAIN_TOOLBAR, 0);
 			if (GetWidgetFromPos(w2, e->we.popupmenu.pt.x - w2->left, e->we.popupmenu.pt.y - w2->top) == WP(w, menu_d).main_button)
 				index = WP(w, menu_d).sel_index;
 		}
@@ -929,7 +931,7 @@ static void ToolbarZoomInClick(Window *w)
 
 static void ToolbarZoomOutClick(Window *w)
 {
-	if (DoZoomInOutWindow(ZOOM_OUT,FindWindowById(WC_MAIN_WINDOW, 0))) {
+	if (DoZoomInOutWindow(ZOOM_OUT, FindWindowById(WC_MAIN_WINDOW, 0))) {
 		w->HandleButtonClick(18);
 		SndPlayFx(SND_15_BEEP);
 	}
@@ -1267,8 +1269,8 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 	switch (e->event) {
 	case WE_PAINT:
 		/* Draw brown-red toolbar bg. */
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB2);
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB2);
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4, FILLRECT_CHECKER);
 
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
@@ -1286,7 +1288,8 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 	case WE_CLICK: {
 		if (_game_mode != GM_MENU && !w->IsWidgetDisabled(e->we.click.widget))
 			_toolbar_button_procs[e->we.click.widget](w);
-	} break;
+		break;
+	}
 
 	case WE_KEYPRESS: {
 		switch (e->we.keypress.keycode) {
@@ -1332,16 +1335,19 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 		default: return;
 		}
 		e->we.keypress.cont = false;
-	} break;
+		break;
+	}
 
 	case WE_PLACE_OBJ: {
 		_place_proc(e->we.place.tile);
-	} break;
+		break;
+	}
 
 	case WE_ABORT_PLACE_OBJ: {
 		w->RaiseWidget(25);
 		SetWindowDirty(w);
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP:
 		if (w->IsWidgetLowered(0) != !!_pause_game) {
@@ -1380,7 +1386,8 @@ static void MainToolbarWndProc(Window *w, WindowEvent *e)
 			x += (spacing != 0) ? button_width : (w->width - x) / (27 - i);
 			w->widget[i].right = x - 1;
 		}
-	} break;
+		break;
+	}
 
 	case WE_TIMEOUT: {
 		uint i;
@@ -1520,8 +1527,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 		w->SetWidgetDisabledState(7, _patches_newgame.starting_year >= MAX_YEAR);
 
 		/* Draw brown-red toolbar bg. */
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB2);
-		GfxFillRect(0, 0, w->width-1, w->height-1, 0xB4 | (1 << PALETTE_MODIFIER_GREYOUT));
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB2);
+		GfxFillRect(0, 0, w->width - 1, w->height - 1, 0xB4, FILLRECT_CHECKER);
 
 		DrawWindowWidgets(w);
 
@@ -1539,7 +1546,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 	case WE_CLICK: {
 		if (_game_mode == GM_MENU) return;
 		_scen_toolbar_button_procs[e->we.click.widget](w);
-	} break;
+		break;
+	}
 
 	case WE_KEYPRESS:
 		switch (e->we.keypress.keycode) {
@@ -1581,16 +1589,18 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 
 	case WE_PLACE_OBJ: {
 		_place_proc(e->we.place.tile);
-	} break;
+		break;
+	}
 
 	case WE_ABORT_PLACE_OBJ: {
 		w->RaiseWidget(25);
 		SetWindowDirty(w);
-	} break;
+		break;
+	}
 
 	case WE_RESIZE: {
 		/* There are 15 buttons plus some spacings if the space allows it.
-		 * Furthermore there are two panels of which one is non-essential
+		 * Furthermore there are two panels of which one is non - essential
 		 * and that one can be removed is the space is too small. */
 		uint buttons_width;
 		uint spacing;
@@ -1632,7 +1642,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 					x += 130;
 					w->widget[i].right = x - 1;
 					i += 2;
-				} break;
+					break;
+				}
 
 				default:
 					if (w->widget[i].bottom == 0) continue;
@@ -1652,7 +1663,8 @@ static void ScenEditToolbarWndProc(Window *w, WindowEvent *e)
 				x += add;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_MOUSELOOP:
 		if (w->IsWidgetLowered(0) != !!_pause_game) {
@@ -1776,7 +1788,8 @@ static void StatusBarWndProc(Window *w, WindowEvent *e)
 		}
 
 		if (WP(w, def_d).data_2 > 0) DrawSprite(SPR_BLOT, PALETTE_TO_RED, w->widget[1].right - 11, 2);
-	} break;
+		break;
+	}
 
 	case WE_MESSAGE:
 		w->message.msg = e->we.message.msg;
@@ -2004,7 +2017,8 @@ static void MainWindowWndProc(Window *w, WindowEvent *e)
 			WP(w, vp_d).scrollpos_y += ScaleByZoom(e->we.scroll.delta.y, vp->zoom);
 			WP(w, vp_d).dest_scrollpos_x = WP(w, vp_d).scrollpos_x;
 			WP(w, vp_d).dest_scrollpos_y = WP(w, vp_d).scrollpos_y;
-		} break;
+			break;
+		}
 
 		case WE_MOUSEWHEEL:
 			ZoomInOrOutToCursorWindow(e->we.wheel.wheel < 0, w);
@@ -2022,21 +2036,17 @@ void ShowSelectGameWindow();
 
 void SetupColorsAndInitialWindow()
 {
-	uint i;
-	Window *w;
-	int width, height;
-
-	for (i = 0; i != 16; i++) {
-		const byte *b = GetNonSprite(PALETTE_RECOLOR_START + i);
+	for (uint i = 0; i != 16; i++) {
+		const byte *b = GetNonSprite(PALETTE_RECOLOR_START + i, ST_RECOLOUR);
 
 		assert(b);
 		memcpy(_colour_gradient[i], b + 0xC6, sizeof(_colour_gradient[i]));
 	}
 
-	width = _screen.width;
-	height = _screen.height;
+	int width = _screen.width;
+	int height = _screen.height;
 
-	w = AllocateWindow(0, 0, width, height, MainWindowWndProc, WC_MAIN_WINDOW, NULL);
+	Window *w = AllocateWindow(0, 0, width, height, MainWindowWndProc, WC_MAIN_WINDOW, NULL);
 	AssignWindowViewport(w, 0, 0, width, height, TileXY(32, 32), ZOOM_LVL_VIEWPORT);
 
 	/* XXX: these are not done */

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file signs_gui.cpp */
+/** @file signs_gui.cpp The GUI for signs. */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -101,7 +101,8 @@ static void SignListWndProc(Window *w, WindowEvent *e)
 				y += 10;
 			}
 		}
-	} break;
+		break;
+	}
 
 	case WE_CLICK: {
 		switch (e->we.click.widget) {
@@ -119,9 +120,11 @@ static void SignListWndProc(Window *w, WindowEvent *e)
 
 			si = _sign_sort[id_v];
 			ScrollMainWindowToTile(TileVirtXY(si->x, si->y));
-		} break;
+			break;
 		}
-	} break;
+		}
+		break;
+	}
 
 	case WE_RESIZE:
 		w->vscroll.cap += e->we.sizing.diff.y / 10;
@@ -238,7 +241,7 @@ static void QuerySignEditWndProc(Window *w, WindowEvent *e)
 				case QUERY_EDIT_SIGN_WIDGET_NEXT:
 					if (_sign_sort_dirty) GlobalSortSignList();
 					sign_index = _sign_sort[0]->index;
-					for (uint i = 0; i < _num_sign_sort-1; i++) {
+					for (uint i = 0; i < _num_sign_sort - 1; i++) {
 						if (qs->cur_sign == _sign_sort[i]->index) {
 							sign_index = _sign_sort[i + 1]->index;
 							break;

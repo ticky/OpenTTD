@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file dropdown.cpp Implementation of the dropdown widget. */
+
 #include "../stdafx.h"
 #include "../openttd.h"
 #include "../strings_type.h"
@@ -112,7 +114,7 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 
 						if (item->masked) {
 							GfxFillRect(x, y, x + width, y + 9,
-								(1 << PALETTE_MODIFIER_GREYOUT) | _colour_gradient[w->widget[0].color][5]
+								_colour_gradient[w->widget[0].color][5], FILLRECT_CHECKER
 							);
 						}
 					} else {
@@ -125,7 +127,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 				}
 				y += 10;
 			}
-		} break;
+			break;
+		}
 
 		case WE_CLICK: {
 			if (e->we.click.widget != 0) break;
@@ -135,7 +138,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 				WP(w, dropdown_d).selected_index = item;
 				SetWindowDirty(w);
 			}
-		} break;
+			break;
+		}
 
 		case WE_TICK:
 			if (WP(w, dropdown_d).scrolling == -1) {
@@ -189,7 +193,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 				WP(w, dropdown_d).selected_index = item;
 				SetWindowDirty(w);
 			}
-		} break;
+			break;
+		}
 
 		case WE_DESTROY: {
 			Window *w2 = FindWindowById(WP(w, dropdown_d).parent_wnd_class, WP(w,dropdown_d).parent_wnd_num);
@@ -199,7 +204,8 @@ static void DropDownMenuWndProc(Window *w, WindowEvent *e)
 			}
 
 			DeleteDropDownList(WP(w, dropdown_d).list);
-		} break;
+			break;
+		}
 	}
 }
 

@@ -1,5 +1,7 @@
 /* $Id$ */
 
+/** @file network.cpp Base functions for networking support. */
+
 #include "../stdafx.h"
 #include "network_data.h"
 
@@ -10,6 +12,7 @@
 #include "../strings_func.h"
 #include "../map_func.h"
 #include "../command_func.h"
+#include "../gfx_type.h"
 #include "../variables.h"
 #include "../date_func.h"
 #include "../newgrf_config.h"
@@ -141,7 +144,7 @@ byte NetworkSpectatorCount()
 // This puts a text-message to the console, or in the future, the chat-box,
 //  (to keep it all a bit more general)
 // If 'self_send' is true, this is the client who is sending the message
-void CDECL NetworkTextMessage(NetworkAction action, uint16 color, bool self_send, const char *name, const char *str, ...)
+void CDECL NetworkTextMessage(NetworkAction action, uint16 colour, bool self_send, const char *name, const char *str, ...)
 {
 	char buf[1024];
 	va_list va;
@@ -155,16 +158,16 @@ void CDECL NetworkTextMessage(NetworkAction action, uint16 color, bool self_send
 
 	switch (action) {
 		case NETWORK_ACTION_SERVER_MESSAGE:
-			color = 1;
+			colour = 1;
 			snprintf(message, sizeof(message), "*** %s", buf);
 			break;
 		case NETWORK_ACTION_JOIN:
-			color = 1;
+			colour = 1;
 			GetString(temp, STR_NETWORK_CLIENT_JOINED, lastof(temp));
 			snprintf(message, sizeof(message), "*** %s %s", name, temp);
 			break;
 		case NETWORK_ACTION_LEAVE:
-			color = 1;
+			colour = 1;
 			GetString(temp, STR_NETWORK_ERR_LEFT, lastof(temp));
 			snprintf(message, sizeof(message), "*** %s %s (%s)", name, temp, buf);
 			break;
@@ -201,12 +204,13 @@ void CDECL NetworkTextMessage(NetworkAction action, uint16 color, bool self_send
 			SetDParamStr(1, buf);
 			GetString(temp, STR_NETWORK_CHAT_ALL, lastof(temp));
 			ttd_strlcpy(message, temp, sizeof(message));
+
 			break;
 	}
 
 	DebugDumpCommands("ddc:cmsg:%d;%d;%s\n", _date, _date_fract, message);
-	IConsolePrintF(color, "%s", message);
-	AddChatMessage(color, duration, "%s", message);
+	IConsolePrintF(colour, "%s", message);
+	AddChatMessage((TextColour)colour, duration, "%s", message);
 }
 
 // Calculate the frame-lag of a client
@@ -395,7 +399,7 @@ static void NetworkFindIPs()
 			uint32 netmask;
 
 			fields = sscanf(*output, "%u: %hhu.%hhu.%hhu.%hhu, netmask %hhu.%hhu.%hhu.%hhu%n",
-												&n, &i1,&i2,&i3,&i4, &j1,&j2,&j3,&j4, &read);
+												&n, &i1, &i2, &i3, &i4, &j1, &j2, &j3, &j4, &read);
 			read += 1;
 			if (fields != 9) {
 				break;
@@ -1421,7 +1425,7 @@ void NetworkStartUp()
 	DEBUG(net, 3, "[core] starting network...");
 
 	/* Network is available */
-	_network_available = NetworkCoreInitialize();;
+	_network_available = NetworkCoreInitialize();
 	_network_dedicated = false;
 	_network_last_advertise_frame = 0;
 	_network_need_advertise = true;

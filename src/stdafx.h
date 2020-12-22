@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** @file stdafx.h */
+/** @file stdafx.h Definition of base types and functions in a cross-platform compatible way. */
 
 #ifndef STDAFX_H
 #define STDAFX_H
@@ -322,9 +322,9 @@ assert_compile(sizeof(uint8)  == 1);
 #define endof(x) (&x[lengthof(x)])
 #define lastof(x) (&x[lengthof(x) - 1])
 
-#define cpp_offsetof(s,m)   (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
+#define cpp_offsetof(s, m)   (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
 #if !defined(offsetof)
-	#define offsetof(s,m) cpp_offsetof(s, m)
+	#define offsetof(s, m) cpp_offsetof(s, m)
 #endif /* offsetof */
 
 

@@ -18,9 +18,9 @@
 
 #include "../../openttd.h"
 #include "../../debug.h"
-#include "../../console.h"
 #include "../../variables.h"
 #include "../../core/geometry_type.hpp"
+#include "../../core/sort_func.hpp"
 #include "cocoa_v.h"
 #include "../../blitter/factory.hpp"
 #include "../../fileio.h"
@@ -57,7 +57,6 @@ extern "C" OSErr CPSSetFrontProcess(CPSProcessSerNum* psn);
 
 
 @interface OTTDMain : NSObject
-@property (assign) NSFileHandle* stdin;
 @end
 
 
@@ -75,41 +74,11 @@ CocoaSubdriver* _cocoa_subdriver = NULL;
 /* Called when the internal event loop has just started running */
 - (void) applicationDidFinishLaunching: (NSNotification*) note
 {
-	/* Grab a handle to stdin */
-	self.stdin = [NSFileHandle fileHandleWithStandardInput];
-
-	/* Ask for a notification center, to send us notifications */
-	[ [ NSNotificationCenter defaultCenter ] addObserver:self
-		selector:@selector(stdinReadCompleted:) name:NSFileHandleReadCompletionNotification object:self.stdin ];
-
-	/* Tell stdin to tell us when there's a line of input */
-	[ self.stdin readInBackgroundAndNotify ];
-
 	/* Hand off to main application code */
 	QZ_GameLoop();
 
 	/* We're done, thank you for playing */
 	[ NSApp stop:_ottd_main ];
-}
-
-/* Called when there's been a line of input on stdin */
-- (void) stdinReadCompleted: (NSNotification*) notification
-{
-	NSData* data = notification.userInfo[NSFileHandleNotificationDataItem];
-
-	if (data != nil) {
-		NSString* string = [ [ [ [ NSString stringWithUTF8String: (const char *)data.bytes ]
-															stringByTrimmingCharactersInSet: [ NSCharacterSet newlineCharacterSet ] ]
-														componentsSeparatedByCharactersInSet: [ NSCharacterSet newlineCharacterSet ] ]
-													firstObject ];
-
-		_send_console_to_stdout = true;
-		IConsoleCmdExec([ string UTF8String ]);
-		_send_console_to_stdout = false;
-	}
-
-	/* Tell stdin to tell us when there's another line of input */
-	[ self.stdin readInBackgroundAndNotify ];
 }
 
 /* Display the in game quit confirmation dialog */
@@ -223,30 +192,48 @@ static void setupApplication()
 }
 
 
-uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
+static int CDECL ModeSorter(const OTTD_Point *p1, const OTTD_Point *p2)
 {
-	CFArrayRef mode_list;
-	CFIndex num_modes;
-	CFIndex i;
-	uint count = 0;
+	if (p1->x < p2->x) return -1;
+	if (p1->x > p2->x) return +1;
+	if (p1->y < p2->y) return -1;
+	if (p1->y > p2->y) return +1;
+	return 0;
+}
 
-	mode_list  = CGDisplayAvailableModes(display_id);
-	num_modes = CFArrayGetCount(mode_list);
+static void QZ_GetDisplayModeInfo(CFArrayRef modes, CFIndex i, int &bpp, uint16 &width, uint16 &height)
+{
+	bpp = 0;
+	width = 0;
+	height = 0;
 
-	/* Build list of modes with the requested bpp */
-	for (i = 0; i < num_modes && count < max_modes; i++) {
-		CFDictionaryRef onemode;
-		CFNumberRef     number;
-		int bpp;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	if (MacOSVersionIsAtLeast(10, 6, 0)) {
+		CGDisplayModeRef mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(modes, i);
+
+		width = (uint16)CGDisplayModeGetWidth(mode);
+		height = (uint16)CGDisplayModeGetHeight(mode);
+
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11)
+		/* Extract bit depth from mode string. */
+		CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(mode);
+		if (CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo) bpp = 32;
+		if (CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo) bpp = 16;
+		if (CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo) bpp = 8;
+		CFRelease(pixEnc);
+#else
+		/* CGDisplayModeCopyPixelEncoding is deprecated on OSX 10.11+, but there are no 8 bpp modes anyway... */
+		bpp = 32;
+#endif
+	} else
+#endif
+	{
 		int intvalue;
-		bool hasMode;
-		uint16 width, height;
 
-		onemode = (const __CFDictionary*)CFArrayGetValueAtIndex(mode_list, i);
-		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayBitsPerPixel);
-		CFNumberGetValue (number, kCFNumberSInt32Type, &bpp);
-
-		if (bpp != device_depth) continue;
+		CFDictionaryRef onemode = (const __CFDictionary*)CFArrayGetValueAtIndex(modes, i);
+		CFNumberRef number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayBitsPerPixel);
+		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
+		bpp = intvalue;
 
 		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayWidth);
 		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
@@ -255,16 +242,36 @@ uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_i
 		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayHeight);
 		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
 		height = (uint16)intvalue;
+	}
+}
+
+uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
+{
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6) && (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
+	CFArrayRef mode_list = MacOSVersionIsAtLeast(10, 6, 0) ? CGDisplayCopyAllDisplayModes(display_id, NULL) : CGDisplayAvailableModes(display_id);
+#elif (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	CFArrayRef mode_list = CGDisplayCopyAllDisplayModes(display_id, NULL);
+#else
+	CFArrayRef mode_list = CGDisplayAvailableModes(display_id);
+#endif
+	CFIndex    num_modes = CFArrayGetCount(mode_list);
+
+	/* Build list of modes with the requested bpp */
+	uint count = 0;
+	for (CFIndex i = 0; i < num_modes && count < max_modes; i++) {
+		int bpp;
+		uint16 width, height;
+
+		QZ_GetDisplayModeInfo(mode_list, i, bpp, width, height);
+
+		if (bpp != device_depth) continue;
 
 		/* Check if mode is already in the list */
-		{
-			uint i;
-			hasMode = false;
-			for (i = 0; i < count; i++) {
-				if (modes[i].x == width &&  modes[i].y == height) {
-					hasMode = true;
-					break;
-				}
+		bool hasMode = false;
+		for (uint i = 0; i < count; i++) {
+			if (modes[i].x == width &&  modes[i].y == height) {
+				hasMode = true;
+				break;
 			}
 		}
 
@@ -277,26 +284,11 @@ uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_i
 	}
 
 	/* Sort list smallest to largest */
-	{
-		uint i, j;
-		for (i = 0; i < count; i++) {
-			for (j = 0; j < count-1; j++) {
-				if (modes[j].x > modes[j + 1].x || (
-					modes[j].x == modes[j + 1].x &&
-					modes[j].y >  modes[j + 1].y
-					)) {
-					uint tmpw = modes[j].x;
-					uint tmph = modes[j].y;
+	QSortT(modes, count, &ModeSorter);
 
-					modes[j].x = modes[j + 1].x;
-					modes[j].y = modes[j + 1].y;
-
-					modes[j + 1].x = tmpw;
-					modes[j + 1].y = tmph;
-				}
-			}
-		}
-	}
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	if (MacOSVersionIsAtLeast(10, 6, 0)) CFRelease(mode_list);
+#endif
 
 	return count;
 }
@@ -349,6 +341,8 @@ void QZ_GameSizeChanged()
 	_screen.height = _cocoa_subdriver->GetHeight();
 	_screen.pitch = _cocoa_subdriver->GetWidth();
 	_fullscreen = _cocoa_subdriver->IsFullscreen();
+
+	BlitterFactoryBase::GetCurrentBlitter()->PostResize();
 
 	GameSizeChanged();
 }

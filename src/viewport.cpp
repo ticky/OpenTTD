@@ -1,6 +1,22 @@
 /* $Id$ */
 
-/** @file viewport.cpp */
+/** @file viewport.cpp Handling of all viewports.
+ *
+ * \verbatim
+ * The in-game coordinate system looks like this *
+ *                                               *
+ *                    ^ Z                        *
+ *                    |                          *
+ *                    |                          *
+ *                    |                          *
+ *                    |                          *
+ *                 /     \                       *
+ *              /           \                    *
+ *           /                 \                 *
+ *        /                       \              *
+ *   X <                             > Y         *
+ * \endverbatim
+ */
 
 #include "stdafx.h"
 #include "openttd.h"
@@ -600,7 +616,7 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, byte 
 {
 	const ViewportDrawer *vd = _cur_vd;
 	Point pt = RemapCoords(x, y, z);
-	const Sprite* spr = GetSprite(image & SPRITE_MASK);
+	const Sprite* spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 
 	if (pt.x + spr->x_offs >= vd->dpi.left + vd->dpi.width ||
 			pt.x + spr->x_offs + spr->width <= vd->dpi.left ||
@@ -685,7 +701,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		top  = ps->top  = RemapCoords(x + bb_offset_x, y + bb_offset_y, z + dz         ).y;
 		bottom          = RemapCoords(x + w          , y + h          , z + bb_offset_z).y + 1;
 	} else {
-		const Sprite *spr = GetSprite(image & SPRITE_MASK);
+		const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 		left = ps->left = (pt.x += spr->x_offs);
 		right           = (pt.x +  spr->width );
 		top  = ps->top  = (pt.y += spr->y_offs);
@@ -1110,7 +1126,7 @@ static void ViewportAddTownNames(DrawPixelInfo *dpi)
 				if (bottom > t->sign.top &&
 						top    < t->sign.top + 24 &&
 						right  > t->sign.left &&
-						left   < t->sign.left + t->sign.width_1*2) {
+						left   < t->sign.left + t->sign.width_1 * 2) {
 					AddStringToDraw(t->sign.left + 1, t->sign.top + 1,
 						_patches.population_in_label ? STR_TOWN_LABEL_POP : STR_TOWN_LABEL,
 						t->index, t->population);
@@ -1183,7 +1199,7 @@ static void ViewportAddStationNames(DrawPixelInfo *dpi)
 				if (bottom > st->sign.top &&
 						top    < st->sign.top + 24 &&
 						right  > st->sign.left &&
-						left   < st->sign.left + st->sign.width_1*2) {
+						left   < st->sign.left + st->sign.width_1 * 2) {
 					AddStation(st, STR_305C_0, st->sign.width_1);
 				}
 			}
@@ -1323,7 +1339,7 @@ static void ViewportAddWaypoints(DrawPixelInfo *dpi)
 				if (bottom > wp->sign.top &&
 						top    < wp->sign.top + 24 &&
 						right  > wp->sign.left &&
-						left   < wp->sign.left + wp->sign.width_1*2) {
+						left   < wp->sign.left + wp->sign.width_1 * 2) {
 					AddWaypoint(wp, STR_WAYPOINT_VIEWPORT, wp->sign.width_1);
 				}
 			}
@@ -1488,7 +1504,7 @@ static void ViewportDrawStrings(DrawPixelInfo *dpi, const StringSpriteToDraw *ss
 	dp.height = UnScaleByZoom(dp.height, zoom);
 
 	do {
-		uint16 colour;
+		TextColour colour;
 
 		if (ss->width != 0) {
 			int x = UnScaleByZoom(ss->x, zoom) - 1;
@@ -1518,9 +1534,9 @@ static void ViewportDrawStrings(DrawPixelInfo *dpi, const StringSpriteToDraw *ss
 		/* if we didn't draw a rectangle, or if transparant building is on,
 		 * draw the text in the color the rectangle would have */
 		if (IsTransparencySet(TO_SIGNS) && ss->string != STR_2806 && ss->width != 0) {
-			/* Real colors need the IS_PALETTE_COLOR flag
-			 * otherwise colors from _string_colormap are assumed. */
-			colour = _colour_gradient[ss->color][6] | IS_PALETTE_COLOR;
+			/* Real colors need the TC_IS_PALETTE_COLOUR flag
+			 * otherwise colours from _string_colormap are assumed. */
+			colour = (TextColour)_colour_gradient[ss->color][6] | TC_IS_PALETTE_COLOUR;
 		} else {
 			colour = TC_BLACK;
 		}
@@ -2522,7 +2538,8 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			h1 = TileHeight(TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_line_by_dir[12 + style_t])));
 			ht = TileHeight(TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_line_by_dir[12 + style_t + 1])));
 			h1 = max(h1, ht);
-		} break;
+			break;
+		}
 	}
 
 	if (swap) Swap(h0, h1);
@@ -2733,7 +2750,8 @@ calc_heightdiff_single_direction:;
 				}
 
 				GuiShowTooltipsWithArgs(measure_strings_length[index], index, params);
-			} break;
+			}
+			break;
 
 		case VPM_X_AND_Y_LIMITED: { /* drag an X by Y constrained rect area */
 			int limit = (_thd.sizelimit - 1) * TILE_SIZE;
@@ -2774,7 +2792,7 @@ calc_heightdiff_single_direction:;
 
 				GuiShowTooltipsWithArgs(measure_strings_area[index], index, params);
 			}
-		break;
+			break;
 
 		}
 		default: NOT_REACHED();
