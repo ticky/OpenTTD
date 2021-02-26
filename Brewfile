@@ -1,0 +1,2 @@
+brew "libiconv"
+brew "zlib"
